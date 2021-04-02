@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <geGL/geGL.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "helpers.hpp"
 
@@ -19,17 +22,24 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
 
 
 std::string getFramgmentShaderCode()
 {
     return R"(
     #version 330 core
-    const float iTime            = 100.0;
+    uniform float iTime            = 100.0;
+    uniform vec3 camera_origin   = vec3(0.0);
+    uniform mat4 camera_rotation = mat4(1.0);
     const vec2  iResolution      = vec2(1.0,1.0);
 
-    const int g_maxIterations    = 64;
-    const float g_eps            = 0.001;
+    const int g_maxIterations    = 32;
+    const float g_eps            = 0.01;
 
     const int coloringMode       = 0;
 
@@ -264,15 +274,18 @@ std::string getFramgmentShaderCode()
         float orbiterSpeed = 0.3;
         vec3  orbiterDir = vec3(sin(orbiterSpeed*iTime),0.0, cos(orbiterSpeed*iTime));
         float orbiterRadius = (3.0+2.0*sin(iTime*1.0))*3.0;
-        vec3 cameraOrigin = orbiterPoint+orbiterDir*orbiterRadius;
+        //vec3 cameraOrigin = orbiterPoint+orbiterDir*orbiterRadius;
+        vec3 cameraOrigin = camera_origin;
         
         vec3 cameraLookUp = vec3(sin(iTime)*0.1,1.0,cos(iTime)*0.1);
         //vec3 cameraDir = normalize(vec3(sin(0.0), 0.0,abs(cos(0.0))));
         vec3 cameraDir = -normalize(orbiterDir);
-        mat3 rotation = mat3( cross(cameraLookUp,cameraDir), cameraLookUp,cameraDir);
+        //mat3 rotation = mat3( cross(cameraLookUp,cameraDir), cameraLookUp,cameraDir);
+        
         vec3 screenLookVector = normalize(vec3(uv, 1.0));
         
-        screenLookVector = rotation*screenLookVector;
+        //screenLookVector = rotation*screenLookVector;
+        screenLookVector = (camera_rotation*vec4(screenLookVector,0.0)).xyz;
         
 
         
@@ -327,6 +340,7 @@ int main(void)
     }
     glfwMakeContextCurrent(window);
 
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     ge::gl::init();
 
     auto p = std::make_shared<ge::gl::Program>();
@@ -431,6 +445,14 @@ int main(void)
     tex->create(GL_TEXTURE_2D, GL_RGBA8, 1, 500,100);
     fillTexture(tex, 500,100);
 
+
+    //---------------------------------------------------------------
+    // Camera
+    //---------------------------------------------------------------
+    glm::vec3 origin = glm::vec3(0.0,0.0,-3.0);
+    glm::mat4 rotation = glm::mat4(1.0);
+
+
     //---------------------------------------------------------------
     // Create texture view
     //---------------------------------------------------------------
@@ -445,6 +467,27 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         fullscreenQuad.vao->bind();
         p->use();
+
+        static float time = 0.0;
+        time += 0.1;
+        p->set1f("iTime", time);
+
+        origin = glm::vec3(0.0,0.0,0.0);
+        rotation = glm::rotate(float(time), glm::vec3(0.0,1.0,0.0));
+        auto orbitPoint = glm::vec3(rotation*glm::vec4(0.0, 0.0, -6.0, 1.0));
+        auto orbitDirection = glm::normalize(origin-orbitPoint);
+        auto upVector = glm::vec3(0,1.0,0);
+
+        rotation = glm::mat4( glm::mat3(cross(upVector,orbitDirection), upVector, orbitDirection));
+
+        origin = orbitPoint;
+      
+
+
+        //origin = glm::vec3(rotation * glm::vec4(0.0,0.0,-3.0, 1.0));
+        //rotation = glm::transpose(rotation);
+        p->setMatrix4fv("camera_rotation", glm::value_ptr(rotation));
+        p->set3fv("camera_origin", glm::value_ptr(origin));
         glDrawArrays(GL_TRIANGLES,0,6);
 
         fullscreenQuad.vao->unbind();
