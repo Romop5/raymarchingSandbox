@@ -1,7 +1,9 @@
+#ifndef RAYMARCHER_HELPERS_HPP
+#define RAYMARCHER_HELPERS_HPP
 #include <geGL/geGL.h>
 #include <vector>
 
-void fillTexture(std::shared_ptr<ge::gl::Texture>&  tex, size_t width, size_t height)
+static void fillTexture(std::shared_ptr<ge::gl::Texture>&  tex, size_t width, size_t height)
 {
     std::vector<unsigned char> textureData;
     textureData.reserve(width*height*4);
@@ -55,3 +57,5 @@ struct FullscreenQuad
         vbo->unbind(GL_ARRAY_BUFFER);
     }
 };
+
+#endif

@@ -441,9 +441,10 @@ int main(void)
     //---------------------------------------------------------------
     // CREATE a procedural texture
     //---------------------------------------------------------------
-    auto tex = std::make_shared<ge::gl::Texture>();
+    /*auto tex = std::make_shared<ge::gl::Texture>();
     tex->create(GL_TEXTURE_2D, GL_RGBA8, 1, 500,100);
     fillTexture(tex, 500,100);
+    */
 
 
     //---------------------------------------------------------------
