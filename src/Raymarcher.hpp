@@ -21,6 +21,12 @@ enum class ShadingMode
     /// Render count of iterations per fragment as intensity
     ITERATIONS
 };
+
+struct RaymarchingAttributes
+{
+    size_t maximumIterations    = 64;
+    double maximumPrecision     = 0.001;
+};
 /**
  * @brief Generic rendered of SDF
  */
@@ -44,6 +50,7 @@ class Raymarcher
     auto SetSkyColour(glm::vec3 color) -> void;
 
     /* Rendering-specific methods */
+    auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
     auto Render() -> void;
 
     private:

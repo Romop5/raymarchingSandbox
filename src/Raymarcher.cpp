@@ -21,9 +21,11 @@ class Raymarcher::Pimpl
     auto SetSkyColour(glm::vec3 color) -> void;
 
     /* Rendering-specific methods */
+    auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
     auto Render() -> void;
 
     private:
+    auto UpdateUniforms() -> void;
     auto Compile() -> bool;
     std::shared_ptr<ICamera> camera;
     std::shared_ptr<ISDF> sdf;
@@ -31,6 +33,7 @@ class Raymarcher::Pimpl
     std::unique_ptr<ge::gl::Program> program; 
 
     FullscreenQuad fullscreenQuad;
+    RaymarchingAttributes attributes;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,6 +63,12 @@ auto Raymarcher::Pimpl::SetSkyColour(glm::vec3 color) -> void
 {
 }
 
+auto Raymarcher::Pimpl::SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void
+{
+    this->attributes = attributes;
+    UpdateUniforms();
+}
+
 auto Raymarcher::Pimpl::Render() -> void
 {
     if(program && camera)
@@ -71,11 +80,20 @@ auto Raymarcher::Pimpl::Render() -> void
         program->setMatrix4fv("camera_rotation", glm::value_ptr(transform));
         program->set3fv("camera_origin", glm::value_ptr(origin));
         static float time = 0.0;
-        time += 0.1;
+        time += 0.05;
         program->set1f("iTime", time);
 
 
         fullscreenQuad.draw();
+    }
+}
+
+auto Raymarcher::Pimpl::UpdateUniforms() -> void
+{
+    if(program)
+    {
+        program->set1i("g_maxIterations", attributes.maximumIterations);
+        program->set1f("g_eps", attributes.maximumPrecision);
     }
 }
 
@@ -91,6 +109,8 @@ auto Raymarcher::Pimpl::Compile() -> bool
     program->link({vs,fs});
 
     this->program = std::move(program);
+
+    UpdateUniforms();
     return true;
 }
 
@@ -128,6 +148,11 @@ auto Raymarcher::SetSun(glm::vec3 directory) -> void
 auto Raymarcher::SetSkyColour(glm::vec3 color) -> void
 {
     pimpl->SetSkyColour(color);
+}
+
+auto Raymarcher::SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void
+{
+    pimpl->SetRaymarchingAttributes(attributes);
 }
 
 auto Raymarcher::Render() -> void

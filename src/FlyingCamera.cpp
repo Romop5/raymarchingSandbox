@@ -17,7 +17,7 @@ FlyingCamera::FlyingCamera() :
 auto FlyingCamera::GetTransformation() const -> const glm::mat4&
 {
     static glm::mat4 transform;
-    auto rotation = glm::mat4(glm::mat3(glm::cross(normalizedUpVector, normalizedLookDirection),
+    auto rotation = glm::mat4(glm::mat3(glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection)),
                                         normalizedUpVector,
                                         normalizedLookDirection));
 
@@ -59,28 +59,37 @@ auto FlyingCamera::MoveDown() -> void
 
 auto FlyingCamera::RotateLeft() -> void
 {
-    normalizedLookDirection = glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                              glm::rotate(angularSpeed, normalizedUpVector));
+    auto orthogonalLookUp = glm::cross(glm::cross(normalizedUpVector, normalizedLookDirection), 
+                            normalizedLookDirection);
+
+    normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
+                              glm::rotate(angularSpeed, orthogonalLookUp)));
 }
 
 auto FlyingCamera::RotateRight() -> void
 {
-    normalizedLookDirection = glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                              glm::rotate(-angularSpeed, normalizedUpVector));
+    auto orthogonalLookUp = glm::cross(glm::cross(normalizedUpVector, normalizedLookDirection), 
+                            normalizedLookDirection);
+    normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
+                              glm::rotate(-angularSpeed, orthogonalLookUp)));
 }
 
 auto FlyingCamera::RotateUp() -> void
 {
-    auto orthoDirection = glm::cross(normalizedUpVector, normalizedLookDirection);
-    normalizedUpVector= glm::vec3(glm::vec4(normalizedUpVector, 0.0) * 
-                        glm::rotate(angularSpeed, orthoDirection));
+    if(glm::dot(normalizedLookDirection, normalizedUpVector) > 0.7)
+        return;
+    auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
+    normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
+                        glm::rotate(angularSpeed, orthoDirection)));
 }
 
 auto FlyingCamera::RotateDown() -> void
 {
-    auto orthoDirection = glm::cross(normalizedUpVector, normalizedLookDirection);
-    normalizedUpVector= glm::vec3(glm::vec4(normalizedUpVector, 0.0) * 
-                        glm::rotate(-angularSpeed, orthoDirection));
+    if(glm::dot(normalizedLookDirection, normalizedUpVector) < -0.7)
+        return;
+    auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
+    normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
+                        glm::rotate(-angularSpeed, orthoDirection)));
 }
 
 auto FlyingCamera::SetMovementSpeed(float unitsPerMovement) -> void

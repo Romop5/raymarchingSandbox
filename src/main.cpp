@@ -1,17 +1,66 @@
+#include <iostream>
 #include <GLFW/glfw3.h>
 
 #include "Raymarcher.hpp"
 #include "FlyingCamera.hpp"
 #include "SDF.hpp"
 
+std::shared_ptr<raymarcher::FlyingCamera> g_sceneCamera;
+
 static void error_callback(int error, const char* description)
 {
     fputs(description, stderr);
 }
+static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static double lastXpos = 0.0, lastYpos = 0.0;
+    double relativeX = xpos-lastXpos;
+    double relativeY = ypos-lastYpos;
+    lastXpos = xpos;
+    lastYpos = ypos;
+
+    std::cout << "Cursor: " << xpos << " - " << ypos << std::endl;
+    g_sceneCamera->SetAngularSpeed(0.01);
+    if(relativeX> 0.0)
+        g_sceneCamera->RotateLeft();
+    if(relativeX< 0.0)
+        g_sceneCamera->RotateRight();
+
+    
+    if(relativeY> 0.0)
+        g_sceneCamera->RotateDown();
+    if(relativeY< 0.0)
+        g_sceneCamera->RotateUp();
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+
+    switch(key)
+    {
+        case GLFW_KEY_W:
+            g_sceneCamera->MoveForward();
+            break;
+        case GLFW_KEY_S:
+            g_sceneCamera->MoveBackward();
+            break;
+        case GLFW_KEY_A:
+            g_sceneCamera->MoveLeft();
+            break;
+        case GLFW_KEY_D:
+            g_sceneCamera->MoveRight();
+            break;
+        case GLFW_KEY_UP:
+            g_sceneCamera->MoveUp();
+            break;
+        case GLFW_KEY_DOWN:
+            g_sceneCamera->MoveDown();
+            break;
+        default:
+            break;
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -34,6 +83,7 @@ int main(void)
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     ge::gl::init();
 
     auto sdfLiteral = R"(
@@ -52,13 +102,16 @@ int main(void)
 
     raymarcher::Raymarcher rm;
     auto flyingCamera = std::make_shared<raymarcher::FlyingCamera>();
+    g_sceneCamera = flyingCamera;
     flyingCamera->SetMovementSpeed(10.0);
     flyingCamera->MoveBackward();
+    flyingCamera->SetMovementSpeed(0.5);
     rm.SetCamera(flyingCamera);
     auto sdf = std::make_shared<raymarcher::SDF>(sdfLiteral);
     rm.SetSDF(sdf);
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, cursor_callback);
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

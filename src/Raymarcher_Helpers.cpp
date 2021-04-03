@@ -13,8 +13,8 @@ namespace
         uniform mat4 camera_rotation = mat4(1.0);
         const vec2  iResolution      = vec2(1.0,1.0);
 
-        const int g_maxIterations    = 32;
-        const float g_eps            = 0.01;
+        uniform int g_maxIterations    = 32;
+        uniform float g_eps            = 0.01;
 
         const int coloringMode       = 0;
 
