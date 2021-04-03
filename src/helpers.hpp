@@ -1,6 +1,7 @@
 #ifndef RAYMARCHER_HELPERS_HPP
 #define RAYMARCHER_HELPERS_HPP
 #include <geGL/geGL.h>
+#include <GL/gl.h>
 #include <vector>
 
 static void fillTexture(std::shared_ptr<ge::gl::Texture>&  tex, size_t width, size_t height)
@@ -55,6 +56,13 @@ struct FullscreenQuad
         vao->addAttrib(vbo, 1, 2, GL_FLOAT,5*sizeof(float), sizeof(float)*3);
         vao->unbind();
         vbo->unbind(GL_ARRAY_BUFFER);
+    }
+
+    void draw()
+    {
+        vao->bind();
+        glDrawArrays(GL_TRIANGLES,0,6);
+        vao->unbind();
     }
 };
 

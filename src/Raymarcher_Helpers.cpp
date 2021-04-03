@@ -35,6 +35,52 @@ namespace
         const vec3  floorAColor      = vec3(1.0);
         const vec3  floorBColor      = vec3(0.0);
         const float floorThickness   = 0.99;
+
+        float sphere(vec3 pos, float radius)
+        {
+            return length(pos)-radius;
+        }
+
+        float sphereModulated(vec3 pos, float radius)
+        {
+            pos.x += 0.1*(sin(iTime*pos.y*pos.x*3.0));
+            return length(pos)-radius;
+        }
+
+        float cube(vec3 pos, float radius)
+        {
+            return max(abs(pos.x),max(abs(pos.y),abs(pos.z)))-radius;
+        }
+
+        float unite(float a, float b)
+        {
+            return min(a, b);
+        }
+
+        float uniteSmooth(float a, float b)
+        {
+            return smoothstep(a,b, min(0.0,max(1.0,a/(a+b))));
+        }
+
+        float intersect(float a, float b)
+        {
+            return max(a, b);
+        }
+
+        float ground(vec3 position, float elevation)
+        {
+            return position.y - elevation;
+        }
+
+        float object(vec3 pos)
+        {
+            pos.y += sin(cos(tan(iTime*3.0)*pos.x)+pos.y*0.3*20.0)*0.3;
+            pos.x += sin(pos.y*pos.x*2.0);
+            pos.y += sin(iTime);
+            float b = sphere(pos+vec3(0.0,0.0,0.0), 1.0);
+            float c = sphere(pos+vec3(1.0,0.0,0.0), 1.0);
+            return intersect(b,c);
+        }
         )";
         return literal;
     }
@@ -43,6 +89,40 @@ namespace
     std::string GetFragmentShaderTail()
     {
         auto literal = std::string(R"(
+
+        float threshold(float val, float thres)
+        {
+            return float(val > thres);
+        }
+
+        vec3 colorize(vec3 pos)
+        {
+            float distToFloor = max(0.0, min(1.0, 10.0*g_eps+pos.y-(floorElevation)));
+            float checkerColor = clamp(0.0,1.0,threshold(sin(6.0*pos.x),floorThickness)+
+                                               threshold(sin(6.0*pos.z),floorThickness));
+            return mix(mix(floorAColor, floorBColor, checkerColor),
+                       vec3(1.0,0.8,0.5),
+                       distToFloor);
+        }
+        vec2 rayMarchWithIterations(vec3 o, vec3 d)
+        {
+            int currentIterations = 0;
+            float t = 0.0;
+            while((g_maxIterations-currentIterations) > 0)
+            {
+                float closestDistance = df(o+t*d);
+                if(closestDistance < g_eps)
+                {
+                    return vec2(t+closestDistance, currentIterations);
+                }
+                t += closestDistance;
+                currentIterations = currentIterations + 1;
+            }
+            return vec2(t, currentIterations);
+        }
+
+
+
         float rayMarch(vec3 o, vec3 d)
         {
             int maximumIterations = g_maxIterations;
@@ -236,10 +316,10 @@ std::string raymarcher::ConstructRenderedVertexShader()
     layout(location = 0) in vec3 normal;
     layout(location = 1) in vec2 uvIn;
 
-    out vec2 vs_uv;
+    out vec2 uv;
     void main()
     {
-        vs_uv = uvIn;
+        uv = uvIn;
         gl_Position = vec4(normal.xy, 0.0, 1.0);
     }
     )";

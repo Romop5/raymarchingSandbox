@@ -13,23 +13,23 @@ class FlyingCamera: public ICamera
     FlyingCamera();
     auto GetTransformation() const -> const glm::mat4& override;
 
-    auto MoveForward();
-    auto MoveBackward();
-    auto MoveLeft();
-    auto MoveRight();
-    auto MoveUp();
-    auto MoveDown();
+    auto MoveForward() -> void;
+    auto MoveBackward() -> void;
+    auto MoveLeft() -> void;
+    auto MoveRight() -> void;
+    auto MoveUp() -> void;
+    auto MoveDown() -> void;
 
-    auto RotateLeft();
-    auto RotateRight();
-    auto RotateUp();
-    auto RotateDown();
+    auto RotateLeft() -> void;
+    auto RotateRight() -> void;
+    auto RotateUp() -> void;
+    auto RotateDown() -> void;
 
-    auto SetMovementSpeed(float unitsPerMovement);
-    auto SetMovementSpeed() const -> float;
+    auto SetMovementSpeed(float unitsPerMovement) -> void;
+    auto GetMovementSpeed() const -> float;
 
-    auto SetAngularSpeed(float degreesPerMovement);
-    auto SetAngularSpeed() const -> float;
+    auto SetAngularSpeed(float degreesPerMovement) -> void;
+    auto GetAngularSpeed() const -> float;
     private:
     glm::vec3 position;
     glm::vec3 normalizedLookDirection;

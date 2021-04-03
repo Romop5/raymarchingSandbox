@@ -10,8 +10,12 @@ namespace raymarcher
 class SDF: public ISDF
 {
     public:
+    explicit SDF(std::string sourceCode);
     auto GetGLSLCode() -> const std::string& override;
     auto OnUpdateParametersCallback(ge::gl::Program& program) -> void override;
+
+    private:
+    std::string sourceCode;
 };
 
 }

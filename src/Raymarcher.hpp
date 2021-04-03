@@ -5,7 +5,6 @@
 #include "ISDF.hpp"
 #include "ICamera.hpp"
 
-
 namespace raymarcher
 {
 
@@ -32,6 +31,7 @@ class Raymarcher
     class Pimpl;
 
     Raymarcher();
+    ~Raymarcher();
 
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
