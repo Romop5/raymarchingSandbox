@@ -49,6 +49,15 @@ auto GLFWCamera::MouseCursorChanged(GLFWwindow* window, double relativeX, double
     }
 }
 
+auto GLFWCamera::ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void
+{
+    if (type == ORBITER_CAMERA)
+    {
+        auto& orbiter = static_cast<OrbitCamera&>(*camera);
+        orbiter.SetDistance(orbiter.GetDistance() - relativeY);
+    }
+}
+
 auto GLFWCamera::KeyPressed(GLFWwindow* window, int key) const -> void 
 {
     if(type == FLYING_CAMERA)

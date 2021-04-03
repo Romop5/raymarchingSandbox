@@ -9,6 +9,7 @@ class IGLFWInputHandler
 {
     public:
     virtual auto MouseCursorChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void = 0;
+    virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void = 0;
     virtual auto KeyPressed(GLFWwindow* window, int key) const -> void = 0;
 };
 }

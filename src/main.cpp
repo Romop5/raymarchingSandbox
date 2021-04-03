@@ -13,6 +13,17 @@ static void error_callback(int error, const char* description)
 {
     fputs(description, stderr);
 }
+static void scroll_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static double lastXpos = 0.0, lastYpos = 0.0;
+    double relativeX = xpos-lastXpos;
+    double relativeY = ypos-lastYpos;
+    lastXpos = xpos;
+    lastYpos = ypos;
+
+    std::cout << "Scroll: " << xpos << " - " << ypos << std::endl;
+    g_sceneCamera->ScrollChanged(window, xpos, ypos);
+}
 static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
 {
     static double lastXpos = 0.0, lastYpos = 0.0;
@@ -23,17 +34,6 @@ static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
 
     std::cout << "Cursor: " << xpos << " - " << ypos << std::endl;
     g_sceneCamera->MouseCursorChanged(window, relativeX, relativeY);
-    /* g_sceneCamera->SetAngularSpeed(0.01); */
-    /* if(relativeX> 0.0) */
-    /*     g_sceneCamera->RotateLeft(); */
-    /* if(relativeX< 0.0) */
-    /*     g_sceneCamera->RotateRight(); */
-
-    
-    /* if(relativeY> 0.0) */
-    /*     g_sceneCamera->RotateDown(); */
-    /* if(relativeY< 0.0) */
-    /*     g_sceneCamera->RotateUp(); */
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -42,29 +42,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GL_TRUE);
 
     g_sceneCamera->KeyPressed(window, key);
-    /* switch(key) */
-    /* { */
-    /*     case GLFW_KEY_W: */
-    /*         g_sceneCamera->MoveForward(); */
-    /*         break; */
-    /*     case GLFW_KEY_S: */
-    /*         g_sceneCamera->MoveBackward(); */
-    /*         break; */
-    /*     case GLFW_KEY_A: */
-    /*         g_sceneCamera->MoveLeft(); */
-    /*         break; */
-    /*     case GLFW_KEY_D: */
-    /*         g_sceneCamera->MoveRight(); */
-    /*         break; */
-    /*     case GLFW_KEY_UP: */
-    /*         g_sceneCamera->MoveUp(); */
-    /*         break; */
-    /*     case GLFW_KEY_DOWN: */
-    /*         g_sceneCamera->MoveDown(); */
-    /*         break; */
-    /*     default: */
-    /*         break; */
-    /* } */
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -111,15 +88,13 @@ int main(void)
     orbiter->SetDistance(5.0);
     /* g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(flyingCamera, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA); */
     g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
-    /* flyingCamera->SetMovementSpeed(10.0); */
-    /* flyingCamera->MoveBackward(); */
-    /* flyingCamera->SetMovementSpeed(0.5); */
     rm.SetCamera(g_sceneCamera);
     auto sdf = std::make_shared<raymarcher::SDF>(sdfLiteral);
     rm.SetSDF(sdf);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

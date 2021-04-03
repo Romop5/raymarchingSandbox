@@ -55,11 +55,15 @@ auto OrbitCamera::RotateRight() -> void
 auto OrbitCamera::RotateUp() -> void
 {
     verticalAngle += angularSpeed;
+    if(verticalAngle  > 0.9)
+        verticalAngle = 0.9;
 }
 
 auto OrbitCamera::RotateDown() -> void
 {
     verticalAngle -= angularSpeed;
+    if(verticalAngle  < -0.9)
+        verticalAngle = -0.9;
 }
 
 auto OrbitCamera::SetAngularSpeed(float degreesPerMovement) -> void
