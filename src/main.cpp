@@ -3,9 +3,11 @@
 
 #include "Raymarcher.hpp"
 #include "FlyingCamera.hpp"
+#include "OrbitCamera.hpp"
+#include "GLFWCamera.hpp"
 #include "SDF.hpp"
 
-std::shared_ptr<raymarcher::FlyingCamera> g_sceneCamera;
+std::shared_ptr<raymarcher::GLFWCamera> g_sceneCamera;
 
 static void error_callback(int error, const char* description)
 {
@@ -20,17 +22,18 @@ static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
     lastYpos = ypos;
 
     std::cout << "Cursor: " << xpos << " - " << ypos << std::endl;
-    g_sceneCamera->SetAngularSpeed(0.01);
-    if(relativeX> 0.0)
-        g_sceneCamera->RotateLeft();
-    if(relativeX< 0.0)
-        g_sceneCamera->RotateRight();
+    g_sceneCamera->MouseCursorChanged(window, relativeX, relativeY);
+    /* g_sceneCamera->SetAngularSpeed(0.01); */
+    /* if(relativeX> 0.0) */
+    /*     g_sceneCamera->RotateLeft(); */
+    /* if(relativeX< 0.0) */
+    /*     g_sceneCamera->RotateRight(); */
 
     
-    if(relativeY> 0.0)
-        g_sceneCamera->RotateDown();
-    if(relativeY< 0.0)
-        g_sceneCamera->RotateUp();
+    /* if(relativeY> 0.0) */
+    /*     g_sceneCamera->RotateDown(); */
+    /* if(relativeY< 0.0) */
+    /*     g_sceneCamera->RotateUp(); */
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -38,29 +41,30 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 
-    switch(key)
-    {
-        case GLFW_KEY_W:
-            g_sceneCamera->MoveForward();
-            break;
-        case GLFW_KEY_S:
-            g_sceneCamera->MoveBackward();
-            break;
-        case GLFW_KEY_A:
-            g_sceneCamera->MoveLeft();
-            break;
-        case GLFW_KEY_D:
-            g_sceneCamera->MoveRight();
-            break;
-        case GLFW_KEY_UP:
-            g_sceneCamera->MoveUp();
-            break;
-        case GLFW_KEY_DOWN:
-            g_sceneCamera->MoveDown();
-            break;
-        default:
-            break;
-    }
+    g_sceneCamera->KeyPressed(window, key);
+    /* switch(key) */
+    /* { */
+    /*     case GLFW_KEY_W: */
+    /*         g_sceneCamera->MoveForward(); */
+    /*         break; */
+    /*     case GLFW_KEY_S: */
+    /*         g_sceneCamera->MoveBackward(); */
+    /*         break; */
+    /*     case GLFW_KEY_A: */
+    /*         g_sceneCamera->MoveLeft(); */
+    /*         break; */
+    /*     case GLFW_KEY_D: */
+    /*         g_sceneCamera->MoveRight(); */
+    /*         break; */
+    /*     case GLFW_KEY_UP: */
+    /*         g_sceneCamera->MoveUp(); */
+    /*         break; */
+    /*     case GLFW_KEY_DOWN: */
+    /*         g_sceneCamera->MoveDown(); */
+    /*         break; */
+    /*     default: */
+    /*         break; */
+    /* } */
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -102,11 +106,15 @@ int main(void)
 
     raymarcher::Raymarcher rm;
     auto flyingCamera = std::make_shared<raymarcher::FlyingCamera>();
-    g_sceneCamera = flyingCamera;
-    flyingCamera->SetMovementSpeed(10.0);
-    flyingCamera->MoveBackward();
-    flyingCamera->SetMovementSpeed(0.5);
-    rm.SetCamera(flyingCamera);
+    auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
+    orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
+    orbiter->SetDistance(5.0);
+    /* g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(flyingCamera, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA); */
+    g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
+    /* flyingCamera->SetMovementSpeed(10.0); */
+    /* flyingCamera->MoveBackward(); */
+    /* flyingCamera->SetMovementSpeed(0.5); */
+    rm.SetCamera(g_sceneCamera);
     auto sdf = std::make_shared<raymarcher::SDF>(sdfLiteral);
     rm.SetSDF(sdf);
 

@@ -27,8 +27,10 @@ add_executable (gl
     src/main.cpp
     src/SDF.cpp
     src/Raymarcher.cpp
-    src/FlyingCamera.cpp
     src/Raymarcher_Helpers.cpp
+    src/FlyingCamera.cpp
+    src/OrbitCamera.cpp
+    src/GLFWCamera.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
 target_link_libraries(gl geGL dl)
