@@ -31,18 +31,16 @@ static void fillTexture(std::shared_ptr<ge::gl::Texture>&  tex, size_t width, si
 struct FullscreenQuad
 {
     public:
-    FullscreenQuad() = default;
+    FullscreenQuad() 
+    {
+        Initialize();
+    }
     
     void draw()
     {
-        if(!vao || !vbo)
-        {
-            Initialize();
-        }
-
-        vao->bind();
+        vao.bind();
         glDrawArrays(GL_TRIANGLES,0,6);
-        vao->unbind();
+        vao.unbind();
     }
     private:
     void Initialize()
@@ -59,22 +57,20 @@ struct FullscreenQuad
              0.0f, 0.0f, 0.0f, 0.0f
         };
 
-        vbo = std::make_shared<ge::gl::Buffer>();
-        vbo->alloc(sizeof(float)*5*6);
-        vbo->setData(vertices, sizeof(float)*5*6);
+        vbo.alloc(sizeof(float)*5*6);
+        vbo.setData(vertices, sizeof(float)*5*6);
 
-        vao = std::make_shared<ge::gl::VertexArray>();
-        vao->bind();
-        vbo->bind(GL_ARRAY_BUFFER);
+        vao.bind();
+        vbo.bind(GL_ARRAY_BUFFER);
         /* // X,Y,Z */
-        vao->addAttrib(vbo, 0, 3, GL_FLOAT,5*sizeof(float));
+        vao.addAttrib(&vbo, 0, 3, GL_FLOAT,5*sizeof(float));
         /* // UV */
-        vao->addAttrib(vbo, 1, 2, GL_FLOAT,5*sizeof(float), sizeof(float)*3);
-        vao->unbind();
-        vbo->unbind(GL_ARRAY_BUFFER);
+        vao.addAttrib(&vbo, 1, 2, GL_FLOAT,5*sizeof(float), sizeof(float)*3);
+        vao.unbind();
+        vbo.unbind(GL_ARRAY_BUFFER);
     }
-    std::shared_ptr<ge::gl::Buffer> vbo;
-    std::shared_ptr<ge::gl::VertexArray> vao;
+    ge::gl::Buffer vbo;
+    ge::gl::VertexArray vao;
 };
 
 #endif

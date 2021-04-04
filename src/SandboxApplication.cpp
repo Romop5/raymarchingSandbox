@@ -32,6 +32,7 @@ SandboxApplication::SandboxApplication()
 
 
     adapter.Initialize(500,500);
+    adapter.SetVisibility(true);
 
     auto widget = std::make_shared<raymarcher::RendererWidget>(rm);
     widget->SetViewportSize(300,300);

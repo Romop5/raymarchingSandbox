@@ -10,7 +10,7 @@ using namespace raymarcher;
 class Raymarcher::Pimpl
 {
     public:
-    Pimpl();
+    Pimpl() = default;
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
    
@@ -33,19 +33,13 @@ class Raymarcher::Pimpl
 
     std::shared_ptr<ge::gl::Program> program; 
 
-    std::unique_ptr<FullscreenQuad> fullscreenQuad;
+    FullscreenQuad fullscreenQuad;
     RaymarchingAttributes attributes;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // Raymarcher:pimpl
 ///////////////////////////////////////////////////////////////////////////////
-
-Raymarcher::Pimpl::Pimpl()
-{
-    fullscreenQuad = std::make_unique<FullscreenQuad>();
-}
-
 auto Raymarcher::Pimpl::SetCamera(std::shared_ptr<ICamera> camera) -> void
 {
     this->camera = camera;
@@ -77,7 +71,7 @@ auto Raymarcher::Pimpl::SetRaymarchingAttributes(const RaymarchingAttributes& at
 
 auto Raymarcher::Pimpl::Render() -> void
 {
-    if(program && camera && fullscreenQuad)
+    if(program && camera)
     {
         auto transform = camera->GetTransformation();
         program->use();
@@ -89,8 +83,7 @@ auto Raymarcher::Pimpl::Render() -> void
         time += 0.05;
         program->set1f("iTime", time);
 
-
-        fullscreenQuad->draw();
+        fullscreenQuad.draw();
     }
 }
 
