@@ -31,7 +31,7 @@ class Raymarcher::Pimpl
     std::shared_ptr<ICamera> camera;
     std::shared_ptr<ISDF> sdf;
 
-    std::shared_ptr<ge::gl::Program> program; 
+    std::unique_ptr<ge::gl::Program> program; 
 
     FullscreenQuad fullscreenQuad;
     RaymarchingAttributes attributes;
@@ -98,7 +98,7 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
 
 auto Raymarcher::Pimpl::Compile() -> bool
 {
-    auto program = std::make_shared<ge::gl::Program>();
+    auto program = std::make_unique<ge::gl::Program>();
 
     auto vs = std::make_shared<ge::gl::Shader>(GL_VERTEX_SHADER);
     vs->compile(ConstructRenderedVertexShader());
