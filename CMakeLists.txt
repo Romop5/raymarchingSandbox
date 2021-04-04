@@ -54,6 +54,7 @@ add_executable (gl
     src/GLFWCamera.cpp
     src/ImguiAdapter.cpp
     src/RendererWidget.cpp
+    src/WidgetManager.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
 target_link_libraries(gl geGL dl imgui)

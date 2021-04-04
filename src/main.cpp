@@ -9,6 +9,8 @@
 #include "SDF.hpp"
 #include "ImguiAdapter.hpp"
 #include "RendererWidget.hpp"
+#include "WidgetManager.hpp"
+#include "IWidget.hpp"
 
 
 constexpr auto defaultWindowWidth = 600;
@@ -131,8 +133,16 @@ int main(void)
 
     adapter.Initialize(defaultWindowWidth, defaultWindowHeight);
 
-    auto widget = std::make_unique<raymarcher::RendererWidget>(rm);
+    auto widget = std::make_shared<raymarcher::RendererWidget>(rm);
     widget->SetViewportSize(300,300);
+
+
+    auto widget2 = std::make_shared<raymarcher::RendererWidget>(rm);
+    widget2->SetViewportSize(300,100);
+
+    raymarcher::WidgetManager widgetManager;
+    widgetManager.AddWidget(widget);
+    widgetManager.AddWidget(widget2);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_callback);
@@ -146,12 +156,14 @@ int main(void)
         if(adapter.IsVisible())
         {
             adapter.BeginFrame();
-            //ImGui::ShowDemoWindow(nullptr);
-            if(ImGui::Begin("Widget"))
-            {
-                widget->Render();
-                ImGui::End();
-            }
+            ImGui::ShowDemoWindow(nullptr);
+            
+            widgetManager.Render();
+            /* if(ImGui::Begin("Widget", nullptr)) */
+            /* { */
+            /*     widget->Render(); */
+            /*     ImGui::End(); */
+            /* } */
             adapter.EndFrame();
             adapter.RenderCurrentFrame();
         }

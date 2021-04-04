@@ -29,7 +29,12 @@ auto RendererWidget::Render() -> void
     targetFBO->unbind();
     glPopAttrib();
 
-    ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImVec2(viewportWidth, viewportHeight), ImVec2(1,1), ImVec2(0, 0));
+
+    if(ImGui::BeginChild("Render"))
+    {
+        ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImVec2(viewportWidth, viewportHeight), ImVec2(1,1), ImVec2(0, 0));
+        ImGui::EndChild();
+    }
 }
 
 

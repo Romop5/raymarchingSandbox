@@ -3,13 +3,14 @@
 
 #include <geGL/geGL.h>
 #include "Raymarcher.hpp"
+#include "IWidget.hpp"
 
 namespace raymarcher 
 {
 /**
  * @brief Renders RayMarching's scene in a ImGUI window
  */
-class RendererWidget
+class RendererWidget: public IWidget
 {
     public:
         RendererWidget() = default;
