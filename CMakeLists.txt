@@ -23,6 +23,27 @@ find_package(geGL REQUIRED)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
 
+# Compile imgui
+add_library(imgui SHARED 
+    3rd/imgui/imgui.cpp
+    3rd/imgui/imgui_demo.cpp
+    3rd/imgui/imgui_draw.cpp
+    3rd/imgui/imgui_tables.cpp
+    3rd/imgui/imgui_widgets.cpp
+    3rd/imgui/imconfig.h
+    3rd/imgui/imgui.h
+    3rd/imgui/imgui_internal.h
+    3rd/imgui/imstb_rectpack.h
+    3rd/imgui/imstb_textedit.h
+    3rd/imgui/imstb_truetype.h
+
+    3rd/imgui/backends/imgui_impl_opengl3.h
+    3rd/imgui/backends/imgui_impl_opengl3.cpp
+)
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
+target_link_libraries(imgui PUBLIC GLEW)
+
+
 add_executable (gl 
     src/main.cpp
     src/SDF.cpp
@@ -31,8 +52,9 @@ add_executable (gl
     src/FlyingCamera.cpp
     src/OrbitCamera.cpp
     src/GLFWCamera.cpp
+    src/ImguiAdapter.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
-target_link_libraries(gl geGL dl)
+target_link_libraries(gl geGL dl imgui)
 
 target_link_libraries (gl glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
