@@ -8,6 +8,7 @@
 #include "GLFWCamera.hpp"
 #include "SDF.hpp"
 #include "ImguiAdapter.hpp"
+#include "RendererWidget.hpp"
 
 
 constexpr auto defaultWindowWidth = 600;
@@ -20,6 +21,7 @@ static void error_callback(int error, const char* description)
 {
     fputs(description, stderr);
 }
+
 static void scroll_callback(GLFWwindow* window, double xpos, double ypos)
 {
     static double lastXpos = 0.0, lastYpos = 0.0;
@@ -89,7 +91,7 @@ int main(void)
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
-    window = glfwCreateWindow(defaultWindowWidth, defaultWindowHeight, "Simple example", NULL, NULL);
+    window = glfwCreateWindow(defaultWindowWidth, defaultWindowHeight, "Raymarching Sandbox", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -115,19 +117,22 @@ int main(void)
     )";
 
 
-    raymarcher::Raymarcher rm;
+    auto rm = std::make_shared<raymarcher::Raymarcher>();
     auto flyingCamera = std::make_shared<raymarcher::FlyingCamera>();
     auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
     orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
     orbiter->SetDistance(5.0);
     /* g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(flyingCamera, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA); */
     g_sceneCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
-    rm.SetCamera(g_sceneCamera);
+    rm->SetCamera(g_sceneCamera);
     auto sdf = std::make_shared<raymarcher::SDF>(sdfLiteral);
-    rm.SetSDF(sdf);
+    rm->SetSDF(sdf);
 
 
     adapter.Initialize(defaultWindowWidth, defaultWindowHeight);
+
+    auto widget = std::make_unique<raymarcher::RendererWidget>(rm);
+    widget->SetViewportSize(300,300);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_callback);
@@ -136,12 +141,17 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rm.Render();
+        //rm->Render();
 
         if(adapter.IsVisible())
         {
             adapter.BeginFrame();
-            ImGui::ShowDemoWindow(nullptr);
+            //ImGui::ShowDemoWindow(nullptr);
+            if(ImGui::Begin("Widget"))
+            {
+                widget->Render();
+                ImGui::End();
+            }
             adapter.EndFrame();
             adapter.RenderCurrentFrame();
         }

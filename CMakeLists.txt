@@ -53,6 +53,7 @@ add_executable (gl
     src/OrbitCamera.cpp
     src/GLFWCamera.cpp
     src/ImguiAdapter.cpp
+    src/RendererWidget.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
 target_link_libraries(gl geGL dl imgui)
