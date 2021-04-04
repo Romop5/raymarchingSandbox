@@ -7,8 +7,8 @@ namespace raymarcher
 class ICamera
 {
     public:
-    virtual auto GetTransformation() const -> const glm::mat4& = 0;
     virtual ~ICamera() = default;
+    virtual auto GetTransformation() const -> const glm::mat4& = 0;
 };
 }
 #endif

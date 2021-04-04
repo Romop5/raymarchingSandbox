@@ -10,6 +10,7 @@ using namespace raymarcher;
 class Raymarcher::Pimpl
 {
     public:
+    Pimpl();
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
    
@@ -30,15 +31,20 @@ class Raymarcher::Pimpl
     std::shared_ptr<ICamera> camera;
     std::shared_ptr<ISDF> sdf;
 
-    std::unique_ptr<ge::gl::Program> program; 
+    std::shared_ptr<ge::gl::Program> program; 
 
-    FullscreenQuad fullscreenQuad;
+    std::unique_ptr<FullscreenQuad> fullscreenQuad;
     RaymarchingAttributes attributes;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // Raymarcher:pimpl
 ///////////////////////////////////////////////////////////////////////////////
+
+Raymarcher::Pimpl::Pimpl()
+{
+    fullscreenQuad = std::make_unique<FullscreenQuad>();
+}
 
 auto Raymarcher::Pimpl::SetCamera(std::shared_ptr<ICamera> camera) -> void
 {
@@ -71,7 +77,7 @@ auto Raymarcher::Pimpl::SetRaymarchingAttributes(const RaymarchingAttributes& at
 
 auto Raymarcher::Pimpl::Render() -> void
 {
-    if(program && camera)
+    if(program && camera && fullscreenQuad)
     {
         auto transform = camera->GetTransformation();
         program->use();
@@ -84,7 +90,7 @@ auto Raymarcher::Pimpl::Render() -> void
         program->set1f("iTime", time);
 
 
-        fullscreenQuad.draw();
+        fullscreenQuad->draw();
     }
 }
 
@@ -99,7 +105,7 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
 
 auto Raymarcher::Pimpl::Compile() -> bool
 {
-    auto program = std::make_unique<ge::gl::Program>();
+    auto program = std::make_shared<ge::gl::Program>();
 
     auto vs = std::make_shared<ge::gl::Shader>(GL_VERTEX_SHADER);
     vs->compile(ConstructRenderedVertexShader());

@@ -11,6 +11,7 @@ auto WidgetManager::Render() -> void
 {
     for(auto& widget: widgets)
     {
-        widget->Render();
+        if(widget)
+            widget->Render();
     }
 }
