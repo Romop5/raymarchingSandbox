@@ -14,10 +14,21 @@ class WidgetManager
 {
     public:
         WidgetManager() = default;
+
+        using WidgetStorageType = std::vector<std::shared_ptr<IWidget>>;
+
+        enum LayoutType
+        {
+            VERTICAL_BOX,
+            HORIZONTAL_BOX
+        };
+
         auto AddWidget(std::shared_ptr<raymarcher::IWidget> newWidget) -> void;
         auto Render() -> void;
+        auto SetLayout(LayoutType type) -> void;
     private:
-        std::vector<std::shared_ptr<IWidget>> widgets;
+        WidgetStorageType widgets;
+        LayoutType layout;
 };
 
 }

@@ -3,18 +3,16 @@
 
 #include "IApplication.hpp"
 
-#include "Raymarcher.hpp"
-#include "FlyingCamera.hpp"
 #include "OrbitCamera.hpp"
 #include "GLFWCamera.hpp"
-#include "SDF.hpp"
 #include "ImguiAdapter.hpp"
-#include "RendererWidget.hpp"
 #include "WidgetManager.hpp"
-#include "IWidget.hpp"
 
 namespace raymarcher
 {
+class GLFWCamera;
+class WidgetManager;
+
 class SandboxApplication: public IApplication
 {
     public:
@@ -29,8 +27,8 @@ class SandboxApplication: public IApplication
     virtual auto KeyPressed(GLFWwindow* window, int key, int action) -> void override;
     private:
     raymarcher::ImguiAdapter adapter;
-    std::shared_ptr<raymarcher::GLFWCamera> globalCamera;
-    std::unique_ptr<raymarcher::WidgetManager> widgetManager;
+    raymarcher::WidgetManager widgetManager;
+    std::shared_ptr<raymarcher::GLFWCamera> focusedCamera;
 };
 }
 #endif

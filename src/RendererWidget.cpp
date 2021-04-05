@@ -33,8 +33,8 @@ auto RendererWidget::Render() -> void
     if(ImGui::BeginChild("Render"))
     {
         ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImVec2(viewportWidth, viewportHeight), ImVec2(1,1), ImVec2(0, 0));
-        ImGui::EndChild();
     }
+    ImGui::EndChild();
 }
 
 

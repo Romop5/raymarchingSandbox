@@ -39,6 +39,9 @@ add_library(imgui SHARED
 
     3rd/imgui/backends/imgui_impl_opengl3.h
     3rd/imgui/backends/imgui_impl_opengl3.cpp
+
+    3rd/imgui/misc/cpp/imgui_stdlib.cpp
+    3rd/imgui/misc/cpp/imgui_stdlib.h
 )
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
 target_link_libraries(imgui PUBLIC GLEW)
@@ -53,9 +56,12 @@ add_executable (gl
     src/OrbitCamera.cpp
     src/GLFWCamera.cpp
     src/ImguiAdapter.cpp
-    src/RendererWidget.cpp
     src/WidgetManager.cpp
+    src/WindowWidget.cpp
+    src/RendererWidget.cpp
     src/SandboxApplication.cpp
+    src/MenuWidget.cpp
+    src/EditWidget.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
 target_link_libraries(gl geGL dl imgui)
