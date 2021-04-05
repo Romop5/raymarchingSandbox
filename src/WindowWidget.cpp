@@ -16,9 +16,14 @@ auto WindowWidget::Render() -> void
 
     if(ImGui::Begin(label.c_str(), nullptr))
     {
-        WidgetManager::Render();
+        RenderContent();
     }
     ImGui::End();
+}
+
+auto WindowWidget::RenderContent() -> void
+{
+    WidgetManager::Render();
 }
 
 auto WindowWidget::SetTitle(const std::string& title) -> void

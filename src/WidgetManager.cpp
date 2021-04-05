@@ -4,7 +4,7 @@
 
 using namespace raymarcher;
 
-auto WidgetManager::AddWidget(std::shared_ptr<raymarcher::IWidget> newWidget) -> void
+auto WidgetManager::AddWidget(std::shared_ptr<raymarcher::WidgetBase> newWidget) -> void
 {
     widgets.push_back(newWidget);
 }

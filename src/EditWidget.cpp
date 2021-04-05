@@ -13,7 +13,7 @@ using namespace raymarcher;
 
 namespace
 {
-    auto CreateRayMarchingWidget(std::string code) -> std::shared_ptr<IWidget>
+    auto CreateRayMarchingWidget(std::string code) -> std::shared_ptr<WidgetBase>
     {
         auto rm = std::make_shared<raymarcher::Raymarcher>();
         auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
@@ -36,7 +36,7 @@ EditWidget::EditWidget(std::string startingCode) :
 {
 }
 
-auto EditWidget::Render() -> void
+auto EditWidget::RenderContent() -> void
 {
     if(ImGui::Button("Compile"))
     {

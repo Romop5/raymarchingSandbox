@@ -3,20 +3,20 @@
 
 #include <geGL/geGL.h>
 #include "Raymarcher.hpp"
-#include "IWidget.hpp"
+#include "WidgetBase.hpp"
 
 namespace raymarcher 
 {
 /**
  * @brief Renders RayMarching's scene in a ImGUI window
  */
-class RendererWidget: public IWidget
+class RendererWidget: public WidgetBase
 {
     public:
         RendererWidget() = default;
         explicit RendererWidget(std::shared_ptr<Raymarcher> rm);
 
-        auto Render() -> void;
+        auto RenderContent() -> void override;
         auto SetViewportSize(size_t width, size_t height) -> void;
     private:
         auto Reinitialize() -> void;

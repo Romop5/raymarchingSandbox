@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include "IWidget.hpp"
+#include "WidgetBase.hpp"
 
 namespace raymarcher 
 {
@@ -15,7 +15,7 @@ class WidgetManager
     public:
         WidgetManager() = default;
 
-        using WidgetStorageType = std::vector<std::shared_ptr<IWidget>>;
+        using WidgetStorageType = std::vector<std::shared_ptr<WidgetBase>>;
 
         enum LayoutType
         {
@@ -23,7 +23,7 @@ class WidgetManager
             HORIZONTAL_BOX
         };
 
-        auto AddWidget(std::shared_ptr<raymarcher::IWidget> newWidget) -> void;
+        auto AddWidget(std::shared_ptr<raymarcher::WidgetBase> newWidget) -> void;
         auto Render() -> void;
         auto SetLayout(LayoutType type) -> void;
     private:

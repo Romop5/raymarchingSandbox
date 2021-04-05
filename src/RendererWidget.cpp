@@ -13,7 +13,7 @@ RendererWidget::RendererWidget(std::shared_ptr<Raymarcher> rm) :
     Reinitialize();
 }
 
-auto RendererWidget::Render() -> void
+auto RendererWidget::RenderContent() -> void
 {
     if(!targetFBO || !colorImage)
     {

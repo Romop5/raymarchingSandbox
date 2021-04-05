@@ -3,7 +3,6 @@
 #include <imgui.h>
 
 #include "SDF.hpp"
-#include "IWidget.hpp"
 #include "WindowWidget.hpp"
 #include "MenuWidget.hpp"
 

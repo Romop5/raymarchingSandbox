@@ -34,7 +34,7 @@ MenuWidget::MenuWidget(WidgetManager& manager) :
 {
 }
 
-auto MenuWidget::Render() -> void
+auto MenuWidget::RenderContent() -> void
 {
     if(ImGui::Button("Add new"))
     {
