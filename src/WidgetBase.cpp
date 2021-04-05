@@ -12,10 +12,11 @@ class WidgetBase::Impl
     auto GetOnExitEventRegister() -> Observee<bool>&;
     private:
     WidgetID id;
-    raymarcher::Observee<bool> onExitEvent;
+    std::shared_ptr<Observee<bool>> onExitEvent;
 };
 
-WidgetBase::Impl::Impl()
+WidgetBase::Impl::Impl() :
+    onExitEvent { std::make_shared<Observee<bool>>() }
 {
     static WidgetID sessionUniqueWidgetID = InvalidID+1;
     id = sessionUniqueWidgetID++;
@@ -30,7 +31,7 @@ auto WidgetBase::Impl::GetID() -> WidgetID
 
 Observee<bool>& WidgetBase::Impl::GetOnExitEventRegister()
 {
-    return onExitEvent;
+    return *onExitEvent;
 }
 
 //-----------------------------------------------------------------------------
@@ -59,3 +60,9 @@ auto WidgetBase::Render() -> void
 auto WidgetBase::RenderContent() -> void
 {
 }
+
+auto WidgetBase::Delete() -> void
+{
+    GetOnExitEventRegister().Call(true);
+}
+

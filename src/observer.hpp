@@ -81,7 +81,10 @@ class Callback: public std::enable_shared_from_this<Callback<T>>
 template<typename T>
 Observer<T>::~Observer<T>()
 {
-    callback->Unregister();
+    if(callback)
+    {
+        callback->Unregister();
+    }
     callback.reset();
 }
 
@@ -240,7 +243,6 @@ auto Callback<T>::Unregister() -> void
 {
     if(observee)
     {
-        
         observee->Unregister(std::enable_shared_from_this<Callback<T>>::shared_from_this());
     }
 }

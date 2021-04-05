@@ -14,11 +14,17 @@ auto WindowWidget::Render() -> void
     auto id = std::to_string(reinterpret_cast<size_t>(static_cast<void*>(this)));
     auto label = title + "###" + id;
 
-    if(ImGui::Begin(label.c_str(), nullptr))
+    bool shouldContinue = true;
+    if(ImGui::Begin(label.c_str(), &shouldContinue))
     {
         RenderContent();
     }
     ImGui::End();
+
+    if(!shouldContinue)
+    {
+        Delete();
+    }
 }
 
 auto WindowWidget::RenderContent() -> void

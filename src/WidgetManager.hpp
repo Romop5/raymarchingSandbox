@@ -7,15 +7,25 @@
 
 namespace raymarcher 
 {
+
+template<typename T>
+class Observer;
+
 /**
  * @brief Manages life time / updating / rendering of the contained widgets
  */
 class WidgetManager 
 {
     public:
-        WidgetManager() = default;
+        WidgetManager();
+        ~WidgetManager();
 
-        using WidgetStorageType = std::vector<std::shared_ptr<WidgetBase>>;
+        struct WidgetEntry
+        {
+            std::shared_ptr<WidgetBase>     widget;
+            std::unique_ptr<Observer<bool>> onExitObserver;
+        };
+        using WidgetStorageType = std::vector<WidgetEntry>;
 
         enum LayoutType
         {

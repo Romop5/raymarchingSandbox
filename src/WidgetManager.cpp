@@ -1,18 +1,31 @@
 #include "WidgetManager.hpp"
-
 #include <imgui.h>
+
+#include "observer.hpp"
 
 using namespace raymarcher;
 
+
+WidgetManager::WidgetManager() = default;
+
+WidgetManager::~WidgetManager() = default;
+
 auto WidgetManager::AddWidget(std::shared_ptr<raymarcher::WidgetBase> newWidget) -> void
 {
-    widgets.push_back(newWidget);
+    auto observer = std::make_unique<Observer<bool>>();
+    *observer = newWidget->GetOnExitEventRegister().Register([&, newWidget](bool okay)
+    {
+        auto id = newWidget->GetID();
+        this->RemoveWidget(id);
+    });
+    widgets.emplace_back(std::move(WidgetEntry { newWidget, std::move(observer)}));
 }
 
 auto WidgetManager::HasWidget(WidgetBase::WidgetID id) -> bool
 {
-    for(auto& widget: widgets)
+    for(auto& entry: widgets)
     {
+        auto& widget = entry.widget;
         if(widget && widget->GetID() == id)
         {
             return true;
@@ -25,7 +38,7 @@ auto WidgetManager::RemoveWidget(WidgetBase::WidgetID id) -> void
 {
     for(auto it = widgets.begin(); it != widgets.end(); it++)
     {
-        auto& widget = *it;
+        auto& widget = (*it).widget;
         if(widget && widget->GetID() == id)
         {
             widgets.erase(it);
@@ -37,8 +50,9 @@ auto WidgetManager::RemoveWidget(WidgetBase::WidgetID id) -> void
 
 auto WidgetManager::Render() -> void
 {
-    for(auto& widget: widgets)
+    for(auto& entry: widgets)
     {
+        auto& widget = entry.widget;
         if(widget)
         {
             widget->Render();
