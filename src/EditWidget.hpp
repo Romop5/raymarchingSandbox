@@ -8,11 +8,11 @@ namespace raymarcher
 /**
  * @brief Renders RayMarching's scene in a ImGUI window
  */
-class EditWidget: public WidgetBase
+class EditWidget: public WindowWidget
 {
     public:
         EditWidget() = default;
-        explicit EditWidget(std::string startingCode);
+        EditWidget(std::string name, std::string startingCode);
 
         auto RenderContent() -> void override;
     private:

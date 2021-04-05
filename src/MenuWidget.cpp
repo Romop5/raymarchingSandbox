@@ -38,11 +38,8 @@ auto MenuWidget::RenderContent() -> void
 {
     if(ImGui::Button("Add new"))
     {
-        auto widget = std::make_shared<raymarcher::EditWidget>(SimpleSDFCode());
-        auto window = std::make_shared<raymarcher::WindowWidget>();
-        window->AddWidget(widget);
-        window->SetTitle("New SDF function");
-        windowManager.AddWidget(window);
+        auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
+        windowManager.AddWidget(widget);
     }
     
     static std::vector<std::pair<std::string, std::string>> primitives =
@@ -54,11 +51,8 @@ auto MenuWidget::RenderContent() -> void
     {
         if(ImGui::Button(name.c_str()))
         {
-            auto widget = std::make_shared<raymarcher::EditWidget>(code);
-            auto window = std::make_shared<raymarcher::WindowWidget>();
-            window->AddWidget(widget);
-            window->SetTitle(name);
-            windowManager.AddWidget(window);
+            auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
+            windowManager.AddWidget(widget);
         }
     }
 }

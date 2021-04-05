@@ -31,9 +31,10 @@ namespace
     }
 }
 
-EditWidget::EditWidget(std::string startingCode) :
+EditWidget::EditWidget(std::string name, std::string startingCode) :
     code { startingCode }
 {
+    SetTitle(name);
 }
 
 auto EditWidget::RenderContent() -> void
