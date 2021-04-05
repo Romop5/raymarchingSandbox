@@ -19,7 +19,6 @@ class EditWidget: public WindowWidget
     std::string code;
 
     std::shared_ptr<WidgetBase> previewWidget;
-
 };
 
 }
