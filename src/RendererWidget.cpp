@@ -32,11 +32,16 @@ auto RendererWidget::RenderContent() -> void
 
     if(ImGui::BeginChild("Render"))
     {
-        ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImVec2(viewportWidth, viewportHeight), ImVec2(1,1), ImVec2(0, 0));
+        ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImGui::GetWindowSize(), ImVec2(1,1), ImVec2(0, 0));
     }
     ImGui::EndChild();
 }
 
+auto RendererWidget::Render() -> void
+{
+    ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_Once);
+    WindowWidget::Render();
+}
 
 auto RendererWidget::SetViewportSize(size_t width, size_t height) -> void
 {

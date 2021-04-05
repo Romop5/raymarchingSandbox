@@ -37,17 +37,20 @@ EditWidget::EditWidget(std::string name, std::string startingCode) :
     SetTitle(name);
 }
 
+auto EditWidget::Render() -> void
+{
+    ImGui::SetNextWindowSize(ImVec2(400,300), ImGuiCond_Once);
+    WindowWidget::Render();
+}
+
 auto EditWidget::RenderContent() -> void
 {
     if(ImGui::Button("Compile"))
     {
-        previewWidget = CreateRayMarchingWidget(code);
+        AddWidget(CreateRayMarchingWidget(code));
     }
     ImGui::Text("Code:");
-    ImGui::InputTextMultiline("", &code, ImVec2(-1,0));
+    ImGui::InputTextMultiline("", &code, ImVec2(-1,-1));
 
-    if(previewWidget)
-    {
-        previewWidget->Render();
-    }
+    WindowWidget::RenderContent();
 }

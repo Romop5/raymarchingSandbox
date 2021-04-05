@@ -17,6 +17,7 @@ class RendererWidget: public WindowWidget
         explicit RendererWidget(std::shared_ptr<Raymarcher> rm);
 
         auto RenderContent() -> void override;
+        auto Render() -> void override;
         auto SetViewportSize(size_t width, size_t height) -> void;
     private:
         auto Reinitialize() -> void;

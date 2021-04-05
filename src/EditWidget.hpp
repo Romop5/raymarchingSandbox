@@ -14,11 +14,12 @@ class EditWidget: public WindowWidget
         EditWidget() = default;
         EditWidget(std::string name, std::string startingCode);
 
+        auto Render() -> void override;
         auto RenderContent() -> void override;
     private:
     std::string code;
 
-    std::shared_ptr<WidgetBase> previewWidget;
+    //std::shared_ptr<WidgetBase> previewWidget;
 };
 
 }
