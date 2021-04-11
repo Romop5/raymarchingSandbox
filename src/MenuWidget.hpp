@@ -3,6 +3,7 @@
 
 #include "WidgetBase.hpp"
 #include "WidgetManager.hpp"
+#include "SDFLibrary.hpp"
 
 namespace raymarcher 
 {
@@ -18,6 +19,7 @@ class MenuWidget: public WidgetBase
         auto RenderContent() -> void override;
     private:
         WidgetManager& windowManager;
+        SDFLibrary library;
 };
 
 }

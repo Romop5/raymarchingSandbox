@@ -80,7 +80,7 @@ auto Raymarcher::Pimpl::Render() -> void
         program->setMatrix4fv("camera_rotation", glm::value_ptr(transform));
         program->set3fv("camera_origin", glm::value_ptr(origin));
         static float time = 0.0;
-        time += 0.05;
+        time += 0.005;
         program->set1f("iTime", time);
 
         fullscreenQuad.draw();
@@ -104,7 +104,10 @@ auto Raymarcher::Pimpl::Compile() -> bool
     vs->compile(ConstructRenderedVertexShader());
 
     auto fs = std::make_shared<ge::gl::Shader>(GL_FRAGMENT_SHADER);
-    fs->compile(ConstructRenderedFragmentShader(sdf->GetGLSLCode())); 
+    auto finalFsCode = ConstructRenderedFragmentShader(sdf->GetGLSLCode());
+    std::cout << "Compiling FS: " << std::endl
+              << finalFsCode << std::endl;
+    fs->compile(finalFsCode);
     program->link({vs,fs});
 
     this->program = std::move(program);

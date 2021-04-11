@@ -14,7 +14,8 @@ namespace
         const vec2  iResolution      = vec2(1.0,1.0);
 
         uniform int g_maxIterations    = 32;
-        uniform float g_eps            = 0.01;
+        uniform float g_eps            = 0.5;
+        uniform float g_stepRatio      = 0.9;
 
         const int coloringMode       = 0;
 
@@ -57,6 +58,13 @@ namespace
             return min(a, b);
         }
 
+        vec4 unite(vec4 a, vec4 b)
+        {
+            if(a.x > b.x)
+                return b;
+            return a;
+        }
+
         float uniteSmooth(float a, float b)
         {
             return smoothstep(a,b, min(0.0,max(1.0,a/(a+b))));
@@ -67,19 +75,28 @@ namespace
             return max(a, b);
         }
 
-        float ground(vec3 position, float elevation)
+        float threshold(float val, float thres)
         {
-            return position.y - elevation;
+            return float(val > thres);
         }
 
-        float object(vec3 pos)
+
+        vec4 ground(vec3 position, float elevation)
+        {
+            float checkerColor = clamp(0.0,1.0,threshold(sin(6.0*position.x),floorThickness)+
+                                               threshold(sin(6.0*position.z),floorThickness));
+            vec3 color = mix(floorAColor, floorBColor, checkerColor);
+            return vec4(position.y - elevation, color);
+        }
+
+        vec4 object(vec3 pos)
         {
             pos.y += sin(cos(tan(iTime*3.0)*pos.x)+pos.y*0.3*20.0)*0.3;
             pos.x += sin(pos.y*pos.x*2.0);
             pos.y += sin(iTime);
             float b = sphere(pos+vec3(0.0,0.0,0.0), 1.0);
             float c = sphere(pos+vec3(1.0,0.0,0.0), 1.0);
-            return intersect(b,c);
+            return vec4(intersect(b,c), vec3(1.0,0.0,0.0));
         }
         )";
         return literal;
@@ -90,12 +107,7 @@ namespace
     {
         auto literal = std::string(R"(
 
-        float threshold(float val, float thres)
-        {
-            return float(val > thres);
-        }
-
-        vec3 colorize(vec3 pos)
+               vec3 colorize(vec3 pos)
         {
             float distToFloor = max(0.0, min(1.0, 10.0*g_eps+pos.y-(floorElevation)));
             float checkerColor = clamp(0.0,1.0,threshold(sin(6.0*pos.x),floorThickness)+
@@ -110,12 +122,12 @@ namespace
             float t = 0.0;
             while((g_maxIterations-currentIterations) > 0)
             {
-                float closestDistance = df(o+t*d);
+                float closestDistance = df(o+t*d).x;
                 if(closestDistance < g_eps)
                 {
                     return vec2(t+closestDistance, currentIterations);
                 }
-                t += closestDistance;
+                t += closestDistance*g_stepRatio;
                 currentIterations = currentIterations + 1;
             }
             return vec2(t, currentIterations);
@@ -123,55 +135,64 @@ namespace
 
 
 
-        float rayMarch(vec3 o, vec3 d)
+        vec4 rayMarch(vec3 o, vec3 d)
         {
             int maximumIterations = g_maxIterations;
             float t = 0.0;
             while(maximumIterations > 0)
             {
-                float closestDistance = df(o+t*d);
+                vec4 result = df(o+t*d);
+                float closestDistance = result.x;
+                if(closestDistance > farPlane)
+                {
+                    return vec4(farPlane*2.0, fogColor);
+                }
+                vec3 color = result.yzw;
                 if(closestDistance < g_eps)
                 {
-                    return t+closestDistance;
+                    return vec4(t+closestDistance, color);
                 }
-                t += closestDistance*0.5;
+                t += closestDistance*g_stepRatio;
                 maximumIterations = maximumIterations - 1;
             }
-            return t;
+            return vec4(t, fogColor);
         }
 
         vec3 normalVector(vec3 o, vec3 d)
         {
             vec2 eps = vec2(g_eps, 0);
-            float t = rayMarch(o, d);
+            float t = rayMarch(o, d).x;
             if(t < 0.0)
             {
                 return vec3(0.0);
             }
             vec3 p = o+d*t;
-            vec3 ds = vec3(df(p));
-            vec3 dd = vec3(df(p-eps.xyy), df(p-eps.yxy), df(p-eps.yyx));
+            vec3 ds = vec3(df(p).x);
+            vec3 dd = vec3(df(p-eps.xyy).x, df(p-eps.yxy).x, df(p-eps.yyx).x);
             return ds-dd;
         }
 
         vec3 phongShading(vec3 o, vec3 d, vec3 l)
         {;
          
-            float dO = rayMarch(o, d);
+            vec4 result = rayMarch(o, d);
+            float dO = result.x;
+            vec3 albedo = result.yzw;
             if(dO < 0.0 || dO > farPlane)
             {
                return fogColor;
             }
+            //return result.yzw;
             vec3 p = o+d*dO;
-            
+
           
             vec3  nlDir = normalize(l-p);
             float lightDistance = length(l-p);
-            
-            bool visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir) >= lightDistance-2.0*g_eps);
-            
+
+            bool visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+
             vec3 nd = normalize(o-p);
-         
+
             vec3 nv = normalize(normalVector(o, d));
             vec3 nnv = nv;
             
@@ -188,9 +209,10 @@ namespace
             float lightAttenuation = 0.1*(pow(lightDistance,2.0)+1.0);
             float lightIntensity = 1.0/lightAttenuation;
             float fogRatio = max(0.0,(1.0+dO)/farPlane);
+            //float fogRatio = 0.0;
             
             
-            vec3 albedoColor = colorize(p);
+            vec3 albedoColor = albedo;
             
             vec3 ambientColorPart    = albedoColor*ambientRatio;
             vec3 shadingColor = ambientColorPart;
@@ -210,7 +232,7 @@ namespace
         vec3 depthMap(vec3 o, vec3 d)
         {
             
-            float dO = rayMarch(o, d);
+            float dO = rayMarch(o, d).x;
             if(dO < 0.0)
             {
                 return vec3(0.0);

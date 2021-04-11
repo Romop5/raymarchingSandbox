@@ -63,6 +63,7 @@ add_executable (gl
     src/RendererWidget.cpp
     src/MenuWidget.cpp
     src/EditWidget.cpp
+    src/SDFLibrary.cpp
     src/SandboxApplication.cpp
 )
 set_property(TARGET gl PROPERTY CXX_STANDARD 17)
