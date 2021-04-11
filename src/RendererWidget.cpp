@@ -39,6 +39,11 @@ auto RendererWidget::RenderContent() -> void
     {
         AddWidget(std::make_shared<RendererAttributesWidget>(raymarcher));
     }
+    if(ImGui::Button("Fit render plane to window"))
+    {
+        auto size = ImGui::GetWindowSize();
+        SetViewportSize(size.x, size.y);
+    }
 
     if(ImGui::BeginChild("Render"))
     {
