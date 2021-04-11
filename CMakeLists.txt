@@ -61,6 +61,7 @@ add_executable (gl
     src/WidgetManager.cpp
     src/WindowWidget.cpp
     src/RendererWidget.cpp
+    src/RendererAttributesWidget.cpp
     src/MenuWidget.cpp
     src/EditWidget.cpp
     src/SDFLibrary.cpp

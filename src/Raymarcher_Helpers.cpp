@@ -14,15 +14,15 @@ namespace
         const vec2  iResolution      = vec2(1.0,1.0);
 
         uniform int g_maxIterations    = 32;
-        uniform float g_eps            = 0.5;
+        uniform float g_eps            = 0.00005;
         uniform float g_stepRatio      = 0.9;
 
-        const int coloringMode       = 0;
+        uniform int coloringMode       = 0;
 
         const float roughness        = 0.7;
-        const float ambientRatio     = 0.0;
+        uniform float ambientRatio     = 0.3;
         const float shininess        = 20.0;
-        const float specularity      = 0.3;
+        uniform float specularity      = 0.3;
 
         const vec3  albedoColor      = vec3(1.0,1.0,1.0);
         const vec3  sunColor         = vec3(1.0,1.0,1.0);
