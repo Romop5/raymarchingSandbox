@@ -12,11 +12,9 @@ class Raymarcher::Pimpl
     public:
     Pimpl() = default;
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
+    auto GetCamera() -> std::shared_ptr<ICamera>;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
    
-    /* Lighting-specific methods */
-    auto SetShadingMode(raymarcher::ShadingMode mode) -> void;
-
     /* Phong related */
     auto SetSun(glm::vec3 directory) -> void;
     auto SetSkyColour(glm::vec3 color) -> void;
@@ -25,7 +23,6 @@ class Raymarcher::Pimpl
     auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
     auto Render() -> void;
 
-    private:
     auto UpdateUniforms() -> void;
     auto Compile() -> bool;
     std::shared_ptr<ICamera> camera;
@@ -35,6 +32,7 @@ class Raymarcher::Pimpl
 
     FullscreenQuad fullscreenQuad;
     RaymarchingAttributes attributes;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,14 +43,15 @@ auto Raymarcher::Pimpl::SetCamera(std::shared_ptr<ICamera> camera) -> void
     this->camera = camera;
 }
 
+auto Raymarcher::Pimpl::GetCamera() -> std::shared_ptr<ICamera>
+{
+    return this->camera;
+}
+
 auto Raymarcher::Pimpl::SetSDF(std::shared_ptr<ISDF> sdf) -> void
 {
     this->sdf = sdf;
     Compile();
-}
-
-auto Raymarcher::Pimpl::SetShadingMode(raymarcher::ShadingMode mode) -> void
-{
 }
 
 auto Raymarcher::Pimpl::SetSun(glm::vec3 directory) -> void
@@ -93,6 +92,8 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
     {
         program->set1i("g_maxIterations", attributes.maximumIterations);
         program->set1f("g_eps", attributes.maximumPrecision);
+        program->set1f("ambientRatio", attributes.ambientCoef);
+        program->set1f("specularity", attributes.specularityCoef);
     }
 }
 
@@ -132,6 +133,11 @@ auto Raymarcher::SetCamera(std::shared_ptr<ICamera> camera) -> void
     pimpl->SetCamera(camera);
 }
 
+auto Raymarcher::GetCamera() -> std::shared_ptr<ICamera>
+{
+    return pimpl->GetCamera();
+}
+
 auto Raymarcher::SetSDF(std::shared_ptr<ISDF> sdf) -> void
 {
     pimpl->SetSDF(sdf);
@@ -139,7 +145,13 @@ auto Raymarcher::SetSDF(std::shared_ptr<ISDF> sdf) -> void
 
 auto Raymarcher::SetShadingMode(ShadingMode mode) -> void
 {
-    pimpl->SetShadingMode(mode);
+    pimpl->attributes.mode = mode;
+    pimpl->program->set1i("coloringMode", static_cast<int>(mode));
+}
+
+auto Raymarcher::GetShadingMode() -> ShadingMode
+{
+    return pimpl->attributes.mode;
 }
 
 auto Raymarcher::SetSun(glm::vec3 directory) -> void
@@ -157,7 +169,54 @@ auto Raymarcher::SetRaymarchingAttributes(const RaymarchingAttributes& attribute
     pimpl->SetRaymarchingAttributes(attributes);
 }
 
+
+auto Raymarcher::SetMaximumIterations(size_t maximum) -> void
+{
+    pimpl->attributes.maximumIterations = maximum;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetMaximumIterations() -> size_t
+{
+    return pimpl->attributes.maximumIterations;
+}
+
+
+auto Raymarcher::SetEps(float eps) -> void
+{
+    pimpl->attributes.maximumPrecision = eps;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetEps() -> float
+{
+    return pimpl->attributes.maximumPrecision;
+}
+
+auto Raymarcher::SetAmbientCoef(float c) -> void
+{
+    pimpl->attributes.ambientCoef = c;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetAmbientCoef() -> float
+{
+    return pimpl->attributes.ambientCoef;
+}
+
+auto Raymarcher::SetSpecularityCoef(float c) -> void
+{
+    pimpl->attributes.specularityCoef = c;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetSpecularityCoef() -> float
+{
+    return pimpl->attributes.specularityCoef;
+}
+
 auto Raymarcher::Render() -> void
 {
     pimpl->Render();
 }
+

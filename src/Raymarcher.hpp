@@ -10,22 +10,24 @@ namespace raymarcher
 
 enum class ShadingMode
 {
-    /// Render white where ray hits surface
-    MASK,
     /// Render using Phong shading
-    PHONG,
+    PHONG = 0,
     /// Render depth (similar to rendering depth buffer)
-    DEPTH,
+    DEPTH = 1,
     /// Render normals (each vector is encoded as RGB)
-    NORMAL,
+    NORMAL = 2,
     /// Render count of iterations per fragment as intensity
-    ITERATIONS
+    ITERATIONS = 3,
 };
 
 struct RaymarchingAttributes
 {
     size_t maximumIterations    = 64;
     double maximumPrecision     = 0.001;
+
+    ShadingMode  mode;
+    float        ambientCoef    = 0.3;
+    float        specularityCoef = 0.3;
 };
 /**
  * @brief Generic rendered of SDF
@@ -40,10 +42,13 @@ class Raymarcher
     ~Raymarcher();
 
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
+    auto GetCamera() -> std::shared_ptr<ICamera>;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
    
     /* Lighting-specific methods */
     auto SetShadingMode(ShadingMode mode) -> void ;
+    auto GetShadingMode() -> ShadingMode;
+
 
     /* Phong related */
     auto SetSun(glm::vec3 directory) -> void;
@@ -51,8 +56,20 @@ class Raymarcher
 
     /* Rendering-specific methods */
     auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
-    auto Render() -> void;
 
+    auto SetMaximumIterations(size_t maximum) -> void;
+    auto GetMaximumIterations() -> size_t;
+
+    auto SetEps(float eps) -> void;
+    auto GetEps() -> float;
+
+    auto SetAmbientCoef(float c) -> void;
+    auto GetAmbientCoef() -> float;
+
+    auto SetSpecularityCoef(float c) -> void;
+    auto GetSpecularityCoef() -> float;
+
+    auto Render() -> void;
     private:
     std::unique_ptr<Pimpl> pimpl;
 };

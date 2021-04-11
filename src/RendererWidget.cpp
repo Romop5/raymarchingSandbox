@@ -2,6 +2,8 @@
 #include <imgui.h>
 #include <iostream>
 #include <GL/gl.h>
+#include "IApplication.hpp"
+#include "RendererAttributesWidget.hpp"
 
 using namespace raymarcher;
 
@@ -29,6 +31,11 @@ auto RendererWidget::RenderContent() -> void
     targetFBO->unbind();
     glPopAttrib();
 
+
+    if(ImGui::Button("Settings"))
+    {
+        AddWidget(std::make_shared<RendererAttributesWidget>(raymarcher));
+    }
 
     if(ImGui::BeginChild("Render"))
     {
