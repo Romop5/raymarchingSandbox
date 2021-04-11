@@ -45,6 +45,11 @@ auto SandboxApplication::Render() -> void
 
 }
 
+auto SandboxApplication::CharacterPressed(GLFWwindow* window, unsigned int character) -> void
+{
+    adapter.OnCharacter(character);
+}
+
 auto SandboxApplication::MouseCursorChanged(GLFWwindow* window, double absoluteX, double absoluteY) -> void
 {
     static double lastXpos = 0.0, lastYpos = 0.0;

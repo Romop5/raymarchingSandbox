@@ -14,6 +14,7 @@ class IApplication
     virtual auto Resize(size_t newWidth, size_t newHeight) -> void = 0;
     virtual auto Render() -> void = 0;
 
+    virtual auto CharacterPressed(GLFWwindow* window, unsigned int character) -> void = 0;
     virtual auto MouseCursorChanged(GLFWwindow* window, double absoluteX, double absoluteY) -> void = 0;
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void = 0; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void = 0;

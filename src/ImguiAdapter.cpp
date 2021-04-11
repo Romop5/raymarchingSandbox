@@ -60,15 +60,16 @@ bool ImguiAdapter::Initialize(size_t width, size_t height)
     io.KeyMap[ImGuiKey_Delete] = helper::MapGLFWKeyTo256Array(GLFW_KEY_DELETE);
     io.KeyMap[ImGuiKey_Backspace] = helper::MapGLFWKeyTo256Array(GLFW_KEY_BACKSPACE);
     io.KeyMap[ImGuiKey_Space] = helper::MapGLFWKeyTo256Array(GLFW_KEY_SPACE);
-    io.KeyMap[ImGuiKey_Enter] = helper::MapGLFWKeyTo256Array(GLFW_KEY_BACKSPACE);
+    io.KeyMap[ImGuiKey_Enter] = helper::MapGLFWKeyTo256Array(GLFW_KEY_ENTER);
     io.KeyMap[ImGuiKey_Escape] = helper::MapGLFWKeyTo256Array(GLFW_KEY_ESCAPE);
     io.KeyMap[ImGuiKey_KeyPadEnter] = helper::MapGLFWKeyTo256Array(GLFW_KEY_BACKSPACE);
-    io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
+    /*io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
     io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
     io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
     io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
     io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
     io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+    */
 
     io.MouseDrawCursor = true;
 
@@ -118,14 +119,20 @@ void ImguiAdapter::Destroy()
     ImGui_ImplOpenGL3_Shutdown();
 }
 
+void ImguiAdapter::OnCharacter(size_t character)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddInputCharacter(character);
+}
+
 void ImguiAdapter::OnKey(size_t key, bool isDown)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[helper::MapGLFWKeyTo256Array(key)] = isDown;
-    if(isDown && std::isalnum(key))
+    /*if(isDown && std::isalnum(key))
     {
         io.AddInputCharacter(key);
-    }
+    }*/
 }
 
 void ImguiAdapter::OnMousePositionRelative(float deltaX, float deltaY)

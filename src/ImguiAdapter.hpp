@@ -27,6 +27,7 @@ namespace raymarcher
             /// Clean up
             void Destroy();
 
+            void OnCharacter(size_t character);
             void OnKey(size_t key, bool isDown = true);
             void OnMousePositionRelative(float deltaX, float deltaY);
             void OnMousePosition(float x, float y);

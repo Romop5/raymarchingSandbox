@@ -15,6 +15,11 @@ static void error_callback(int error, const char* description)
     fputs(description, stderr);
 }
 
+static void character_callback(GLFWwindow* window, unsigned int c)
+{
+    g_application->CharacterPressed(window, c);
+}
+
 static void scroll_callback(GLFWwindow* window, double xpos, double ypos)
 {
     static double lastXpos = 0.0, lastYpos = 0.0;
@@ -72,6 +77,7 @@ int main(void)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    glfwSetCharCallback(window, character_callback);
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_callback);
     glfwSetScrollCallback(window, scroll_callback);

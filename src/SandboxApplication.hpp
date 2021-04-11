@@ -21,6 +21,7 @@ class SandboxApplication: public IApplication
     virtual auto Resize(size_t newWidth, size_t newHeight) -> void override;
     virtual auto Render() -> void override;
 
+    virtual auto CharacterPressed(GLFWwindow* window, unsigned int character) -> void override;
     virtual auto MouseCursorChanged(GLFWwindow* window, double absoluteX, double absoluteY) -> void override;
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void override; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void override;
