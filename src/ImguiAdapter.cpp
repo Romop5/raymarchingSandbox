@@ -16,9 +16,9 @@ namespace helper
         //    return xkey;
         switch(xkey)
         {
-            case GLFW_KEY_TAB: return 0;
-            case GLFW_KEY_LEFT: return 1;
-            case GLFW_KEY_RIGHT: return 2;
+            case GLFW_KEY_TAB: return 1;
+            case GLFW_KEY_LEFT: return 2;
+            case GLFW_KEY_RIGHT: return 3;
             case GLFW_KEY_UP: return 4;
             case GLFW_KEY_DOWN: return 5;
             case GLFW_KEY_PAGE_UP: return 6;
@@ -30,8 +30,9 @@ namespace helper
             case GLFW_KEY_SPACE: return 12;
             case GLFW_KEY_BACKSPACE: return 13;
             case GLFW_KEY_ESCAPE: return 14;
+            case GLFW_KEY_ENTER: return 15;
         }
-        return 255;
+        return 256;
     }
 };
 
@@ -128,6 +129,8 @@ void ImguiAdapter::OnCharacter(size_t character)
 void ImguiAdapter::OnKey(size_t key, bool isDown)
 {
     ImGuiIO& io = ImGui::GetIO();
+    if(helper::MapGLFWKeyTo256Array(key) == 256)
+        return;
     io.KeysDown[helper::MapGLFWKeyTo256Array(key)] = isDown;
     /*if(isDown && std::isalnum(key))
     {

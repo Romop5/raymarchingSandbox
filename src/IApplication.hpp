@@ -1,12 +1,15 @@
 #ifndef RAYMARCHER_IAPPLICATION_HPP
 #define RAYMARCHER_IAPPLICATION_HPP
 
+#include <memory>
 #include <cstdlib>
 
 class GLFWwindow;
 
 namespace raymarcher
 {
+class IGLFWInputHandler;
+
 class IApplication
 {
     public:
@@ -19,6 +22,10 @@ class IApplication
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void = 0; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void = 0;
     virtual auto KeyPressed(GLFWwindow* window, int key, int action) -> void = 0;
+
+    virtual auto SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void  = 0;
+
+    static IApplication& GetApplication();
 };
 }
 #endif

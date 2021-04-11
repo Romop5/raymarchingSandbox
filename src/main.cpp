@@ -10,6 +10,12 @@ std::unique_ptr<raymarcher::IApplication> g_application;
 constexpr auto defaultWindowWidth = 600;
 constexpr auto defaultWindowHeight = 400;
 
+
+raymarcher::IApplication& raymarcher::IApplication::GetApplication()
+{
+    return *g_application;
+}
+
 static void error_callback(int error, const char* description)
 {
     fputs(description, stderr);
@@ -45,8 +51,8 @@ static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+    //if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    //    glfwSetWindowShouldClose(window, GL_TRUE);
 
     g_application->KeyPressed(window, key, action);
 }

@@ -4,8 +4,9 @@
 #include <geGL/geGL.h>
 #include "Raymarcher.hpp"
 #include "WindowWidget.hpp"
+#include "GLFWCamera.hpp"
 
-namespace raymarcher 
+namespace raymarcher
 {
 /**
  * @brief Renders RayMarching's scene in a ImGUI window
@@ -14,7 +15,7 @@ class RendererWidget: public WindowWidget
 {
     public:
         RendererWidget() = default;
-        explicit RendererWidget(std::shared_ptr<Raymarcher> rm);
+        explicit RendererWidget(std::shared_ptr<Raymarcher> rm, std::shared_ptr<GLFWCamera> camera);
 
         auto RenderContent() -> void override;
         auto Render() -> void override;
@@ -22,6 +23,7 @@ class RendererWidget: public WindowWidget
     private:
         auto Reinitialize() -> void;
         std::shared_ptr<Raymarcher>             raymarcher;
+        std::shared_ptr<GLFWCamera>             camera;
         std::shared_ptr<ge::gl::Framebuffer>    targetFBO;
         std::shared_ptr<ge::gl::Texture>        colorImage;
 

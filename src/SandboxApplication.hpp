@@ -26,10 +26,12 @@ class SandboxApplication: public IApplication
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void override; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void override;
     virtual auto KeyPressed(GLFWwindow* window, int key, int action) -> void override;
+    virtual auto SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void override;
     private:
     raymarcher::ImguiAdapter adapter;
     raymarcher::WidgetManager widgetManager;
     std::shared_ptr<raymarcher::GLFWCamera> focusedCamera;
+    std::shared_ptr<IGLFWInputHandler> inputHandler;
 };
 }
 #endif

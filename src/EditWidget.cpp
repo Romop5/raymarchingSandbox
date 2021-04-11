@@ -19,13 +19,13 @@ namespace
         auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
         orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
         orbiter->SetDistance(5.0);
-        //auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
-        //rm->SetCamera(focusedCamera);
-        rm->SetCamera(orbiter);
+        auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
+        rm->SetCamera(focusedCamera);
+        //rm->SetCamera(orbiter);
         auto sdf = std::make_shared<raymarcher::SDF>(code);
         rm->SetSDF(sdf);
 
-        auto widget = std::make_shared<raymarcher::RendererWidget>(rm);
+        auto widget = std::make_shared<raymarcher::RendererWidget>(rm, focusedCamera);
         widget->SetViewportSize(300,300);
         return widget;
     }

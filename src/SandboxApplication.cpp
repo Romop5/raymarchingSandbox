@@ -31,7 +31,7 @@ auto SandboxApplication::Render() -> void
     if(adapter.IsVisible())
     {
         adapter.BeginFrame();
-        //ImGui::ShowDemoWindow(nullptr);
+        ImGui::ShowDemoWindow(nullptr);
         
         widgetManager.Render();
         /* if(ImGui::Begin("Widget", nullptr)) */
@@ -58,16 +58,18 @@ auto SandboxApplication::MouseCursorChanged(GLFWwindow* window, double absoluteX
     lastXpos = absoluteX;
     lastYpos = absoluteY;
 
+    if(inputHandler)
+    {
+        inputHandler->MouseCursorChanged(window, relativeX, relativeY);
+        return;
+    }
+
     adapter.OnMousePosition(absoluteX, absoluteY);
     if(adapter.IsVisible())
     {
         return;
     }
 
-    if(focusedCamera)
-    {
-        focusedCamera->MouseCursorChanged(window, relativeX, relativeY);
-    }
 }
 
 auto SandboxApplication::MouseButtonPressed(GLFWwindow* window, int button, int action) -> void 
@@ -80,18 +82,29 @@ auto SandboxApplication::MouseButtonPressed(GLFWwindow* window, int button, int 
 
 auto SandboxApplication::ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void
 {
-    if(focusedCamera)
+    if(inputHandler)
     {
-        focusedCamera->ScrollChanged(window, relativeX, relativeY);
+        inputHandler->ScrollChanged(window, relativeX, relativeY);
+        return;
     }
 }
 
 auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action) -> void
 {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
+        inputHandler.reset();
+    }
     if(key == GLFW_KEY_F11 && action == GLFW_PRESS)
     {
         adapter.SetVisibility(!adapter.IsVisible());
         //glfwSetInputMode(window, GLFW_CURSOR, adapter.IsVisible()?GLFW_CURSOR_NORMAL:GLFW_CURSOR_DISABLED);
+    }
+
+    if(inputHandler)
+    {
+        inputHandler->KeyPressed(window, key);
+        return;
     }
 
     if(adapter.WantCaptureKeyboard())
@@ -99,8 +112,10 @@ auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action) -> 
         adapter.OnKey(key, action == GLFW_PRESS);
         return;
     }
-    if(focusedCamera)
-    {
-        focusedCamera->KeyPressed(window, key);
-    }
+    
+}
+
+auto SandboxApplication::SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void
+{
+    inputHandler = std::move(handler);
 }
