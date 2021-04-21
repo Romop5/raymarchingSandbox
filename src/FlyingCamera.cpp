@@ -14,6 +14,11 @@ FlyingCamera::FlyingCamera() :
 {
 }
 
+auto FlyingCamera::SetPosition(const glm::vec3& pos) -> void
+{
+    this->position = pos;
+}
+
 auto FlyingCamera::GetTransformation() const -> const glm::mat4&
 {
     static glm::mat4 transform;

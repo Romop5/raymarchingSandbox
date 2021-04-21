@@ -11,6 +11,9 @@ class FlyingCamera: public ICamera
 {
     public:
     FlyingCamera();
+
+    auto SetPosition(const glm::vec3& pos) -> void;
+
     auto GetTransformation() const -> const glm::mat4& override;
 
     auto MoveForward() -> void;
