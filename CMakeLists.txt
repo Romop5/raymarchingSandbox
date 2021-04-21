@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.12) 
+cmake_minimum_required (VERSION 2.8.12)
 project (gl)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -47,7 +47,7 @@ target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
 target_link_libraries(imgui PUBLIC GLEW)
 
 
-add_executable (gl 
+add_executable (sandbox
     src/main.cpp
     src/SDF.cpp
     src/Raymarcher.cpp
@@ -67,7 +67,7 @@ add_executable (gl
     src/SDFLibrary.cpp
     src/SandboxApplication.cpp
 )
-set_property(TARGET gl PROPERTY CXX_STANDARD 17)
-target_link_libraries(gl geGL dl imgui)
+set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
+target_link_libraries(sandbox geGL dl imgui)
 
-target_link_libraries (gl glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries (sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
