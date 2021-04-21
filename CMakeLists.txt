@@ -66,6 +66,7 @@ add_executable (sandbox
     src/EditWidget.cpp
     src/SDFLibrary.cpp
     src/SandboxApplication.cpp
+    src/TestApplication.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
 target_link_libraries(sandbox geGL dl imgui)

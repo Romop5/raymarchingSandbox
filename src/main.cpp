@@ -4,6 +4,7 @@
 
 #include "IApplication.hpp"
 #include "SandboxApplication.hpp"
+#include "TestApplication.hpp"
 
 std::unique_ptr<raymarcher::IApplication> g_application;
 
@@ -77,7 +78,8 @@ int main(void)
     }
     glfwMakeContextCurrent(window);
 
-    g_application = std::make_unique<raymarcher::SandboxApplication>();
+    //g_application = std::make_unique<raymarcher::SandboxApplication>();
+    g_application = std::make_unique<raymarcher::TestApplication>();
     g_application->Resize(defaultWindowWidth, defaultWindowHeight);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);

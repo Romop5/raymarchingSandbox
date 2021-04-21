@@ -22,11 +22,11 @@ enum class ShadingMode
 
 struct RaymarchingAttributes
 {
-    size_t maximumIterations    = 64;
+    size_t maximumIterations    = 100;
     double maximumPrecision     = 0.001;
 
     ShadingMode  mode;
-    float        ambientCoef    = 0.3;
+    float        ambientCoef    = 0.0;
     float        specularityCoef = 0.3;
 };
 /**

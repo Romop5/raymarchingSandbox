@@ -13,25 +13,26 @@ namespace
         uniform mat4 camera_rotation = mat4(1.0);
         const vec2  iResolution      = vec2(1.0,1.0);
 
-        uniform int g_maxIterations    = 32;
-        uniform float g_eps            = 0.00005;
-        uniform float g_stepRatio      = 0.9;
+        uniform int g_maxIterations;
+        uniform float g_eps;
+        uniform float g_stepRatio      = 0.99;
 
         uniform int coloringMode       = 0;
 
         const float roughness        = 0.7;
-        uniform float ambientRatio     = 0.3;
+        uniform float ambientRatio;
         const float shininess        = 20.0;
-        uniform float specularity      = 0.3;
+        uniform float specularity =  1.0;
 
         const vec3  albedoColor      = vec3(1.0,1.0,1.0);
         const vec3  sunColor         = vec3(1.0,1.0,1.0);
 
 
         const float floorElevation   = -2.0;
-        const float farPlane         = 100.0;
-        const float fogStartPlane    = 50.0;
-        const vec3  fogColor         = vec3(0.2,0.2,0.7);
+        const float farPlane         = 30.0;
+        const vec3  fogColor         = vec3(0.1,0.1,0.3);
+        //const vec3  fogColor         = vec3(0.2,0.2,0.7);
+        //const vec3  fogColor         = vec3(0.871,0.871,1.0);
 
         const vec3  floorAColor      = vec3(1.0);
         const vec3  floorBColor      = vec3(0.0);
@@ -139,6 +140,7 @@ namespace
         {
             int maximumIterations = g_maxIterations;
             float t = 0.0;
+            vec3 color;
             while(maximumIterations > 0)
             {
                 vec4 result = df(o+t*d);
@@ -147,7 +149,7 @@ namespace
                 {
                     return vec4(farPlane*2.0, fogColor);
                 }
-                vec3 color = result.yzw;
+                color = result.yzw;
                 if(closestDistance < g_eps)
                 {
                     return vec4(t+closestDistance, color);
@@ -155,7 +157,7 @@ namespace
                 t += closestDistance*g_stepRatio;
                 maximumIterations = maximumIterations - 1;
             }
-            return vec4(t, fogColor);
+            return vec4(t, color);
         }
 
         vec3 normalVector(vec3 o, vec3 d)
