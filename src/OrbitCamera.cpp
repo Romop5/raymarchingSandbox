@@ -1,10 +1,11 @@
 #include "OrbitCamera.hpp"
+#include <algorithm>
 
 using namespace raymarcher;
 
 OrbitCamera::OrbitCamera() :
     center { glm::vec3(0.0) },
-    radius { 1.0 }, 
+    radius { 1.0 },
     horizontalAngle { 0.0 },
     verticalAngle { 0.0 },
     angularSpeed { 0.01 }
@@ -34,7 +35,7 @@ auto OrbitCamera::SetCenter(glm::vec3 position) -> void
 
 auto OrbitCamera::SetDistance(float newRadius) -> void
 {
-    radius = newRadius;
+    radius = std::max(newRadius, 0.0f);
 }
 
 auto OrbitCamera::GetDistance() const -> float

@@ -74,3 +74,8 @@ auto WidgetManager::SetLayout(LayoutType type) -> void
 {
     layout = type;
 }
+
+auto WidgetManager::HasAnyWidget() const -> bool
+{
+    return !widgets.empty();
+}

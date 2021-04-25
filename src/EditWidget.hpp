@@ -5,6 +5,8 @@
 
 namespace raymarcher 
 {
+// Fwd decl
+class Raymarcher;
 /**
  * @brief Renders RayMarching's scene in a ImGUI window
  */
@@ -17,11 +19,12 @@ class EditWidget: public WindowWidget
         auto Render() -> void override;
         auto RenderContent() -> void override;
     private:
+    auto Recompile() -> void;
     std::string code;
 
     std::string lastError;
 
-    //std::shared_ptr<WidgetBase> previewWidget;
+    std::shared_ptr<Raymarcher> rm;
 };
 
 }

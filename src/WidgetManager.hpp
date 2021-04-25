@@ -39,6 +39,7 @@ class WidgetManager
         auto RemoveAllWidgets() -> void;
         auto Render() -> void;
         auto SetLayout(LayoutType type) -> void;
+        auto HasAnyWidget() const -> bool;
     private:
         WidgetStorageType widgets;
         LayoutType layout;
