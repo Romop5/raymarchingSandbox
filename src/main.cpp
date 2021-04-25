@@ -8,8 +8,8 @@
 
 std::unique_ptr<raymarcher::IApplication> g_application;
 
-constexpr auto defaultWindowWidth = 600;
-constexpr auto defaultWindowHeight = 400;
+constexpr auto defaultWindowWidth = 1600;
+constexpr auto defaultWindowHeight = 900;
 
 
 raymarcher::IApplication& raymarcher::IApplication::GetApplication()
@@ -70,6 +70,7 @@ int main(void)
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
     window = glfwCreateWindow(defaultWindowWidth, defaultWindowHeight, "Raymarching Sandbox", NULL, NULL);
     if (!window)
     {
@@ -90,6 +91,8 @@ int main(void)
     glfwSetCursorPosCallback(window, cursor_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+
+    glEnable(GL_MULTISAMPLE);  
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(1.0, 1.0, 1.0, 1.0);

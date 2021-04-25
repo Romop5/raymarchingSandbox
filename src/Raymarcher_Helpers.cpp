@@ -29,10 +29,10 @@ namespace
 
 
         const float floorElevation   = -2.0;
-        const float farPlane         = 30.0;
-        const vec3  fogColor         = vec3(0.1,0.1,0.3);
+        const float farPlane         = 200.0;
+        //const vec3  fogColor         = vec3(0.1,0.1,0.3);
         //const vec3  fogColor         = vec3(0.2,0.2,0.7);
-        //const vec3  fogColor         = vec3(0.871,0.871,1.0);
+        const vec3  fogColor         = vec3(0.871,0.871,1.0);
 
         const vec3  floorAColor      = vec3(1.0);
         const vec3  floorBColor      = vec3(0.0);
@@ -191,7 +191,12 @@ namespace
             vec3  nlDir = normalize(l-p);
             float lightDistance = length(l-p);
 
-            bool visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+            bool visibility = false;
+
+            if(lightDistance < 30.0)
+            {
+                visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+            }
 
             vec3 nd = normalize(o-p);
 

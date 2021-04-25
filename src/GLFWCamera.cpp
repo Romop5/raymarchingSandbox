@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "FlyingCamera.hpp"
 #include "OrbitCamera.hpp"
+#include "InterpolatedCamera.hpp"
 
 using namespace raymarcher;
 
@@ -9,6 +10,17 @@ raymarcher::GLFWCamera::GLFWCamera(std::shared_ptr<ICamera> cameraPtr, CameraTyp
     type { cameraType },
     camera { cameraPtr }
 {
+}
+
+
+auto GLFWCamera::UpdateFrame() -> void
+{
+    if(type == INTERPOLATED_CAMERA)
+    {
+        auto& interpolatedCamera = static_cast<InterpolatedCamera&>(*camera);
+        static size_t frameID = 0;
+        interpolatedCamera.UpdateFrame(frameID++);
+    }
 }
 
 auto GLFWCamera::GetTransformation() const -> const glm::mat4& 

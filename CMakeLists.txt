@@ -54,8 +54,10 @@ add_executable (sandbox
     src/Raymarcher_Helpers.cpp
     src/FlyingCamera.cpp
     src/OrbitCamera.cpp
+    src/InterpolatedCamera.cpp
     src/GLFWCamera.cpp
     src/ImguiAdapter.cpp
+    src/FPSMeter.cpp
 
     src/WidgetBase.cpp
     src/WidgetManager.cpp

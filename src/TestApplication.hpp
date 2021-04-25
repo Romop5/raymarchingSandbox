@@ -7,6 +7,7 @@
 #include "GLFWCamera.hpp"
 #include "ImguiAdapter.hpp"
 #include "Raymarcher.hpp"
+#include "FPSMeter.hpp"
 
 namespace raymarcher
 {
@@ -34,6 +35,8 @@ class TestApplication: public IApplication
 
     std::shared_ptr<Raymarcher>             raymarcher;
     std::shared_ptr<GLFWCamera>             camera;
+
+    FPSMeter fpsMeter;
 };
 }
 #endif
