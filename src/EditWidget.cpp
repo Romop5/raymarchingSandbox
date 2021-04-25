@@ -47,7 +47,17 @@ auto EditWidget::RenderContent() -> void
 {
     if(ImGui::Button("Compile"))
     {
-        AddWidget(CreateRayMarchingWidget(code));
+        lastError = "";
+        try {
+            AddWidget(CreateRayMarchingWidget(code));
+        } catch (std::exception& error)
+        {
+            lastError = error.what();
+        }
+    }
+    if(!lastError.empty())
+    {
+        ImGui::Text("Error: %s", lastError.c_str());
     }
     ImGui::Text("Code:");
     ImGui::InputTextMultiline("", &code, ImVec2(-1,-1));

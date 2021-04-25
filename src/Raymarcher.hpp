@@ -44,7 +44,7 @@ class Raymarcher
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
     auto GetCamera() -> std::shared_ptr<ICamera>;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
-   
+
     /* Lighting-specific methods */
     auto SetShadingMode(ShadingMode mode) -> void ;
     auto GetShadingMode() -> ShadingMode;

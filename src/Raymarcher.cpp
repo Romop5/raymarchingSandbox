@@ -103,12 +103,20 @@ auto Raymarcher::Pimpl::Compile() -> bool
 
     auto vs = std::make_shared<ge::gl::Shader>(GL_VERTEX_SHADER);
     vs->compile(ConstructRenderedVertexShader());
+    if(!vs->getCompileStatus())
+    {
+        throw std::runtime_error(vs->getInfoLog());
+    }
 
     auto fs = std::make_shared<ge::gl::Shader>(GL_FRAGMENT_SHADER);
     auto finalFsCode = ConstructRenderedFragmentShader(sdf->GetGLSLCode());
     std::cout << "Compiling FS: " << std::endl
               << finalFsCode << std::endl;
     fs->compile(finalFsCode);
+    if(!fs->getCompileStatus())
+    {
+        throw std::runtime_error(fs->getInfoLog());
+    }
     program->link({vs,fs});
 
     this->program = std::move(program);

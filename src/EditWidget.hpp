@@ -19,6 +19,8 @@ class EditWidget: public WindowWidget
     private:
     std::string code;
 
+    std::string lastError;
+
     //std::shared_ptr<WidgetBase> previewWidget;
 };
 
