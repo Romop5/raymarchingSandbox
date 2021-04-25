@@ -48,6 +48,12 @@ auto WidgetManager::RemoveWidget(WidgetBase::WidgetID id) -> void
 
 }
 
+auto WidgetManager::RemoveAllWidgets() -> void
+{
+    widgets.clear();
+}
+
+
 auto WidgetManager::Render() -> void
 {
     for(auto& entry: widgets)

@@ -18,6 +18,7 @@ class GLFWCamera: public IGLFWInputHandler, public ICamera
     };
 
     GLFWCamera(std::shared_ptr<ICamera> camera, CameraType type);
+    auto GetType() const -> CameraType;
     auto UpdateFrame() -> void;
     auto GetTransformation() const -> const glm::mat4& override;
     auto MouseCursorChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void override;

@@ -17,7 +17,11 @@ class WidgetManager;
 class TestApplication: public IApplication
 {
     public:
-    TestApplication();
+    struct StartParameters
+    {
+        bool shouldRunWithFreeMovement = false;
+    };
+    explicit TestApplication(StartParameters params);
     virtual ~TestApplication() = default;
     virtual auto Resize(size_t newWidth, size_t newHeight) -> void override;
     virtual auto Render() -> void override;
@@ -37,6 +41,8 @@ class TestApplication: public IApplication
     std::shared_ptr<GLFWCamera>             camera;
 
     FPSMeter fpsMeter;
+
+    StartParameters parameters;
 };
 }
 #endif

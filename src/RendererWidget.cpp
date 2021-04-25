@@ -4,6 +4,8 @@
 #include <GL/gl.h>
 #include "IApplication.hpp"
 #include "RendererAttributesWidget.hpp"
+#include "FlyingCamera.hpp"
+#include "OrbitCamera.hpp"
 
 using namespace raymarcher;
 
@@ -39,8 +41,26 @@ auto RendererWidget::RenderContent() -> void
     {
         AddWidget(std::make_shared<RendererAttributesWidget>(raymarcher));
     }
+    ImGui::SameLine();
     if(ImGui::Button("Fit render plane to window"))
     {
+        auto size = ImGui::GetWindowSize();
+        SetViewportSize(size.x, size.y);
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Toggle orbiter/fly"))
+    {
+        using CameraType = GLFWCamera::CameraType;
+        if(camera)
+        {
+            if(camera->GetType() == CameraType::ORBITER_CAMERA)
+            {
+                camera = std::make_shared<GLFWCamera>(std::make_shared<FlyingCamera>(), CameraType::FLYING_CAMERA);
+            } else {
+                camera = std::make_shared<GLFWCamera>(std::make_shared<OrbitCamera>(), CameraType::ORBITER_CAMERA);
+            }
+            raymarcher->SetCamera(camera);
+        }
         auto size = ImGui::GetWindowSize();
         SetViewportSize(size.x, size.y);
     }

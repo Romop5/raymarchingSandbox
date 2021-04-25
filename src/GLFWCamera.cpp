@@ -12,6 +12,11 @@ raymarcher::GLFWCamera::GLFWCamera(std::shared_ptr<ICamera> cameraPtr, CameraTyp
 {
 }
 
+auto GLFWCamera::GetType() const -> CameraType
+{
+    return type;
+}
+
 
 auto GLFWCamera::UpdateFrame() -> void
 {

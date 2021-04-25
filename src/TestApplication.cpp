@@ -11,6 +11,13 @@
 using namespace raymarcher;
 
 namespace {
+    auto CreateFlyingCamera() -> std::shared_ptr<GLFWCamera>
+    {
+        auto flycam = std::make_shared<raymarcher::FlyingCamera>();
+        auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(flycam, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA);
+        return focusedCamera;
+    }
+
     auto CreateTestApp() -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
     {
         auto code= R"(
@@ -112,7 +119,8 @@ vec4 df(vec3 pos)
 }
  
 
-TestApplication::TestApplication()
+TestApplication::TestApplication(StartParameters params) :
+    parameters(params)
 {    
     ge::gl::init();
 
@@ -123,6 +131,13 @@ TestApplication::TestApplication()
     raymarcher = rm;
     camera = cam;
     inputHandler = cam;
+
+    if(parameters.shouldRunWithFreeMovement)
+    {
+        camera = CreateFlyingCamera();
+        raymarcher->SetCamera(camera);
+        SetFocus(camera);
+    }
 }
 
 auto TestApplication::Resize(size_t newWidth, size_t newHeight) -> void
@@ -132,11 +147,14 @@ auto TestApplication::Resize(size_t newWidth, size_t newHeight) -> void
 
 auto TestApplication::Render() -> void
 {
-    static size_t frameID = 0;
-    frameID++;
-    if(frameID > 350)
+    if(!parameters.shouldRunWithFreeMovement)
     {
-        abort();
+        static size_t frameID = 0;
+        frameID++;
+        if(frameID > 350)
+        {
+            abort();
+        }
     }
 
     camera->UpdateFrame();

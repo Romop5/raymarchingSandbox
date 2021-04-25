@@ -47,6 +47,7 @@ auto EditWidget::RenderContent() -> void
 {
     if(ImGui::Button("Compile"))
     {
+        RemoveAllWidgets();
         lastError = "";
         try {
             AddWidget(CreateRayMarchingWidget(code));

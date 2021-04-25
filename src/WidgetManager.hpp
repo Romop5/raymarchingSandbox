@@ -36,6 +36,7 @@ class WidgetManager
         auto AddWidget(std::shared_ptr<raymarcher::WidgetBase> newWidget) -> void;
         auto HasWidget(WidgetBase::WidgetID id) -> bool;
         auto RemoveWidget(WidgetBase::WidgetID id) -> void;
+        auto RemoveAllWidgets() -> void;
         auto Render() -> void;
         auto SetLayout(LayoutType type) -> void;
     private:
