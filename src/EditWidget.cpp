@@ -34,9 +34,10 @@ namespace
     }
 }
 
-EditWidget::EditWidget(std::string name, std::string startingCode) :
+EditWidget::EditWidget(std::string name, std::string startingCode, std::string file) :
     code { startingCode },
-    isStatusError { false }
+    isStatusError { false },
+    filename { file }
 {
     SetTitle(name);
 }
@@ -55,6 +56,10 @@ auto EditWidget::RenderContent() -> void
     {
         Recompile();
     }
+
+    ImGui::SameLine();
+    ImGui::Checkbox("Auto-Compile",&isAutocompileEnabled);
+
     if(!lastStatus.empty())
     {
         ImGui::SameLine();
@@ -76,7 +81,7 @@ auto EditWidget::RenderContent() -> void
     }
     
     ImGui::Text("Code:");
-    if(ImGui::InputTextMultiline("", &code, ImVec2(-1,-1)))
+    if(ImGui::InputTextMultiline("", &code, ImVec2(-1,-1)) && isAutocompileEnabled)
     {
         Recompile();
     }

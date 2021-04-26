@@ -14,7 +14,7 @@ class EditWidget: public WindowWidget
 {
     public:
         EditWidget() = default;
-        EditWidget(std::string name, std::string startingCode);
+        EditWidget(std::string name, std::string startingCode, std::string file = "");
 
         auto Render() -> void override;
         auto RenderContent() -> void override;
@@ -26,6 +26,8 @@ class EditWidget: public WindowWidget
     auto SetLastStatus(std::string msg) -> void;
     std::string code;
     std::string filename;
+
+    bool isAutocompileEnabled;
 
     bool isStatusError;
     std::string lastStatus;
