@@ -67,7 +67,7 @@ auto RendererWidget::RenderContent() -> void
 
     if(ImGui::BeginChild("Render"))
     {
-        ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImGui::GetWindowSize(), ImVec2(1,1), ImVec2(0, 0));
+        ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImGui::GetWindowSize(), ImVec2(0,1), ImVec2(1, 0));
         if(ImGui::IsItemClicked())
         {
             auto& app = IApplication::GetApplication();
