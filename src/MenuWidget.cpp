@@ -162,7 +162,7 @@ auto MenuWidget::Load(std::string path) -> void
         content << line << std::endl;
     }
 
-    auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.str());
+    auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.str(), filePath.filename());
     windowManager.AddWidget(widget);
 }
 
