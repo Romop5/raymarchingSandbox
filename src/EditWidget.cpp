@@ -1,5 +1,6 @@
 #include "EditWidget.hpp"
 
+#include <fstream>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -34,7 +35,8 @@ namespace
 }
 
 EditWidget::EditWidget(std::string name, std::string startingCode) :
-    code { startingCode }
+    code { startingCode },
+    isStatusError { false }
 {
     SetTitle(name);
 }
@@ -47,28 +49,46 @@ auto EditWidget::Render() -> void
 
 auto EditWidget::RenderContent() -> void
 {
+    SaveAsSubwidget();
+    ImGui::SameLine();
     if(ImGui::Button("Compile"))
     {
         Recompile();
     }
-    if(!lastError.empty())
+    if(!lastStatus.empty())
     {
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0, 0.0,0.0,1.0),"Compilation Error");
+        std::string msg = lastStatus.substr(0, 30);
+        if(isStatusError)
+        {
+            msg = "Error: " + msg;
+            ImGui::TextColored(ImVec4(1.0, 0.0,0.0,1.0),msg.c_str());
+        } else {
+            msg = "Status: " + msg;
+            ImGui::Text(msg.c_str());
+        }
+        if(ImGui::IsItemHovered())
+        {
+            ImGui::BeginTooltip();
+            ImGui::Text(lastStatus.c_str());
+            ImGui::EndTooltip();
+        }
     }
+    
     ImGui::Text("Code:");
     if(ImGui::InputTextMultiline("", &code, ImVec2(-1,-1)))
     {
         Recompile();
     }
 
-    if(!lastError.empty())
-    {
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
-        ImGui::BeginChild("ErrorChild", ImVec2(0, 60), false, window_flags);
-        ImGui::TextWrapped("Error: %s", lastError.c_str());
-        ImGui::EndChild();
-    }
+    /* if(!lastStatus.empty()) */
+    /* { */
+    /*     ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar; */
+    /*     ImGui::BeginChild("ErrorChild", ImVec2(0, 60), false, window_flags); */
+        
+    /*     ImGui::TextWrapped("Error: %s", lastStatus.c_str()); */
+    /*     ImGui::EndChild(); */
+    /* } */
 
 
     WindowWidget::RenderContent();
@@ -77,7 +97,7 @@ auto EditWidget::RenderContent() -> void
 auto EditWidget::Recompile() -> void
 {
     //RemoveAllWidgets();
-    lastError = "";
+    SetLastStatus("");
     try {
         if(!rm)
         {
@@ -90,6 +110,78 @@ auto EditWidget::Recompile() -> void
         }
     } catch (std::exception& error)
     {
-        lastError = error.what();
+        SetLastError(error.what());
     }
 }
+
+auto EditWidget::SaveAs(std::string filename) -> void
+{
+    if(filename.empty())
+    {
+        SetLastError("No file entered for this SDF");
+        return;
+    }
+    std::fstream outputFile;
+    outputFile.open(filename, std::fstream::out | std::fstream::trunc);
+    if(!outputFile.is_open())
+    {
+        SetLastError("Failed to open file " + filename);
+        return;
+    }
+    outputFile << code;
+    if(!outputFile.good())
+    {
+        SetLastError("Failed to save to " + filename);
+        return;
+    }
+    SetLastStatus("Saved");
+}
+
+auto EditWidget::SaveAsSubwidget() -> void
+{
+    if(ImGui::Button("Save"))
+    {
+        SaveAs(filename);
+    }
+    ImGui::SameLine();
+
+    if(ImGui::Button("Save as"))
+    {
+        if(filename.empty())
+        {
+            filename = "new.sdf";
+        }
+        ImGui::OpenPopup("SVPopup");
+    }
+
+    if(ImGui::BeginPopup("SVPopup"))
+    {
+        ImGui::Text("Save SDF function to disk");
+        ImGui::Separator();
+        ImGui::InputText("", &filename);
+        if(ImGui::Button("Save"))
+        {
+            SaveAs(filename);
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if(ImGui::Button("Exit"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+auto EditWidget::SetLastError(std::string error) -> void
+{
+    lastStatus = error;
+    isStatusError = true;
+}
+auto EditWidget::SetLastStatus(std::string msg) -> void
+{
+    lastStatus = msg;
+    isStatusError = false;
+}
+

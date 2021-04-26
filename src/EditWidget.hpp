@@ -20,9 +20,15 @@ class EditWidget: public WindowWidget
         auto RenderContent() -> void override;
     private:
     auto Recompile() -> void;
+    auto SaveAs(std::string filename) -> void;
+    auto SaveAsSubwidget() -> void;
+    auto SetLastError(std::string error) -> void;
+    auto SetLastStatus(std::string msg) -> void;
     std::string code;
+    std::string filename;
 
-    std::string lastError;
+    bool isStatusError;
+    std::string lastStatus;
 
     std::shared_ptr<Raymarcher> rm;
 };
