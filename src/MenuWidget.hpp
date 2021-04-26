@@ -18,6 +18,8 @@ class MenuWidget: public WidgetBase
 
         auto RenderContent() -> void override;
     private:
+        auto LoadSDFWidget() -> void;
+        auto Load(std::string path) -> void;
         WidgetManager& windowManager;
         SDFLibrary library;
 };

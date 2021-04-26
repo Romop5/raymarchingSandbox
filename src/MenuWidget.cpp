@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <imgui.h>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 #include "EditWidget.hpp"
 
@@ -53,7 +56,9 @@ MenuWidget::MenuWidget(WidgetManager& manager) :
 
 auto MenuWidget::RenderContent() -> void
 {
-    if(ImGui::Button("Add new"))
+    LoadSDFWidget();
+    ImGui::SameLine();
+    if(ImGui::Button("New"))
     {
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
         windowManager.AddWidget(widget);
@@ -64,6 +69,8 @@ auto MenuWidget::RenderContent() -> void
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", TestApplication());
         windowManager.AddWidget(widget);
     }
+
+    ImGui::Text("Primitives");
 
     static std::vector<std::pair<std::string, std::string>> primitives =
     {
@@ -79,5 +86,83 @@ auto MenuWidget::RenderContent() -> void
             windowManager.AddWidget(widget);
         }
     }
+}
+
+auto MenuWidget::LoadSDFWidget() -> void
+{
+    static std::vector<std::string> fileNames;
+    static std::filesystem::path selectedFile;
+
+    if(ImGui::Button("Load file"))
+    {
+        //auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
+        //windowManager.AddWidget(widget);
+        ImGui::OpenPopup("LoadPopup");
+
+    }
+
+    if(ImGui::BeginPopup("LoadPopup"))
+    {
+        ImGui::Text("Load SDF function from disk");
+        ImGui::Separator();
+
+        if(ImGui::BeginListBox(""))
+        {
+        
+            for (const auto & entry : std::filesystem::directory_iterator(std::filesystem::current_path()))
+            {
+                const auto path = entry.path();
+                const auto filename = path.filename();
+                if(filename.extension() != ".sdf")
+                {
+                    continue;
+                }
+                if(ImGui::Selectable(filename.c_str()))
+                {
+                    selectedFile = path;
+                }
+            }
+            ImGui::EndListBox();
+        }
+
+        ImGui::Text(selectedFile.filename().c_str());
+        ImGui::SameLine();
+        if(ImGui::Button("Load"))
+        {
+            Load(selectedFile);
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if(ImGui::Button("Exit"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+auto MenuWidget::Load(std::string path) -> void
+{
+    std::filesystem::path filePath = path;
+    std::ifstream file;
+    file.open(path, std::ifstream::in);
+    if(!file.is_open())
+    {
+        return;
+    }
+
+    std::stringstream content;
+    std::string line;
+    while(file)
+    {
+        std::getline(file, line);
+        if(!file)
+            break;
+        content << line << std::endl;
+    }
+
+    auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.str());
+    windowManager.AddWidget(widget);
 }
 
