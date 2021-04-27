@@ -88,6 +88,24 @@ auto MenuWidget::RenderContent() -> void
             windowManager.AddWidget(widget);
         }
     }
+
+    ImGui::Text("Operations");
+
+    static std::vector<std::pair<std::string, std::string>> operations =
+    {
+        { "Union", "vec4 df(vec3 pos) {\n    float d = min(sphere(pos, 1.0), sphere(pos+vec3(0.5), 1.0));\n    return vec4(d, vec3(1.0));\n}" },
+        { "Intersection", "vec4 df(vec3 pos) {\n    float d = max(sphere(pos, 1.0), sphere(pos+vec3(0.5), 1.0));\n    return vec4(d, vec3(1.0));\n}" },
+    };
+
+    for(auto& [name, code]: operations)
+    {
+        if(ImGui::Button(name.c_str()))
+        {
+            auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
+            windowManager.AddWidget(widget);
+        }
+    }
+
 }
 
 auto MenuWidget::LoadSDFWidget() -> void
