@@ -4,6 +4,7 @@
 #include "WidgetBase.hpp"
 #include "WidgetManager.hpp"
 #include "SDFLibrary.hpp"
+#include "FPSMeter.hpp"
 
 namespace raymarcher 
 {
@@ -22,6 +23,9 @@ class MenuWidget: public WidgetBase
         auto Load(std::string path) -> void;
         WidgetManager& windowManager;
         SDFLibrary library;
+
+        bool showFPS;
+        FPSMeter fpsMeter;
 };
 
 }

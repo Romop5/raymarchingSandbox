@@ -22,8 +22,11 @@ enum class ShadingMode
 
 struct RaymarchingAttributes
 {
+    bool renderShadows          = true;
+    bool renderFog              = true;
     size_t maximumIterations    = 100;
     double maximumPrecision     = 0.001;
+    double farPlaneDistance     = 200.0;
 
     ShadingMode  mode;
     float        ambientCoef    = 0.0;
@@ -68,6 +71,15 @@ class Raymarcher
 
     auto SetSpecularityCoef(float c) -> void;
     auto GetSpecularityCoef() -> float;
+
+    auto SetFarPlaneDistance(float distance) -> void;
+    auto GetFarPlaneDistance() -> float;
+
+    auto SetRenderFog(bool shouldRenderFog) -> void;
+    auto IsFogRendered() -> bool;
+
+    auto SetRenderShadows(bool shouldRenderShadow) -> void;
+    auto IsShadowsRendered() -> bool;
 
     auto Render() -> void;
     private:

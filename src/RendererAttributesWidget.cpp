@@ -32,6 +32,13 @@ auto RendererAttributesWidget::RenderContent() -> void
            raymarcher->SetMaximumIterations(val);
         }
     }
+    {
+        auto val = raymarcher->GetFarPlaneDistance();
+        if(ImGui::InputFloat("Far plane", &val, 1.0, 1000.0))
+        {
+           raymarcher->SetFarPlaneDistance(val);
+        }
+    }
 
     {
         auto val = raymarcher->GetEps();
@@ -42,16 +49,32 @@ auto RendererAttributesWidget::RenderContent() -> void
     }
     {
         auto val = raymarcher->GetAmbientCoef();
-        if(ImGui::InputFloat("Ambient coef.", &val))
+        if(ImGui::SliderFloat("Ambient coef.", &val, 0.0f, 1.0f))
         {
            raymarcher->SetAmbientCoef(val);
         }
     }
     {
         auto val = raymarcher->GetSpecularityCoef();
-        if(ImGui::InputFloat("Specularity", &val))
+        if(ImGui::SliderFloat("Specularity", &val, 0.0f, 1.0f))
         {
            raymarcher->SetSpecularityCoef(val);
         }
     }
+    {
+        auto val = static_cast<bool>(raymarcher->IsFogRendered());
+        if(ImGui::Checkbox("Render fog", &val))
+        {
+           raymarcher->SetRenderFog(val);
+        }
+    }
+
+    {
+        auto val = static_cast<bool>(raymarcher->IsShadowsRendered());
+        if(ImGui::Checkbox("Render shadows", &val))
+        {
+           raymarcher->SetRenderShadows(val);
+        }
+    }
+
 }

@@ -4,9 +4,10 @@
 using namespace raymarcher;
 
 WindowWidget::WindowWidget() :
-    title { "WindowWidget" }
+    title { "WindowWidget" },
+    width { 100 },
+    height{ 100 }
 {
-
 }
 
 auto WindowWidget::Render() -> void
@@ -15,6 +16,7 @@ auto WindowWidget::Render() -> void
     auto label = title + "###" + id;
 
     bool shouldContinue = true;
+    ImGui::SetNextWindowSize(ImVec2(width,height), ImGuiCond_Once);
     if(ImGui::Begin(label.c_str(), &shouldContinue))
     {
         RenderContent();
@@ -32,7 +34,18 @@ auto WindowWidget::RenderContent() -> void
     WidgetManager::Render();
 }
 
+auto WindowWidget::SetSize(float width, float height) -> void
+{
+    this->width = width;
+    this->height = height;
+}
+
 auto WindowWidget::SetTitle(const std::string& title) -> void
 {
     this->title = title;
+}
+
+auto WindowWidget::GetTitle() const -> const std::string
+{
+    return title;
 }

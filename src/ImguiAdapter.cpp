@@ -221,7 +221,7 @@ void ImguiAdapter::SetScaling(float scale)
 
 bool ImguiAdapter::WantCaptureMouse() const
 {
-    ImGuiIO& io = ImGui::GetIO(); 
+    ImGuiIO& io = ImGui::GetIO();
     return (m_Visibility && io.WantCaptureMouse);
 }
 bool ImguiAdapter::WantCaptureKeyboard() const

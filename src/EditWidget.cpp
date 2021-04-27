@@ -19,19 +19,6 @@ namespace
         auto sdf = std::make_shared<raymarcher::SDF>(code);
         rm->SetSDF(sdf);
     }
-
-    auto CreateWidget(std::shared_ptr<raymarcher::Raymarcher> rm) -> std::shared_ptr<WidgetBase>
-    {
-        auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
-        orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
-        orbiter->SetDistance(5.0);
-        auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
-        rm->SetCamera(focusedCamera);
-        
-        auto widget = std::make_shared<raymarcher::RendererWidget>(rm, focusedCamera);
-        widget->SetViewportSize(400,400);
-        return widget;
-    }
 }
 
 EditWidget::EditWidget(std::string name, std::string startingCode, std::string file) :
@@ -40,11 +27,11 @@ EditWidget::EditWidget(std::string name, std::string startingCode, std::string f
     filename { file }
 {
     SetTitle(name);
+    SetSize(400, 400);
 }
 
 auto EditWidget::Render() -> void
 {
-    ImGui::SetNextWindowSize(ImVec2(400,300), ImGuiCond_Once);
     WindowWidget::Render();
 }
 
@@ -111,7 +98,7 @@ auto EditWidget::Recompile() -> void
         CreateAndSetSDF(code, rm);
         if(!HasAnyWidget())
         {
-            AddWidget(CreateWidget(rm));
+            AddWidget(CreateRenderWidget(rm));
         }
     } catch (std::exception& error)
     {
@@ -190,3 +177,20 @@ auto EditWidget::SetLastStatus(std::string msg) -> void
     isStatusError = false;
 }
 
+auto EditWidget::CreateRenderWidget(std::shared_ptr<raymarcher::Raymarcher> rm) -> std::shared_ptr<WidgetBase>
+{
+    auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
+    orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
+    orbiter->SetDistance(5.0);
+    auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
+    rm->SetCamera(focusedCamera);
+    
+    auto widget = std::make_shared<raymarcher::RendererWidget>(rm, focusedCamera);
+
+    ImGuiIO& io = ImGui::GetIO();
+    auto size = io.DisplaySize;
+    widget->SetViewportSize(size.x*0.5, size.y*0.5);
+    widget->SetSize(size.x*0.5, size.y*0.5);
+    widget->SetTitle(GetTitle() + " - Render");
+    return widget;
+}

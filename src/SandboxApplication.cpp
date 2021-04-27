@@ -18,6 +18,7 @@ SandboxApplication::SandboxApplication()
     auto menuWindow = std::make_shared<WindowWidget>();
     menuWindow->AddWidget(std::make_shared<MenuWidget>(widgetManager));
     menuWindow->SetTitle("Menu");
+    menuWindow->SetSize(150, 0);
     widgetManager.AddWidget(menuWindow);
 }
 

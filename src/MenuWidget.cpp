@@ -44,18 +44,22 @@ vec4 df(vec3 pos)
         )";
         return sdfLiteral;
     }
-
-
-
 }
 
 MenuWidget::MenuWidget(WidgetManager& manager) :
-    windowManager { manager }
+    windowManager { manager },
+    showFPS { false }
 {
 }
 
 auto MenuWidget::RenderContent() -> void
 {
+    if (showFPS)
+    {
+        fpsMeter.Measure();
+        fpsMeter.RenderOverlay();
+    }
+
     LoadSDFWidget();
     ImGui::SameLine();
     if(ImGui::Button("New"))
@@ -67,6 +71,7 @@ auto MenuWidget::RenderContent() -> void
     if(ImGui::Button("Test app"))
     {
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", TestApplication());
+        widget->Recompile();
         windowManager.AddWidget(widget);
     }
 
@@ -85,6 +90,7 @@ auto MenuWidget::RenderContent() -> void
         if(ImGui::Button(name.c_str()))
         {
             auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
+            widget->Recompile();
             windowManager.AddWidget(widget);
         }
     }
@@ -102,10 +108,14 @@ auto MenuWidget::RenderContent() -> void
         if(ImGui::Button(name.c_str()))
         {
             auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
+            widget->Recompile();
             windowManager.AddWidget(widget);
         }
     }
-
+    if(ImGui::Button("Show FPS"))
+    {
+        showFPS = !showFPS;
+    }
 }
 
 auto MenuWidget::LoadSDFWidget() -> void

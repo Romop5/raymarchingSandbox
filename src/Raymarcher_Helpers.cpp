@@ -29,7 +29,7 @@ namespace
 
 
         const float floorElevation   = -2.0;
-        const float farPlane         = 200.0;
+        uniform float farPlane         = 200.0;
         //const vec3  fogColor         = vec3(0.1,0.1,0.3);
         //const vec3  fogColor         = vec3(0.2,0.2,0.7);
         const vec3  fogColor         = vec3(0.871,0.871,1.0);
@@ -37,6 +37,9 @@ namespace
         const vec3  floorAColor      = vec3(1.0);
         const vec3  floorBColor      = vec3(0.0);
         const float floorThickness   = 0.99;
+
+        uniform bool renderShadows   = true;
+        uniform bool renderFog       = true;
 
         float sphere(vec3 pos, float radius)
         {
@@ -193,9 +196,14 @@ namespace
 
             bool visibility = false;
 
-            if(lightDistance < 30.0)
+            if(renderShadows)
             {
-                visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+                if(lightDistance < 30.0)
+                {
+                    visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+                }
+            } else {
+                visibility = true;
             }
 
             vec3 nd = normalize(o-p);
@@ -216,7 +224,10 @@ namespace
             float lightAttenuation = 0.1*(pow(lightDistance,2.0)+1.0);
             float lightIntensity = 1.0/lightAttenuation;
             float fogRatio = max(0.0,(1.0+dO)/farPlane);
-            //float fogRatio = 0.0;
+            if(!renderFog)
+            {
+                fogRatio = 0.0;
+            }
             
             
             vec3 albedoColor = albedo;

@@ -39,7 +39,11 @@ auto RendererWidget::RenderContent() -> void
 
     if(ImGui::Button("Settings"))
     {
-        AddWidget(std::make_shared<RendererAttributesWidget>(raymarcher));
+        RemoveAllWidgets();
+        auto widget = std::make_shared<RendererAttributesWidget>(raymarcher);
+        widget->SetTitle(GetTitle() + "  - Settings");
+        widget->SetSize(200, 0);
+        AddWidget(widget);
     }
     ImGui::SameLine();
     if(ImGui::Button("Fit render plane to window"))

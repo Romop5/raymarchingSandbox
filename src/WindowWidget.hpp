@@ -14,10 +14,14 @@ class WindowWidget: public WidgetBase, public WidgetManager
     virtual auto Render() -> void override;
     virtual auto RenderContent() -> void override;
 
+    auto SetSize(float width, float height) -> void;
     auto SetTitle(const std::string& title) -> void;
+    auto GetTitle() const -> const std::string;
 
     private:
     std::string title;
+    size_t width;
+    size_t height;
 };
 }
 #endif

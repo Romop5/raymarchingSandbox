@@ -92,8 +92,11 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
     {
         program->set1i("g_maxIterations", attributes.maximumIterations);
         program->set1f("g_eps", attributes.maximumPrecision);
+        program->set1f("farPlane", attributes.farPlaneDistance);
         program->set1f("ambientRatio", attributes.ambientCoef);
         program->set1f("specularity", attributes.specularityCoef);
+        program->set1i("renderFog", attributes.renderFog);
+        program->set1i("renderShadows", attributes.renderShadows);
     }
 }
 
@@ -221,6 +224,40 @@ auto Raymarcher::SetSpecularityCoef(float c) -> void
 auto Raymarcher::GetSpecularityCoef() -> float
 {
     return pimpl->attributes.specularityCoef;
+}
+
+auto Raymarcher::SetFarPlaneDistance(float distance) -> void
+{
+    pimpl->attributes.farPlaneDistance = distance;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetFarPlaneDistance() -> float
+{
+    return pimpl->attributes.farPlaneDistance;
+}
+
+
+auto Raymarcher::SetRenderFog(bool shouldRenderFog) -> void
+{
+    pimpl->attributes.renderFog = shouldRenderFog;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::IsFogRendered() -> bool
+{
+    return pimpl->attributes.renderFog;
+}
+
+auto Raymarcher::SetRenderShadows(bool shouldRenderShadow) -> void
+{
+    pimpl->attributes.renderShadows = shouldRenderShadow;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::IsShadowsRendered() -> bool
+{
+    return pimpl->attributes.renderShadows;
 }
 
 auto Raymarcher::Render() -> void

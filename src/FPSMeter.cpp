@@ -35,7 +35,8 @@ auto FPSMeter::Measure() -> void
 auto FPSMeter::RenderOverlay() -> void
 {
     ImGui::SetNextWindowSize(ImVec2(0.0,0.0));
-    ImGui::Begin("Overlay", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+    ImGui::SetNextWindowBgAlpha(0.1);
+    ImGui::Begin("Overlay", nullptr, ImGuiWindowFlags_NoDecoration);
     ImGui::Text("Frame period: %d", perFramePeriodInMs);
     
     auto avgPeriod = framePeriods.GetAverage();

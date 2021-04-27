@@ -13,17 +13,19 @@ class Raymarcher;
 class EditWidget: public WindowWidget
 {
     public:
-        EditWidget() = default;
-        EditWidget(std::string name, std::string startingCode, std::string file = "");
+    EditWidget() = default;
+    EditWidget(std::string name, std::string startingCode, std::string file = "");
 
-        auto Render() -> void override;
-        auto RenderContent() -> void override;
-    private:
+    auto Render() -> void override;
+    auto RenderContent() -> void override;
     auto Recompile() -> void;
+    private:
     auto SaveAs(std::string filename) -> void;
     auto SaveAsSubwidget() -> void;
     auto SetLastError(std::string error) -> void;
     auto SetLastStatus(std::string msg) -> void;
+
+    auto CreateRenderWidget(std::shared_ptr<raymarcher::Raymarcher> rm) -> std::shared_ptr<WidgetBase>;
     std::string code;
     std::string filename;
 
