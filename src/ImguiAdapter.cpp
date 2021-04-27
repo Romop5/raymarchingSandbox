@@ -7,6 +7,14 @@
 
 using namespace raymarcher;
 
+const auto INTERNAL_KEY_CTRL_A = 255;
+const auto INTERNAL_KEY_CTRL_C = 254;
+const auto INTERNAL_KEY_CTRL_V = 253;
+const auto INTERNAL_KEY_CTRL_X = 252;
+const auto INTERNAL_KEY_CTRL_Y = 251;
+const auto INTERNAL_KEY_CTRL_Z = 250;
+
+
 namespace helper
 {
     size_t MapGLFWKeyTo256Array(size_t xkey)
@@ -64,13 +72,12 @@ bool ImguiAdapter::Initialize(size_t width, size_t height)
     io.KeyMap[ImGuiKey_Enter] = helper::MapGLFWKeyTo256Array(GLFW_KEY_ENTER);
     io.KeyMap[ImGuiKey_Escape] = helper::MapGLFWKeyTo256Array(GLFW_KEY_ESCAPE);
     io.KeyMap[ImGuiKey_KeyPadEnter] = helper::MapGLFWKeyTo256Array(GLFW_KEY_BACKSPACE);
-    /*io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-    io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-    io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-    io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-    io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-    io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
-    */
+    io.KeyMap[ImGuiKey_A] = INTERNAL_KEY_CTRL_A;
+    io.KeyMap[ImGuiKey_C] = INTERNAL_KEY_CTRL_C;
+    io.KeyMap[ImGuiKey_V] = INTERNAL_KEY_CTRL_V;
+    io.KeyMap[ImGuiKey_X] = INTERNAL_KEY_CTRL_X;
+    io.KeyMap[ImGuiKey_Y] = INTERNAL_KEY_CTRL_Y;
+    io.KeyMap[ImGuiKey_Z] = INTERNAL_KEY_CTRL_Z;
 
     io.MouseDrawCursor = true;
 
@@ -126,9 +133,39 @@ void ImguiAdapter::OnCharacter(size_t character)
     io.AddInputCharacter(character);
 }
 
-void ImguiAdapter::OnKey(size_t key, bool isDown)
+void ImguiAdapter::OnKey(size_t key, bool isDown, ModifierBitmap mod)
 {
     ImGuiIO& io = ImGui::GetIO();
+    io.KeyCtrl = mod & ModifierBitmap::CTRL;
+    io.KeyShift = mod & ModifierBitmap::SHIFT;
+    if(mod == ModifierBitmap::CTRL)
+    {
+        if(key == GLFW_KEY_A)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_A] = isDown;
+        }
+        if(key == GLFW_KEY_C)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_C] = isDown;
+        }
+        if(key == GLFW_KEY_V)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_V] = isDown;
+        }
+        if(key == GLFW_KEY_X)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_X] = isDown;
+        }
+        if(key == GLFW_KEY_Y)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_Y] = isDown;
+        }
+        if(key == GLFW_KEY_Z)
+        {
+            io.KeysDown[INTERNAL_KEY_CTRL_Z] = isDown;
+        }
+        return;
+    }
     if(helper::MapGLFWKeyTo256Array(key) == 256)
         return;
     io.KeysDown[helper::MapGLFWKeyTo256Array(key)] = isDown;

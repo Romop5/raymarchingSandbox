@@ -79,7 +79,7 @@ auto EditWidget::RenderContent() -> void
             ImGui::EndTooltip();
         }
     }
-    
+
     ImGui::Text("Code:");
     if(ImGui::InputTextMultiline("", &code, ImVec2(-1,-1)) && isAutocompileEnabled)
     {

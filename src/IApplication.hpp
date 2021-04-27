@@ -21,7 +21,7 @@ class IApplication
     virtual auto MouseCursorChanged(GLFWwindow* window, double absoluteX, double absoluteY) -> void = 0;
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void = 0; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void = 0;
-    virtual auto KeyPressed(GLFWwindow* window, int key, int action) -> void = 0;
+    virtual auto KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void = 0;
 
     virtual auto SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void  = 0;
 

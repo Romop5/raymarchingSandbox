@@ -6,6 +6,13 @@
 namespace raymarcher
 {
 
+    enum ModifierBitmap
+    {
+        NORMAL  = 0 << 0,
+        CTRL    = 1 << 0,
+        SHIFT   = 1 << 1,
+    };
+
     /**
      * @brief Adapts DearImgui into project
      */
@@ -28,7 +35,7 @@ namespace raymarcher
             void Destroy();
 
             void OnCharacter(size_t character);
-            void OnKey(size_t key, bool isDown = true);
+            void OnKey(size_t key, bool isDown, ModifierBitmap mod);
             void OnMousePositionRelative(float deltaX, float deltaY);
             void OnMousePosition(float x, float y);
             void OnButton(size_t buttonID, bool isPressed);

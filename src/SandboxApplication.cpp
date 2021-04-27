@@ -89,7 +89,7 @@ auto SandboxApplication::ScrollChanged(GLFWwindow* window, double relativeX, dou
     }
 }
 
-auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action) -> void
+auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
@@ -109,7 +109,13 @@ auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action) -> 
 
     if(adapter.WantCaptureKeyboard())
     {
-        adapter.OnKey(key, action == GLFW_PRESS);
+        int imguiMod = ModifierBitmap::NORMAL;
+        if(mod & GLFW_MOD_CONTROL)
+            imguiMod = imguiMod | ModifierBitmap::CTRL;
+        if(mod & GLFW_MOD_SHIFT)
+            imguiMod = imguiMod | ModifierBitmap::SHIFT;
+
+        adapter.OnKey(key, action == GLFW_PRESS, static_cast<ModifierBitmap>(imguiMod));
         return;
     }
     

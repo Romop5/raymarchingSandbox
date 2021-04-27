@@ -55,7 +55,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     //if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     //    glfwSetWindowShouldClose(window, GL_TRUE);
 
-    g_application->KeyPressed(window, key, action);
+    g_application->KeyPressed(window, key, action, mods);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
