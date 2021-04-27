@@ -95,7 +95,7 @@ auto RendererWidget::SetViewportSize(size_t width, size_t height) -> void
 
 auto RendererWidget::Reinitialize() -> void
 {
-    colorImage = std::make_shared<ge::gl::Texture>(GL_TEXTURE_2D, GL_RGB8, 1, viewportWidth, viewportHeight);
+    colorImage = std::make_shared<ge::gl::Texture>(GL_TEXTURE_2D, GL_RGB16, 1, viewportWidth, viewportHeight);
     targetFBO = std::make_shared<ge::gl::Framebuffer>();
     targetFBO->attachTexture(GL_COLOR_ATTACHMENT0, colorImage.get());
     auto status = targetFBO->check();

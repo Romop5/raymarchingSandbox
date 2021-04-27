@@ -77,6 +77,7 @@ auto MenuWidget::RenderContent() -> void
         { "Sphere", "vec4 df(vec3 pos) {\n    vec3 center = vec3(0.0);\n    float radius = 1.0;\n    float d = length(pos-center) - radius;\n    return vec4(d, vec3(1.0,0.0,0.0));\n}" },
         { "Cube", "vec4 df(vec3 pos) {\n    vec3 center = vec3(0.0);\n    float radius = 1.0;\n    vec3 np = abs(pos);\n    float d = max(np.x, max(np.y,np.z)) - radius;\n    return vec4(d, vec3(1.0,0.0,0.0));\n}" },
         { "Plane", "vec4 df(vec3 pos) {\n   vec3 color = vec3(sin(10.0*pos.x), 0.0, 0.0);\n   float offset = -3.0;\n   return vec4(pos.y - offset, color);\n}"},
+        { "Oriented Plane", "vec4 df(vec3 pos) {\n    vec3 normal = normalize(vec3(1.0,1.0,1.0));\n   vec3 color = vec3(sin(10.0*pos.x), 0.0, 0.0);\n   float offset = -3.0;\n   return vec4(dot(normal, pos) - offset, color);\n}"},
     };
 
     for(auto& [name, code]: primitives)
