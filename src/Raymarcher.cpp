@@ -91,6 +91,7 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
         program->set1i("renderShadows", attributes.renderShadows);
 
         program->set3fv("sunColor", glm::value_ptr(attributes.sunColor));
+        program->set3fv("fogColor", glm::value_ptr(attributes.fogColor));
     }
 }
 
@@ -172,6 +173,17 @@ auto Raymarcher::SetSunColour(glm::vec3 color) -> void
 auto Raymarcher::GetSunColour() const -> glm::vec3
 {
     return pimpl->attributes.sunColor;
+}
+
+auto Raymarcher::SetFogColour(glm::vec3 color) -> void
+{
+    pimpl->attributes.fogColor= color;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetFogColour() const -> glm::vec3
+{
+    return pimpl->attributes.fogColor;
 }
 
 auto Raymarcher::SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void

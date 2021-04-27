@@ -32,6 +32,7 @@ struct RaymarchingAttributes
     float        ambientCoef        = 0.0;
     float        specularityCoef    = 0.3;
     glm::vec3    sunColor           = glm::vec3(1.0);
+    glm::vec3    fogColor           = glm::vec3(0.871,0.871,1.0);
 };
 /**
  * @brief Generic rendered of SDF
@@ -58,6 +59,9 @@ class Raymarcher
     auto SetSun(glm::vec3 directory) -> void;
     auto SetSunColour(glm::vec3 color) -> void;
     auto GetSunColour() const -> glm::vec3;
+
+    auto SetFogColour(glm::vec3 color) -> void;
+    auto GetFogColour() const -> glm::vec3;
 
     /* Rendering-specific methods */
     auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;

@@ -69,6 +69,13 @@ auto RendererAttributesWidget::RenderContent() -> void
            raymarcher->SetSunColour(val);
         }
     }
+    {
+        auto val = raymarcher->GetFogColour();
+        if(ImGui::ColorPicker3("Fog color", glm::value_ptr(val)))
+        {
+           raymarcher->SetFogColour(val);
+        }
+    }
 
     {
         auto val = static_cast<bool>(raymarcher->IsFogRendered());

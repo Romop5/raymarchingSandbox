@@ -32,7 +32,7 @@ namespace
         uniform float farPlane         = 200.0;
         //const vec3  fogColor         = vec3(0.1,0.1,0.3);
         //const vec3  fogColor         = vec3(0.2,0.2,0.7);
-        const vec3  fogColor         = vec3(0.871,0.871,1.0);
+        uniform vec3  fogColor         = vec3(0.871,0.871,1.0);
 
         const vec3  floorAColor      = vec3(1.0);
         const vec3  floorBColor      = vec3(0.0);
