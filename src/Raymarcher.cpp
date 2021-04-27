@@ -14,7 +14,7 @@ class Raymarcher::Pimpl
     auto SetCamera(std::shared_ptr<ICamera> camera) -> void;
     auto GetCamera() -> std::shared_ptr<ICamera>;
     auto SetSDF(std::shared_ptr<ISDF> sdf) -> void;
-   
+
     /* Phong related */
     auto SetSun(glm::vec3 directory) -> void;
     auto SetSkyColour(glm::vec3 color) -> void;
@@ -54,14 +54,6 @@ auto Raymarcher::Pimpl::SetSDF(std::shared_ptr<ISDF> sdf) -> void
     Compile();
 }
 
-auto Raymarcher::Pimpl::SetSun(glm::vec3 directory) -> void
-{
-}
-
-auto Raymarcher::Pimpl::SetSkyColour(glm::vec3 color) -> void
-{
-}
-
 auto Raymarcher::Pimpl::SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void
 {
     this->attributes = attributes;
@@ -97,6 +89,8 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
         program->set1f("specularity", attributes.specularityCoef);
         program->set1i("renderFog", attributes.renderFog);
         program->set1i("renderShadows", attributes.renderShadows);
+
+        program->set3fv("sunColor", glm::value_ptr(attributes.sunColor));
     }
 }
 
@@ -167,12 +161,17 @@ auto Raymarcher::GetShadingMode() -> ShadingMode
 
 auto Raymarcher::SetSun(glm::vec3 directory) -> void
 {
-    pimpl->SetSun(directory);
 }
 
-auto Raymarcher::SetSkyColour(glm::vec3 color) -> void
+auto Raymarcher::SetSunColour(glm::vec3 color) -> void
 {
-    pimpl->SetSkyColour(color);
+    pimpl->attributes.sunColor = color;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetSunColour() const -> glm::vec3
+{
+    return pimpl->attributes.sunColor;
 }
 
 auto Raymarcher::SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void
@@ -258,6 +257,25 @@ auto Raymarcher::SetRenderShadows(bool shouldRenderShadow) -> void
 auto Raymarcher::IsShadowsRendered() -> bool
 {
     return pimpl->attributes.renderShadows;
+}
+
+
+auto Raymarcher::GetUserUniforms() -> const std::vector<ISDF::Uniform>&
+{
+    return pimpl->sdf->GetUniforms();
+}
+
+
+auto Raymarcher::SetUniform(std::string name, float value) -> bool
+{
+    try
+    {
+        pimpl->program->set1f(name, value);
+    } catch (std::exception& e)
+    {
+        return false;
+    }
+    return true;
 }
 
 auto Raymarcher::Render() -> void

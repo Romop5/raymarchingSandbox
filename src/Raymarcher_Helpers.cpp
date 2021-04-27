@@ -25,7 +25,7 @@ namespace
         uniform float specularity =  1.0;
 
         const vec3  albedoColor      = vec3(1.0,1.0,1.0);
-        const vec3  sunColor         = vec3(1.0,1.0,1.0);
+        uniform vec3  sunColor         = vec3(1.0,1.0,1.0);
 
 
         const float floorElevation   = -2.0;
@@ -236,7 +236,7 @@ namespace
             vec3 shadingColor = ambientColorPart;
             if(visibility)
             {
-                vec3 lambertianColorPart = albedoColor*lightIntensity*lambertianRatio*roughness;
+                vec3 lambertianColorPart = sunColor*albedoColor*lightIntensity*lambertianRatio*roughness;
                 vec3 specularColorPart   = sunColor*specularRatio*lightIntensity;
             
             

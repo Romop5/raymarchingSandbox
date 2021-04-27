@@ -29,8 +29,9 @@ struct RaymarchingAttributes
     double farPlaneDistance     = 200.0;
 
     ShadingMode  mode;
-    float        ambientCoef    = 0.0;
-    float        specularityCoef = 0.3;
+    float        ambientCoef        = 0.0;
+    float        specularityCoef    = 0.3;
+    glm::vec3    sunColor           = glm::vec3(1.0);
 };
 /**
  * @brief Generic rendered of SDF
@@ -55,7 +56,8 @@ class Raymarcher
 
     /* Phong related */
     auto SetSun(glm::vec3 directory) -> void;
-    auto SetSkyColour(glm::vec3 color) -> void;
+    auto SetSunColour(glm::vec3 color) -> void;
+    auto GetSunColour() const -> glm::vec3;
 
     /* Rendering-specific methods */
     auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
@@ -80,6 +82,9 @@ class Raymarcher
 
     auto SetRenderShadows(bool shouldRenderShadow) -> void;
     auto IsShadowsRendered() -> bool;
+
+    auto GetUserUniforms() -> const std::vector<ISDF::Uniform>&;
+    auto SetUniform(std::string name, float value) -> bool;
 
     auto Render() -> void;
     private:

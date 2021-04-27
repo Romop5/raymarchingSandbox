@@ -3,6 +3,7 @@
 
 #include "Raymarcher.hpp"
 #include "WindowWidget.hpp"
+#include <map>
 
 namespace raymarcher
 {
@@ -15,6 +16,7 @@ class RendererAttributesWidget: public WindowWidget
         auto RenderContent() -> void override;
     private:
         std::shared_ptr<Raymarcher>             raymarcher;
+        std::map<std::string, float>            lastUniformValue;
 };
 
 }

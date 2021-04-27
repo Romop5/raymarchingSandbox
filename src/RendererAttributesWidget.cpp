@@ -1,5 +1,6 @@
 #include "RendererAttributesWidget.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
 using namespace raymarcher;
@@ -62,6 +63,14 @@ auto RendererAttributesWidget::RenderContent() -> void
         }
     }
     {
+        auto val = raymarcher->GetSunColour();
+        if(ImGui::ColorPicker3("Sun color", glm::value_ptr(val)))
+        {
+           raymarcher->SetSunColour(val);
+        }
+    }
+
+    {
         auto val = static_cast<bool>(raymarcher->IsFogRendered());
         if(ImGui::Checkbox("Render fog", &val))
         {
@@ -74,6 +83,21 @@ auto RendererAttributesWidget::RenderContent() -> void
         if(ImGui::Checkbox("Render shadows", &val))
         {
            raymarcher->SetRenderShadows(val);
+        }
+    }
+
+    ImGui::Text("User-defined uniforms");
+
+    for(const auto& uniform: raymarcher->GetUserUniforms())
+    {
+        if(uniform.type == "float")
+        {
+            auto value = lastUniformValue[uniform.name];
+            if(ImGui::SliderFloat(uniform.name.c_str(), &value, -1.0, 1.0))
+            {
+                raymarcher->SetUniform(uniform.name, value);
+                lastUniformValue[uniform.name] = value;
+            }
         }
     }
 
