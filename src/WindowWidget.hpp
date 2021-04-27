@@ -15,6 +15,8 @@ class WindowWidget: public WidgetBase, public WidgetManager
     virtual auto RenderContent() -> void override;
 
     auto SetSize(float width, float height) -> void;
+    auto SetPosition(float posx, float posy) -> void;
+
     auto SetTitle(const std::string& title) -> void;
     auto GetTitle() const -> const std::string;
 
@@ -22,6 +24,9 @@ class WindowWidget: public WidgetBase, public WidgetManager
     std::string title;
     size_t width;
     size_t height;
+
+    size_t posx;
+    size_t posy;
 };
 }
 #endif

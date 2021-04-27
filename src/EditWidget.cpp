@@ -191,6 +191,11 @@ auto EditWidget::CreateRenderWidget(std::shared_ptr<raymarcher::Raymarcher> rm) 
     auto size = io.DisplaySize;
     widget->SetViewportSize(size.x*0.5, size.y*0.5);
     widget->SetSize(size.x*0.5, size.y*0.5);
+
+    auto currentPos = ImGui::GetWindowPos();
+    auto currentSize = ImGui::GetWindowSize();
+    auto newPosition = ImVec2(currentPos.x + currentSize.x, currentPos.y);
+    widget->SetPosition(newPosition.x, newPosition.y);
     widget->SetTitle(GetTitle() + " - Render");
     return widget;
 }
