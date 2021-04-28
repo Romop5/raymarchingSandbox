@@ -58,6 +58,7 @@ add_executable (sandbox
     src/GLFWCamera.cpp
     src/ImguiAdapter.cpp
     src/FPSMeter.cpp
+    src/FileHelper.cpp
 
     src/WidgetBase.cpp
     src/WidgetManager.cpp
@@ -67,6 +68,7 @@ add_executable (sandbox
     src/MenuWidget.cpp
     src/EditWidget.cpp
     src/SDFLibrary.cpp
+    src/BVHCalculator.cpp
     src/SandboxApplication.cpp
     src/TestApplication.cpp
 )

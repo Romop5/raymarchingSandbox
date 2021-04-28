@@ -7,10 +7,16 @@
 #include "MenuWidget.hpp"
 #include "FlyingCamera.hpp"
 #include "InterpolatedCamera.hpp"
+#include "FileHelper.hpp"
 
 using namespace raymarcher;
 
 namespace {
+    auto GetCodeFromFile(std::string path) -> std::optional<std::string>
+    {
+        return FileHelper::LoadFile(path);
+    }
+
     auto CreateFlyingCamera() -> std::shared_ptr<GLFWCamera>
     {
         auto flycam = std::make_shared<raymarcher::FlyingCamera>();
@@ -18,7 +24,7 @@ namespace {
         return focusedCamera;
     }
 
-    auto CreateTestApp() -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
+    auto GetTestAppCode() -> std::string
     {
         auto code= R"(
 vec4 df(vec3 pos)
@@ -90,6 +96,12 @@ vec4 df(vec3 pos)
         )";
 
 
+        return code;
+    }
+
+    auto CreateTestApp(std::string code) -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
+    {
+
         auto rm = std::make_shared<raymarcher::Raymarcher>();
         auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
         orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
@@ -127,7 +139,9 @@ TestApplication::TestApplication(StartParameters params) :
     adapter.Initialize(500,500);
     adapter.SetVisibility(true);
 
-    auto [rm, cam] = CreateTestApp();
+    auto fileContent = GetCodeFromFile(params.filename);
+    std::string code = fileContent.value_or(GetTestAppCode());
+    auto [rm, cam] = CreateTestApp(code);
     raymarcher = rm;
     camera = cam;
     inputHandler = cam;

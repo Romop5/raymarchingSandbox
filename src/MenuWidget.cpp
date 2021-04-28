@@ -3,12 +3,12 @@
 #include <string>
 #include <vector>
 #include <imgui.h>
-#include <filesystem>
-#include <fstream>
 #include <sstream>
 
 #include "EditWidget.hpp"
 #include "BVHCalculator.hpp"
+#include "FileHelper.hpp"
+#include <filesystem>
 
 using namespace raymarcher;
 
@@ -181,25 +181,13 @@ auto MenuWidget::LoadSDFWidget() -> void
 
 auto MenuWidget::Load(std::string path) -> void
 {
-    std::filesystem::path filePath = path;
-    std::ifstream file;
-    file.open(path, std::ifstream::in);
-    if(!file.is_open())
+    auto content = FileHelper::LoadFile(path);
+    if(!content.has_value())
     {
         return;
     }
-
-    std::stringstream content;
-    std::string line;
-    while(file)
-    {
-        std::getline(file, line);
-        if(!file)
-            break;
-        content << line << std::endl;
-    }
-
-    auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.str(), filePath.filename());
+    std::filesystem::path filePath(path);
+    auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.value(), filePath.filename());
     windowManager.AddWidget(widget);
 }
 

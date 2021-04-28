@@ -68,7 +68,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 int main(int argc, const char* argv[])
 {
     bool shouldRunTestApplication =  (argc > 1 && std::string(argv[1]) == "test");
-    bool shouldRunTestFreeMovement =  (argc > 2 && std::string(argv[2]) == "free");
+    bool hasFileName =  (argc > 2);
+    bool shouldRunTestFreeMovement =  (argc > 3 && std::string(argv[3]) == "free");
 
     GLFWwindow* window;
     glfwSetErrorCallback(error_callback);
@@ -87,6 +88,10 @@ int main(int argc, const char* argv[])
     {
         raymarcher::TestApplication::StartParameters params;
         params.shouldRunWithFreeMovement = shouldRunTestFreeMovement;
+        if(hasFileName)
+        {
+            params.filename = argv[2];
+        }
         g_application = std::make_unique<raymarcher::TestApplication>(params);
     } else {
         g_application = std::make_unique<raymarcher::SandboxApplication>();

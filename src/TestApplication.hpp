@@ -19,6 +19,7 @@ class TestApplication: public IApplication
     public:
     struct StartParameters
     {
+        std::string filename = "sphere.sdf";
         bool shouldRunWithFreeMovement = false;
     };
     explicit TestApplication(StartParameters params);
