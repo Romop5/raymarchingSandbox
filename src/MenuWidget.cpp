@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "EditWidget.hpp"
+#include "BVHCalculator.hpp"
 
 using namespace raymarcher;
 
@@ -65,6 +66,12 @@ auto MenuWidget::RenderContent() -> void
     if(ImGui::Button("New"))
     {
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
+        windowManager.AddWidget(widget);
+    }
+
+    if(ImGui::Button("BHV Optimizator"))
+    {
+        auto widget = std::make_shared<raymarcher::BVHCalculator>();
         windowManager.AddWidget(widget);
     }
 
