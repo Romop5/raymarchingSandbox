@@ -24,6 +24,9 @@ class IApplication
     virtual auto KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void = 0;
 
     virtual auto SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void  = 0;
+    virtual auto GetFocus() -> std::shared_ptr<IGLFWInputHandler> = 0;
+
+    virtual auto ShouldContinue() -> bool { return true; }
 
     static IApplication& GetApplication();
 };

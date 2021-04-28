@@ -29,6 +29,8 @@ class RendererWidget: public WindowWidget
 
         size_t viewportWidth;
         size_t viewportHeight;
+
+        bool isPaused;
 };
 
 }

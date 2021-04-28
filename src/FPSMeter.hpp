@@ -14,12 +14,15 @@ class FPSMeter
     auto Measure()          -> void;
     auto RenderOverlay()    -> void;
 
+    auto DumpConclusion()   -> void;
+
     private:
     size_t perFramePeriodInMs;
 
     template<size_t SIZE>
     class RingBuffer
     {
+        using StorageType = std::array<size_t, SIZE>;
         public:
         RingBuffer()
         {
@@ -38,8 +41,12 @@ class FPSMeter
         {
             return this->sum / double(SIZE);
         }
+        auto GetArray() const -> const StorageType&
+        {
+            return buffer;
+        }
         private:
-        std::array<size_t, SIZE> buffer;
+        StorageType buffer;
         size_t position = 0;
         size_t sum = 0;
     };
@@ -47,6 +54,7 @@ class FPSMeter
     RingBuffer<5> fps;
 
     size_t framesPassed = 0;
+    RingBuffer<10000> totalFramePeriods;
 };
 }
 #endif

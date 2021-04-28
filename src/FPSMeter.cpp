@@ -18,6 +18,7 @@ auto FPSMeter::Measure() -> void
 
     perFramePeriodInMs = duration_cast<std::chrono::milliseconds>(now - lastFrame).count();
     framePeriods.Add(perFramePeriodInMs);
+    totalFramePeriods.Add(perFramePeriodInMs);
 
     bool hasAnotherSecondPassed = duration_cast<std::chrono::seconds>(now.time_since_epoch()).count()
                                 - duration_cast<std::chrono::seconds>(lastFrame.time_since_epoch()).count();
@@ -47,4 +48,25 @@ auto FPSMeter::RenderOverlay() -> void
     ImGui::Text("FPS avg: %f", avgFrames);
     ImGui::End();
 
+}
+
+auto FPSMeter::DumpConclusion() -> void
+{
+    const auto& data = totalFramePeriods.GetArray();
+    size_t count = 0;
+    size_t sum = 0;
+    for(auto& period: data)
+    {
+        if(period == 0)
+            continue;
+
+        count++;
+        sum += period;
+    }
+
+    const auto totalSeconds = sum / 1000.0;
+    std::cout << "Total time:" << totalSeconds << " seconds " << std::endl;
+    std::cout << "Total frames:" << count << std::endl;
+    std::cout << "Average frame period:" << (sum / double(count)) << std::endl;
+    std::cout << "Average FPS:" << (count / totalSeconds) << std::endl;
 }

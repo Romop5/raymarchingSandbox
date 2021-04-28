@@ -13,6 +13,7 @@ SandboxApplication::SandboxApplication()
     ge::gl::init();
 
     adapter.Initialize(500,500);
+    width = height = 500;
     adapter.SetVisibility(true);
 
     auto menuWindow = std::make_shared<WindowWidget>();
@@ -25,6 +26,8 @@ SandboxApplication::SandboxApplication()
 auto SandboxApplication::Resize(size_t newWidth, size_t newHeight) -> void
 {
     adapter.Resize(newWidth, newHeight);
+    width = newWidth;
+    height = newHeight;
 }
 
 auto SandboxApplication::Render() -> void
@@ -65,6 +68,17 @@ auto SandboxApplication::MouseCursorChanged(GLFWwindow* window, double absoluteX
         return;
     }
 
+    if(absoluteX < 0.0 || absoluteY < 0.0)
+    {
+        glfwSetCursorPos(window, std::max(0.0, absoluteX), std::max(0.0, absoluteY));
+    }
+    if(absoluteX > width || absoluteY > height)
+    {
+        auto w = static_cast<double>(width);
+        auto h = static_cast<double>(height);
+        glfwSetCursorPos(window, std::min(w, absoluteX), std::min(h, absoluteY));
+    }
+
     adapter.OnMousePosition(absoluteX, absoluteY);
     if(adapter.IsVisible())
     {
@@ -94,7 +108,7 @@ auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action, int
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
-        inputHandler.reset();
+        SetFocus(nullptr);
     }
     if(key == GLFW_KEY_F11 && action == GLFW_PRESS)
     {
@@ -125,4 +139,9 @@ auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action, int
 auto SandboxApplication::SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void
 {
     inputHandler = std::move(handler);
+}
+
+auto SandboxApplication::GetFocus() -> std::shared_ptr<IGLFWInputHandler>
+{
+    return inputHandler;
 }

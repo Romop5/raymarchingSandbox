@@ -13,7 +13,8 @@ RendererWidget::RendererWidget(std::shared_ptr<Raymarcher> rm, std::shared_ptr<G
     raymarcher { std::move(rm) },
     camera { std::move(cam) },
     viewportWidth { 100 },
-    viewportHeight { 100 }
+    viewportHeight { 100 },
+    isPaused { false }
 {
     raymarcher->SetCamera(camera);
     SetTitle("Preview");
@@ -28,14 +29,24 @@ auto RendererWidget::RenderContent() -> void
         return;
     }
 
-    targetFBO->bind();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glViewport(0,0, viewportWidth, viewportHeight);
-    raymarcher->Render();
-    targetFBO->unbind();
-    glPopAttrib();
+    if(!isPaused)
+    {
+        targetFBO->bind();
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0,0, viewportWidth, viewportHeight);
+        raymarcher->Render();
+        targetFBO->unbind();
+        glPopAttrib();
+    }
 
+
+    std::string pauseButtonString = (isPaused ? "Play" : "Pause");
+    if(ImGui::Button(pauseButtonString.c_str()))
+    {
+        isPaused = !isPaused;
+    }
+    ImGui::SameLine();
 
     if(ImGui::Button("Settings"))
     {
@@ -71,10 +82,23 @@ auto RendererWidget::RenderContent() -> void
 
     if(ImGui::BeginChild("Render"))
     {
+        auto& app = IApplication::GetApplication();
         ImGui::Image(reinterpret_cast<void*>(colorImage->getId()), ImGui::GetWindowSize(), ImVec2(0,1), ImVec2(1, 0));
-        if(ImGui::IsItemClicked())
+        if (app.GetFocus() == camera)
         {
-            auto& app = IApplication::GetApplication();
+            auto drawList = ImGui::GetWindowDrawList();
+            auto pos = ImGui::GetWindowPos();
+            auto size = ImGui::GetWindowSize();
+            pos.x += 20;
+            pos.y += 20;
+            drawList->AddText(pos, -1u, "Press ESC to exit");
+            //auto io = ImGui::GetIO();
+            //drawList->AddText(io.FontDefault, 10.0f, pos, -1u, "Press ESC to exit");
+        }
+
+
+        if(ImGui::IsItemClicked() && !isPaused)
+        {
             app.SetFocus(camera);
         }
     }

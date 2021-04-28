@@ -48,6 +48,7 @@ static void cursor_callback(GLFWwindow* window, double xpos, double ypos)
 {
     std::cout << "Cursor: " << xpos << " - " << ypos << std::endl;
     g_application->MouseCursorChanged(window, xpos, ypos);
+
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -103,7 +104,7 @@ int main(int argc, const char* argv[])
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     glEnable(GL_MULTISAMPLE);  
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && g_application->ShouldContinue())
     {
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

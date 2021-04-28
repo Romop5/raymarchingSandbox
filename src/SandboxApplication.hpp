@@ -8,8 +8,10 @@
 #include "ImguiAdapter.hpp"
 #include "WidgetManager.hpp"
 
+
 namespace raymarcher
 {
+
 class GLFWCamera;
 class WidgetManager;
 
@@ -26,12 +28,18 @@ class SandboxApplication: public IApplication
     virtual auto MouseButtonPressed(GLFWwindow* window, int button, int action) -> void override; 
     virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void override;
     virtual auto KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void override;
+
     virtual auto SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void override;
+    virtual auto GetFocus() -> std::shared_ptr<IGLFWInputHandler> override;
+
     private:
     raymarcher::ImguiAdapter adapter;
     raymarcher::WidgetManager widgetManager;
     std::shared_ptr<raymarcher::GLFWCamera> focusedCamera;
     std::shared_ptr<IGLFWInputHandler> inputHandler;
+
+    size_t width;
+    size_t height;
 };
 }
 #endif

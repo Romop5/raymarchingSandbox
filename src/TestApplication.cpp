@@ -153,7 +153,8 @@ auto TestApplication::Render() -> void
         frameID++;
         if(frameID > 350)
         {
-            abort();
+            shouldContinue = false;
+            fpsMeter.DumpConclusion();
         }
     }
 
@@ -247,4 +248,14 @@ auto TestApplication::KeyPressed(GLFWwindow* window, int key, int action, int mo
 auto TestApplication::SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void
 {
     inputHandler = std::move(handler);
+}
+
+auto TestApplication::GetFocus() -> std::shared_ptr<IGLFWInputHandler>
+{
+    return inputHandler;
+}
+
+auto TestApplication::ShouldContinue() -> bool
+{
+    return shouldContinue;
 }
