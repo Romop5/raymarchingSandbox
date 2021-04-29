@@ -8,6 +8,7 @@
 #include "ImguiAdapter.hpp"
 #include "Raymarcher.hpp"
 #include "FPSMeter.hpp"
+#include "RendererAttributesWidget.hpp"
 
 namespace raymarcher
 {
@@ -39,17 +40,18 @@ class TestApplication: public IApplication
     virtual auto ShouldContinue() -> bool override;
     private:
     raymarcher::ImguiAdapter adapter;
-    std::shared_ptr<raymarcher::GLFWCamera> focusedCamera;
-    std::shared_ptr<IGLFWInputHandler> inputHandler;
+    std::shared_ptr<raymarcher::GLFWCamera>     focusedCamera;
+    std::shared_ptr<IGLFWInputHandler>          inputHandler;
 
-    std::shared_ptr<Raymarcher>             raymarcher;
-    std::shared_ptr<GLFWCamera>             camera;
-
+    std::shared_ptr<Raymarcher>                 raymarcher;
+    std::shared_ptr<GLFWCamera>                 camera;
+    std::unique_ptr<RendererAttributesWidget>   attributes;
     FPSMeter fpsMeter;
 
     StartParameters parameters;
 
     bool shouldContinue = true;
+    bool isGUIControlActive = false;
 };
 }
 #endif

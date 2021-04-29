@@ -13,6 +13,8 @@ namespace
         uniform mat4 camera_rotation = mat4(1.0);
         const vec2  iResolution      = vec2(1.0,1.0);
 
+        const float maxLightDistance = 15;
+
         uniform int g_maxIterations;
         uniform float g_eps;
         uniform float g_stepRatio      = 0.99;
@@ -87,10 +89,11 @@ namespace
 
         vec4 ground(vec3 position, float elevation)
         {
+            float distance = position.y - elevation;
             float checkerColor = clamp(0.0,1.0,threshold(sin(6.0*position.x),floorThickness)+
                                                threshold(sin(6.0*position.z),floorThickness));
             vec3 color = mix(floorAColor, floorBColor, checkerColor);
-            return vec4(position.y - elevation, color);
+            return vec4(distance, color);
         }
 
         vec4 object(vec3 pos)
@@ -196,12 +199,9 @@ namespace
 
             bool visibility = false;
 
-            if(renderShadows)
+            if(renderShadows && lightDistance < maxLightDistance)
             {
-                if(lightDistance < 30.0)
-                {
-                    visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
-                }
+                visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
             } else {
                 visibility = true;
             }

@@ -144,6 +144,7 @@ vec4 df(vec3 pos)
 
 TestApplication::TestApplication(StartParameters params) :
     parameters(params)
+
 {    
     ge::gl::init();
 
@@ -156,6 +157,7 @@ TestApplication::TestApplication(StartParameters params) :
     raymarcher = rm;
     camera = cam;
     inputHandler = cam;
+    attributes = std::make_unique<RendererAttributesWidget>(rm);
 
     if(parameters.shouldRunWithFreeMovement)
     {
@@ -192,9 +194,12 @@ auto TestApplication::Render() -> void
     }
 
     adapter.BeginFrame();
-    //ImGui::ShowDemoWindow(nullptr);
-    //ImGui::ShowMetricsWindow(nullptr);
     fpsMeter.RenderOverlay();
+
+    if(attributes)
+    {
+        attributes->Render();
+    }
     
     adapter.EndFrame();
     adapter.RenderCurrentFrame();
@@ -213,17 +218,38 @@ auto TestApplication::MouseCursorChanged(GLFWwindow* window, double absoluteX, d
     lastXpos = absoluteX;
     lastYpos = absoluteY;
 
+    if(isGUIControlActive)
+    {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        if(absoluteX < 0.0 || absoluteY < 0.0)
+        {
+            glfwSetCursorPos(window, std::max(0.0, absoluteX), std::max(0.0, absoluteY));
+        }
+
+        if(absoluteX > width || absoluteY > height)
+        {
+            auto w = static_cast<double>(width);
+            auto h = static_cast<double>(height);
+            glfwSetCursorPos(window, std::min(w, absoluteX), std::min(h, absoluteY));
+        }
+
+
+        adapter.OnMousePosition(absoluteX, absoluteY);
+        if(adapter.IsVisible())
+        {
+            return;
+        }
+    }
+
     if(inputHandler)
     {
         inputHandler->MouseCursorChanged(window, relativeX, relativeY);
         return;
     }
 
-    adapter.OnMousePosition(absoluteX, absoluteY);
-    if(adapter.IsVisible())
-    {
-        return;
-    }
+    
 }
 
 auto TestApplication::MouseButtonPressed(GLFWwindow* window, int button, int action) -> void 
@@ -247,24 +273,28 @@ auto TestApplication::KeyPressed(GLFWwindow* window, int key, int action, int mo
 {
     if(key == GLFW_KEY_F11 && action == GLFW_PRESS)
     {
-        adapter.SetVisibility(!adapter.IsVisible());
+        //adapter.SetVisibility(!adapter.IsVisible());
+        isGUIControlActive = !isGUIControlActive;
+    }
+
+    if(isGUIControlActive)
+    {
+        if(adapter.WantCaptureKeyboard())
+        {
+            int imguiMod = ModifierBitmap::NORMAL;
+            if(mod & GLFW_MOD_CONTROL)
+                imguiMod = imguiMod | ModifierBitmap::CTRL;
+            if(mod & GLFW_MOD_SHIFT)
+                imguiMod = imguiMod | ModifierBitmap::SHIFT;
+
+            adapter.OnKey(key, action == GLFW_PRESS, static_cast<ModifierBitmap>(imguiMod));
+            return;
+        }
     }
 
     if(inputHandler)
     {
         inputHandler->KeyPressed(window, key);
-        return;
-    }
-
-    if(adapter.WantCaptureKeyboard())
-    {
-        int imguiMod = ModifierBitmap::NORMAL;
-        if(mod & GLFW_MOD_CONTROL)
-            imguiMod = imguiMod | ModifierBitmap::CTRL;
-        if(mod & GLFW_MOD_SHIFT)
-            imguiMod = imguiMod | ModifierBitmap::SHIFT;
-
-        adapter.OnKey(key, action == GLFW_PRESS, static_cast<ModifierBitmap>(imguiMod));
         return;
     }
     

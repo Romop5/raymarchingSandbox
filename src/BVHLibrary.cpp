@@ -107,7 +107,7 @@ auto BVHLibrary::GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std
     nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
     if(node.GetChildren().size() == 0)
     {
-        ss << padding <<  "d = min(d, " << nodeString.str() << ");" << std::endl;
+        ss << padding <<  "d = smin(d, " << nodeString.str() << ", k);" << std::endl;
     } else {
         ss << padding <<  "if ( " << nodeString.str() << " < " << minDistance << ")" << std::endl;
         ss << padding <<  "{" << std::endl;
@@ -116,7 +116,7 @@ auto BVHLibrary::GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std
             ss <<  GenerateCodeForNode(*child, level+1)  << std::endl;
         }
         ss << padding <<  "}" << std::endl;
-        ss << padding <<  "else { d = min(d, " << nodeString.str() << "); }" << std::endl;
+        ss << padding <<  "else { d = smin(d, " << nodeString.str() << ", k); }" << std::endl;
     }
     return ss.str();
 }
@@ -124,6 +124,15 @@ auto BVHLibrary::GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std
 auto BVHLibrary::GenerateCodeForScene() -> std::string
 {
     std::stringstream ss;
+    ss << "// polynomial smooth min (k = 0.1);" << std::endl;
+    ss << "float smin( float a, float b, float k ) " << std::endl;
+    ss << "{" << std::endl;
+    ss << "  float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );" << std::endl;
+    ss << "  return mix( b, a, h ) - k*h*(1.0-h);" << std::endl;
+    ss << "}" << std::endl;
+
+    ss << "uniform float k = 0.1;" << std::endl;
+
     ss << "uniform float minDistanceUniform = 0.1;" << std::endl;
     ss << "vec4 df(vec3 pos)" << std::endl;
     ss << "{" << std::endl;
@@ -133,7 +142,7 @@ auto BVHLibrary::GenerateCodeForScene() -> std::string
     {
         ss << GenerateCodeForNode(*node, 0);
     }
-    ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
+    ss << "return unite(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
     ss << "}" << std::endl;
     return ss.str();
 }
@@ -149,7 +158,7 @@ auto BVHLibrary::GenerateCodeForNodeNonOptimized(SpherePrimitive& node, size_t l
     nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
     if(node.GetChildren().size() == 0)
     {
-        ss <<  "d = min(d, " << nodeString.str() << ");" << std::endl;
+        ss <<  "d = smin(d, " << nodeString.str() << ", d);" << std::endl;
     } else {
         for(auto& child: node.GetChildren())
         {
@@ -162,6 +171,18 @@ auto BVHLibrary::GenerateCodeForNodeNonOptimized(SpherePrimitive& node, size_t l
 auto BVHLibrary::GenerateCodeForSceneNonOptimized() -> std::string
 {
     std::stringstream ss;
+
+    ss << "// polynomial smooth min (k = 0.1);" << std::endl;
+    ss << "float smin( float a, float b, float k ) " << std::endl;
+    ss << "{" << std::endl;
+    ss << "  float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );" << std::endl;
+    ss << "  return mix( b, a, h ) - k*h*(1.0-h);" << std::endl;
+    ss << "}" << std::endl;
+
+    ss << "float k = 0.1;" << std::endl;
+
+
+
     ss << "vec4 df(vec3 pos)" << std::endl;
     ss << "{" << std::endl;
     ss << "float d = 1000.0;" << std::endl;
@@ -169,7 +190,7 @@ auto BVHLibrary::GenerateCodeForSceneNonOptimized() -> std::string
     {
         ss << GenerateCodeForNodeNonOptimized(*node, 0);
     }
-    ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
+    ss << "return unite(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
     ss << "}" << std::endl;
     return ss.str();
 }
