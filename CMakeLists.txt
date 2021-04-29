@@ -48,6 +48,8 @@ target_link_libraries(imgui PUBLIC GLEW)
 
 
 add_executable (sandbox
+    src/BVHLibrary.cpp
+
     src/main.cpp
     src/SDF.cpp
     src/Raymarcher.cpp

@@ -8,7 +8,7 @@
 namespace raymarcher
 {
 class SpherePrimitive;
-class BVHCalculatorPimpl;
+class BVHLibrary;
 
 class BVHCalculator : public WindowWidget
 {
@@ -26,7 +26,7 @@ class BVHCalculator : public WindowWidget
         auto GenerateGeometry() -> void;
     private:
         auto DisplayElement(SpherePrimitive&, size_t level) -> void;
-        std::unique_ptr<BVHCalculatorPimpl> pimpl;
+        std::unique_ptr<BVHLibrary> pimpl;
 
        OptimizationParameters params;
 };

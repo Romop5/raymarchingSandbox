@@ -11,258 +11,86 @@
 
 #include "EditWidget.hpp"
 #include "FileHelper.hpp"
+#include "BVHLibrary.hpp"
 
 using namespace raymarcher;
-namespace raymarcher
-{
-    class SpherePrimitive
-    {
-        public:
-        using ChildrenType = std::vector<std::shared_ptr<SpherePrimitive>>;
-        /// Construct bouding sphere for children
-        SpherePrimitive(ChildrenType childrenInst) :
-            children { std::move(childrenInst) }
-        {
-            center = glm::vec3(0.0);
-            for(auto child: children)
-            {
-                center += child->GetCenter();
-            }
-            center = center / glm::vec3(children.size());
-
-            size = 0;
-            for(auto child: children)
-            {
-                size = std::max(size, glm::length(center - child->GetCenter())+child->GetSize());
-            }
-        }
-
-        /// Construct sphere
-        SpherePrimitive(glm::vec3 centerInst, float sizeInst) :
-            center { centerInst },
-            size { sizeInst }
-        {
-        }
-        auto GetChildren() -> ChildrenType& { return children; }
-        auto GetCenter() -> glm::vec3 { return center; }
-        auto GetSize() -> float { return size; }
-
-        double DistanceTo(SpherePrimitive& other)
-        {
-            auto d = glm::length(other.GetCenter()-GetCenter()) + (other.GetSize()+GetSize());
-            return d;
-        }
-
-        auto InflateChildren() -> void
-        {
-            ChildrenType newChildren;
-
-            std::queue<std::shared_ptr<SpherePrimitive>> remainingNodes;
-            for(auto& child: children)
-            {
-                remainingNodes.push(child);
-            }
-
-            while(!remainingNodes.empty())
-            {
-                auto current = remainingNodes.front();
-                remainingNodes.pop();
-
-                if(current->children.empty())
-                {
-                    newChildren.push_back(current);
-                    continue;
-                }
-                for(auto& subnode: current->children)
-                {
-                    remainingNodes.push(subnode);
-                }
-            }
-
-            children = std::move(newChildren);
-        }
-
-        auto InflateSinceLevel(size_t level)
-        {
-            if(level == 0)
-            {
-                InflateChildren();
-                return;
-            }
-            for(auto& child: children)
-            {
-                child->InflateSinceLevel(level - 1);
-            }
-        }
-        protected:
-        ChildrenType children;
-
-        glm::vec3 center;
-        float size;
-    };
-
-    class BVHCalculatorPimpl
-    {
-        public:
-            SpherePrimitive::ChildrenType scene;
-            auto GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std::string
-            {
-                std::string padding(level*2, ' ');
-                std::stringstream ss;
-                const auto minDistance = "minDistance";
-                std::stringstream nodeString;
-                std::string position = "vec3("+std::to_string(node.GetCenter().x) + "," +
-                                           std::to_string(node.GetCenter().y) + "," +
-                                           std::to_string(node.GetCenter().z) + ")";
- 
-                nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
-                if(node.GetChildren().size() == 0)
-                {
-                    ss << padding <<  "d = min(d, " << nodeString.str() << ");" << std::endl;
-                } else {
-                    ss << padding <<  "if ( " << nodeString.str() << " < " << minDistance << ")" << std::endl;
-                    ss << padding <<  "{" << std::endl;
-                    for(auto& child: node.GetChildren())
-                    {
-                        ss <<  GenerateCodeForNode(*child, level+1)  << std::endl;
-                    }
-                    ss << padding <<  "}" << std::endl;
-                    ss << padding <<  "else { d = min(d, " << nodeString.str() << "); }" << std::endl;
-                }
-                return ss.str();
-            }
-            auto GenerateCodeForScene() -> std::string
-            {
-                std::stringstream ss;
-                ss << "uniform float minDistanceUniform = 0.1;" << std::endl;
-                ss << "vec4 df(vec3 pos)" << std::endl;
-                ss << "{" << std::endl;
-                ss << "float minDistance = minDistanceUniform * 10.0;" << std::endl;
-                ss << "float d = 1000.0;" << std::endl;
-                for(auto& node: scene)
-                {
-                    ss << GenerateCodeForNode(*node, 0);
-                }
-                ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
-                ss << "}" << std::endl;
-                return ss.str();
-            }
-            auto GenerateCodeForNodeNonOptimized(SpherePrimitive& node, size_t level) -> std::string
-            {
-                std::string padding(level*2, ' ');
-                std::stringstream ss;
-                std::stringstream nodeString;
-                std::string position = "vec3("+std::to_string(node.GetCenter().x) + "," +
-                                           std::to_string(node.GetCenter().y) + "," +
-                                           std::to_string(node.GetCenter().z) + ")";
-                nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
-                if(node.GetChildren().size() == 0)
-                {
-                    ss <<  "d = min(d, " << nodeString.str() << ");" << std::endl;
-                } else {
-                    for(auto& child: node.GetChildren())
-                    {
-                        ss << GenerateCodeForNodeNonOptimized(*child, level+1)  << std::endl;
-                    }
-                }
-                return ss.str();
-            }
-            auto GenerateCodeForSceneNonOptimized() -> std::string
-            {
-                std::stringstream ss;
-                ss << "vec4 df(vec3 pos)" << std::endl;
-                ss << "{" << std::endl;
-                ss << "float d = 1000.0;" << std::endl;
-                for(auto& node: scene)
-                {
-                    ss << GenerateCodeForNodeNonOptimized(*node, 0);
-                }
-                ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
-                ss << "}" << std::endl;
-                return ss.str();
-            }
-            auto GenerateCode(bool optimized) -> std::string
-            {
-                if(optimized)
-                    return GenerateCodeForScene();
-                return GenerateCodeForSceneNonOptimized();
-            }
-    };
-}
 
 BVHCalculator::BVHCalculator() :
-    pimpl { std::make_unique<BVHCalculatorPimpl>() }
+    pimpl { std::make_unique<BVHLibrary>() }
 {
     SetSize(400, 0);
     // Small (close) scene
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.1, 0.1), 0.13));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.13));
+    //
+    auto& scene = pimpl->GetScene();
 
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.13));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.0, 0.1), 0.09));
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.1, 0.1), 0.13)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.13)); */
 
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 0.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 0.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.2, 0.1), 0.13));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.09));
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 0.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.13)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.0, 0.1), 0.09)); */
+
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 0.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 0.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.2, 0.1), 0.13)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 0.1), 0.09)); */
 
 
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 3.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 3.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.1, 3.1), 0.13));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 3.1), 0.13));
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 3.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 3.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.1, 3.1), 0.13)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 3.1), 0.13)); */
 
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 3.1), 0.13));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.0, 3.1), 0.09));
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.0, 3.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.1, 3.1), 0.13)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.0, 3.1), 0.09)); */
 
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 3.0), 0.1));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 3.1), 0.09));
-    pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.2, 3.1), 0.13));
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 3.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.1, 0.1, 3.1), 0.09)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.2, 0.2, 3.1), 0.13)); */
 
     // Larger scene
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, 0.0), 1.0)); */
 
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(3.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(4.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(3.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(4.0, 0.0, 0.0), 1.0)); */
 
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(10.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(11.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(10.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(11.0, 0.0, 0.0), 1.0)); */
 
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 1.0, 0.0), 1.5)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.2)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, -1.0), 1.1)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, -1.1), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 1.0, 0.0), 1.5)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 1.2)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, -1.0), 1.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.0, -1.1), 1.0)); */
 
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 2.0, 0.0), 1.1)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 1.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 3.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 1.0, 0.0), 0.1)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(5.0, 3.0, 0.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 5.0, 0.0), 1.3)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(2.0, 3.0, -1.0), 1.5)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.5, -1.1), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 2.0, 0.0), 1.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 1.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 3.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 1.0, 0.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(5.0, 3.0, 0.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 5.0, 0.0), 1.3)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(2.0, 3.0, -1.0), 1.5)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.5, -1.1), 1.0)); */
 
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 2.0, -4.0), 1.1)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 1.0, -6.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, -10.0), 3.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 1.0, -20.0), 0.1)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(5.0, 3.0, -30.0), 1.0)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 5.0, -5.0), 1.3)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(2.0, 3.0, -1.0), 1.5)); */
-    /* pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.5, -1.1), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(13.0, 2.0, -4.0), 1.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(14.0, 1.0, -6.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, -10.0), 3.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 1.0, -20.0), 0.1)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(5.0, 3.0, -30.0), 1.0)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 5.0, -5.0), 1.3)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(2.0, 3.0, -1.0), 1.5)); */
+    /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(1.0, 0.5, -1.1), 1.0)); */
 
 }
 
@@ -327,7 +155,7 @@ auto BVHCalculator::RenderContent() -> void
     //--------------------------------------------------------------------------------------
 
     ImGui::Text("Elements");
-    for(auto& element: pimpl->scene)
+    for(auto& element: pimpl->GetScene())
     {
         DisplayElement(*element, 0);
     }
@@ -357,9 +185,9 @@ auto BVHCalculator::DisplayElement(SpherePrimitive& element, size_t level) -> vo
 
 auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
 {
-        while(pimpl->scene.size() > 1)
+        while(pimpl->GetScene().size() > 1)
         {
-            const auto count = pimpl->scene.size();
+            const auto count = pimpl->GetScene().size();
             double minSize = 0.0;
             size_t indices[2] = {0, 1};
 
@@ -367,8 +195,8 @@ auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
             {
                 for(size_t j = i+1; j < count; j++)
                 {
-                    auto distance = pimpl->scene[i]->DistanceTo(*pimpl->scene[j]);
-                    //auto primitive = SpherePrimitive({pimpl->scene[i], pimpl->scene[j]});
+                    auto distance = pimpl->GetScene()[i]->DistanceTo(*pimpl->GetScene()[j]);
+                    //auto primitive = SpherePrimitive({pimpl->GetScene()[i], pimpl->GetScene()[j]});
                     if(distance < minSize)
                     {
                         minSize = distance;
@@ -381,16 +209,16 @@ auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
             auto firstIndex = std::max(indices[0], indices[1]);
             auto secondIndex = std::min(indices[0], indices[1]);
 
-            auto firstElement = pimpl->scene[indices[0]];
-            auto secondElement = pimpl->scene[indices[1]];
+            auto firstElement = pimpl->GetScene()[indices[0]];
+            auto secondElement = pimpl->GetScene()[indices[1]];
 
-            pimpl->scene.erase(pimpl->scene.begin() + firstIndex);
-            pimpl->scene.erase(pimpl->scene.begin() + secondIndex);
-            pimpl->scene.emplace_back(std::make_shared<SpherePrimitive>(SpherePrimitive::ChildrenType{firstElement,secondElement}));
+            pimpl->GetScene().erase(pimpl->GetScene().begin() + firstIndex);
+            pimpl->GetScene().erase(pimpl->GetScene().begin() + secondIndex);
+            pimpl->GetScene().emplace_back(std::make_shared<SpherePrimitive>(SpherePrimitive::ChildrenType{firstElement,secondElement}));
         }
 
         // Inflate
-        pimpl->scene[0]->InflateSinceLevel(params.maxLevel);
+        pimpl->GetScene()[0]->InflateSinceLevel(params.maxLevel);
 }
 
 auto BVHCalculator::GenerateGeometry() -> void
@@ -404,6 +232,6 @@ auto BVHCalculator::GenerateGeometry() -> void
     {
         glm::vec3 pos = glm::vec3(dis(gen),dis(gen), dis(gen));
         float radius = dis(gen)*0.1;
-        pimpl->scene.push_back(std::make_shared<SpherePrimitive>(pos, radius));
+        pimpl->GetScene().push_back(std::make_shared<SpherePrimitive>(pos, radius));
     }
 }
