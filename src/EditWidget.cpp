@@ -24,6 +24,7 @@ namespace
 EditWidget::EditWidget(std::string name, std::string startingCode, std::string file) :
     code { startingCode },
     isStatusError { false },
+    isAutocompileEnabled { true },
     filename { file }
 {
     SetTitle(name);

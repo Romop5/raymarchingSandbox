@@ -1,5 +1,6 @@
 #include "InterpolatedCamera.hpp"
 #include <glm/gtx/transform.hpp>
+#include <cassert>
 
 using namespace raymarcher;
 
@@ -13,7 +14,8 @@ namespace
 }
 
 InterpolatedCamera::InterpolatedCamera(std::vector<CameraPoint> points) :
-    cameraPoints { std::move(points) }
+    cameraPoints { std::move(points) },
+    currentCameraPoint { 0 }
 {
 }
 
@@ -27,6 +29,10 @@ auto InterpolatedCamera::UpdateFrame(size_t frameID) -> void
     /* Camera position is calculated as linear interpolation of two successive camera points 
      * Each point has 'frame' member, which defines start of the camera point in sequence. */
     auto [start, end] = GetIndexesForFrameID(frameID);
+
+    assert(start < cameraPoints.size());
+    assert(end < cameraPoints.size());
+
     auto& startP = cameraPoints[start];
     auto& endP= cameraPoints[end];
 

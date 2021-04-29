@@ -101,7 +101,6 @@ vec4 df(vec3 pos)
 
     auto CreateTestApp(std::string code) -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
     {
-
         auto rm = std::make_shared<raymarcher::Raymarcher>();
         auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
         orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
