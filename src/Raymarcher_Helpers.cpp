@@ -13,7 +13,7 @@ namespace
         uniform mat4 camera_rotation = mat4(1.0);
         const vec2  iResolution      = vec2(1.0,1.0);
 
-        const float maxLightDistance = 15;
+        const float maxLightDistance = 30;
 
         uniform int g_maxIterations;
         uniform float g_eps;
@@ -180,6 +180,9 @@ namespace
             return ds-dd;
         }
 
+        // o = ray's origin
+        // d = direction
+        // l = light position
         vec3 phongShading(vec3 o, vec3 d, vec3 l)
         {;
          
@@ -199,6 +202,15 @@ namespace
 
             bool visibility = false;
 
+            vec3 nv = normalize(normalVector(o, d));
+
+            float distanceToCamera = length(p-camera_origin);
+
+            vec3 reflectionColor = vec3(0.0);
+            /* vec3 reflectionDir = normalize(reflect(d, nv)); */
+            /* vec4 reflection = (rayMarch(p+reflectionDir*g_eps*5.0, reflectionDir)); */
+            /* reflectionColor = (reflection.x > 0.0 ? reflection.yzw : reflectionColor) * (1.0/distanceToCamera); */
+
             if(renderShadows && lightDistance < maxLightDistance)
             {
                 visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
@@ -208,9 +220,8 @@ namespace
 
             vec3 nd = normalize(o-p);
 
-            vec3 nv = normalize(normalVector(o, d));
             vec3 nnv = nv;
-            
+
             vec3 halfDir = normalize(nlDir + nd);
             float specAngle = max(dot(halfDir, nnv), 0.0);
             float specular = pow(specAngle, shininess);
@@ -240,7 +251,7 @@ namespace
                 vec3 specularColorPart   = sunColor*specularRatio*lightIntensity;
             
             
-                shadingColor += lambertianColorPart + specularColorPart;
+                shadingColor += lambertianColorPart + specularColorPart + specularity*reflectionColor;
             }
             
             return mix(shadingColor, fogColor, fogRatio);

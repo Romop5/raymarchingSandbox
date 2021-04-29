@@ -104,11 +104,12 @@ auto BVHLibrary::GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std
                                std::to_string(node.GetCenter().y) + "," +
                                std::to_string(node.GetCenter().z) + ")";
 
-    nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
     if(node.GetChildren().size() == 0)
     {
+        nodeString << "sphere(pos-" << position << ", " << node.GetSize() << "*fract(iTime))";
         ss << padding <<  "d = smin(d, " << nodeString.str() << ", k);" << std::endl;
     } else {
+        nodeString << "sphere(pos-" << position << ", " << node.GetSize() << ")";
         ss << padding <<  "if ( " << nodeString.str() << " < " << minDistance << ")" << std::endl;
         ss << padding <<  "{" << std::endl;
         for(auto& child: node.GetChildren())
