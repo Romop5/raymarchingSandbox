@@ -4,7 +4,7 @@
 
 using namespace raymarcher;
 
-auto FileHelper::LoadFile(std::string path) -> std::optional<std::string>
+auto FileHelper::LoadFile(const std::string& path) -> std::optional<std::string>
 {
     std::filesystem::path filePath = path;
     std::ifstream file;
@@ -25,3 +25,20 @@ auto FileHelper::LoadFile(std::string path) -> std::optional<std::string>
     }
     return std::make_optional(content.str());
 }
+
+auto FileHelper::SaveFile(const std::string& path, const std::string& content) -> bool
+{
+    std::fstream outputFile;
+    outputFile.open(path, std::fstream::out | std::fstream::trunc);
+    if(!outputFile.is_open())
+    {
+        return false;
+    }
+    outputFile << content ;
+    if(!outputFile.good())
+    {
+        return false;
+    }
+    return true;
+}
+ 

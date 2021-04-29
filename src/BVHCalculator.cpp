@@ -4,11 +4,13 @@
 #include <algorithm>
 #include <sstream>
 #include <queue>
+#include <random>
 
 #include <glm/glm.hpp>
 #include <imgui.h>
 
 #include "EditWidget.hpp"
+#include "FileHelper.hpp"
 
 using namespace raymarcher;
 namespace raymarcher
@@ -137,8 +139,11 @@ namespace raymarcher
                 ss << "{" << std::endl;
                 ss << "float minDistance = minDistanceUniform * 10.0;" << std::endl;
                 ss << "float d = 1000.0;" << std::endl;
-                ss << GenerateCodeForNode(*scene[0], 0);
-                ss << "return vec4(d, vec3(1.0));" << std::endl;
+                for(auto& node: scene)
+                {
+                    ss << GenerateCodeForNode(*node, 0);
+                }
+                ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
                 ss << "}" << std::endl;
                 return ss.str();
             }
@@ -165,12 +170,14 @@ namespace raymarcher
             auto GenerateCodeForSceneNonOptimized() -> std::string
             {
                 std::stringstream ss;
-                ss << "uniform float minDistance = 1.0;" << std::endl;
                 ss << "vec4 df(vec3 pos)" << std::endl;
                 ss << "{" << std::endl;
                 ss << "float d = 1000.0;" << std::endl;
-                ss << GenerateCodeForNodeNonOptimized(*scene[0], 0);
-                ss << "return vec4(d, vec3(1.0));" << std::endl;
+                for(auto& node: scene)
+                {
+                    ss << GenerateCodeForNodeNonOptimized(*node, 0);
+                }
+                ss << "return min(ground(pos, -1.0), vec4(d, vec3(1.0)));" << std::endl;
                 ss << "}" << std::endl;
                 return ss.str();
             }
@@ -186,6 +193,7 @@ namespace raymarcher
 BVHCalculator::BVHCalculator() :
     pimpl { std::make_unique<BVHCalculatorPimpl>() }
 {
+    SetSize(400, 0);
     // Small (close) scene
     pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 0.1));
     pimpl->scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.1), 0.09));
@@ -262,13 +270,28 @@ BVHCalculator::~BVHCalculator() = default;
 
 auto BVHCalculator::RenderContent() -> void
 {
-    int maxLevel = params.maxLevel;
-    ImGui::SliderInt("Maximum level of BVH", &maxLevel, 0, 16);
-    params.maxLevel = maxLevel;
+    //--------------------------------------------------------------------------------------
+    // Button controls
+    //--------------------------------------------------------------------------------------
+    if(ImGui::Button("Generate scene"))
+    {
+        GenerateGeometry();
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Generate & save"))
+    {
+        Optimize(params);
+
+        auto hasPassed = true;
+        hasPassed &= FileHelper::SaveFile("optimized.sdf", pimpl->GenerateCode(true));
+        hasPassed &= FileHelper::SaveFile("nonoptimized.sdf", pimpl->GenerateCode(false));
+    }
+
+    ImGui::SameLine();
 
     if(ImGui::Button("Generate optimized code"))
     {
-        Generate(params);
+        Optimize(params);
 
         auto widget = std::make_shared<raymarcher::EditWidget>("Generated: optimized", pimpl->GenerateCode(true));
         AddWidget(widget);
@@ -276,6 +299,32 @@ auto BVHCalculator::RenderContent() -> void
         auto widget2 = std::make_shared<raymarcher::EditWidget>("Generated: non-optimized", pimpl->GenerateCode(false));
         AddWidget(widget2);
     }
+
+    ImGui::SameLine();
+    if(ImGui::Button("Preview current scene"))
+    {
+        auto widget2 = std::make_shared<raymarcher::EditWidget>("Scene Preview: non-optimized", pimpl->GenerateCode(false));
+        widget2->Recompile();
+        AddWidget(widget2);
+    }
+
+    ImGui::SameLine();
+    if(ImGui::Button("Close subwindows"))
+    {
+        RemoveAllWidgets();
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Parameters
+    //--------------------------------------------------------------------------------------
+    int maxLevel = params.maxLevel;
+    ImGui::PushItemWidth(30);
+    ImGui::SliderInt("Maximum level of BVH", &maxLevel, 0, 16);
+    params.maxLevel = maxLevel;
+
+    //--------------------------------------------------------------------------------------
+    // Scene
+    //--------------------------------------------------------------------------------------
 
     ImGui::Text("Elements");
     for(auto& element: pimpl->scene)
@@ -306,7 +355,7 @@ auto BVHCalculator::DisplayElement(SpherePrimitive& element, size_t level) -> vo
     ImGui::PopID();
 }
 
-auto BVHCalculator::Generate(const OptimizationParameters params) -> void
+auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
 {
         while(pimpl->scene.size() > 1)
         {
@@ -342,4 +391,19 @@ auto BVHCalculator::Generate(const OptimizationParameters params) -> void
 
         // Inflate
         pimpl->scene[0]->InflateSinceLevel(params.maxLevel);
+}
+
+auto BVHCalculator::GenerateGeometry() -> void
+{
+    std::random_device rd;  
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0, 2.0);
+    
+    size_t maxNumberOfPrimitives = 30;
+    for(size_t i = 0; i < maxNumberOfPrimitives; i++)
+    {
+        glm::vec3 pos = glm::vec3(dis(gen),dis(gen), dis(gen));
+        float radius = dis(gen)*0.1;
+        pimpl->scene.push_back(std::make_shared<SpherePrimitive>(pos, radius));
+    }
 }

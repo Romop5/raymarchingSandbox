@@ -22,7 +22,8 @@ class BVHCalculator : public WindowWidget
         {
             size_t maxLevel = 1;
         };
-        auto Generate(const OptimizationParameters params) -> void;
+        auto Optimize(const OptimizationParameters params) -> void;
+        auto GenerateGeometry() -> void;
     private:
         auto DisplayElement(SpherePrimitive&, size_t level) -> void;
         std::unique_ptr<BVHCalculatorPimpl> pimpl;

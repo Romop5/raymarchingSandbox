@@ -107,16 +107,28 @@ vec4 df(vec3 pos)
         orbiter->SetDistance(5.0);
         auto flycam = std::make_shared<raymarcher::FlyingCamera>();
 
+        /* auto cameraPoints = std::vector<raymarcher::InterpolatedCamera::CameraPoint> */
+        /* { */
+        /*     {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
+        /*     { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
+        /*     {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
+        /*     {200, glm::vec3( -2.0,20.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) }, */
+        /*     {250, glm::vec3( -20.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
+        /*     {300, glm::vec3( -10.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) }, */
+        /*     {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) }, */
+        /* }; */
+
         auto cameraPoints = std::vector<raymarcher::InterpolatedCamera::CameraPoint>
         {
             {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
             { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
             {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            {200, glm::vec3( -2.0,20.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) },
-            {250, glm::vec3( -20.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            {300, glm::vec3( -10.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) },
+            {200, glm::vec3( -2.0,2.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) },
+            {250, glm::vec3( -2.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
+            {300, glm::vec3( -2.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) },
             {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) },
         };
+     
         auto interpolatedCamera = std::make_shared<raymarcher::InterpolatedCamera>(cameraPoints);
         //auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
         auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(interpolatedCamera, raymarcher::GLFWCamera::CameraType::INTERPOLATED_CAMERA);

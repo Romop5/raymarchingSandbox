@@ -9,7 +9,8 @@ namespace raymarcher
 class FileHelper
 {
     public:
-    static auto LoadFile(std::string path) -> std::optional<std::string>;
+    static auto LoadFile(const std::string& path) -> std::optional<std::string>;
+    static auto SaveFile(const std::string& path, const std::string& content) -> bool;
 };
 }
 

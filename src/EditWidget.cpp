@@ -1,6 +1,5 @@
 #include "EditWidget.hpp"
 
-#include <fstream>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -9,6 +8,7 @@
 #include "OrbitCamera.hpp"
 #include "GLFWCamera.hpp"
 #include "SDF.hpp"
+#include "FileHelper.hpp"
 
 using namespace raymarcher;
 
@@ -114,17 +114,10 @@ auto EditWidget::SaveAs(std::string filename) -> void
         SetLastError("No file entered for this SDF");
         return;
     }
-    std::fstream outputFile;
-    outputFile.open(filename, std::fstream::out | std::fstream::trunc);
-    if(!outputFile.is_open())
+    auto hasBeenSaved = FileHelper::SaveFile(filename, code);
+    if(!hasBeenSaved)
     {
-        SetLastError("Failed to open file " + filename);
-        return;
-    }
-    outputFile << code;
-    if(!outputFile.good())
-    {
-        SetLastError("Failed to save to " + filename);
+        SetLastError("Failed to save file " + filename);
         return;
     }
     SetLastStatus("Saved");
