@@ -70,7 +70,7 @@ add_executable (sandbox
     src/MenuWidget.cpp
     src/EditWidget.cpp
     src/SDFLibrary.cpp
-    src/BVHCalculator.cpp
+    src/BVHCalculatorWidget.cpp
     src/SandboxApplication.cpp
     src/TestApplication.cpp
 )

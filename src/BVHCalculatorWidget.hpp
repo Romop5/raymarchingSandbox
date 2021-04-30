@@ -10,11 +10,11 @@ namespace raymarcher
 class SpherePrimitive;
 class BVHLibrary;
 
-class BVHCalculator : public WindowWidget
+class BVHCalculatorWidget : public WindowWidget
 {
     public:
-        BVHCalculator();
-        ~BVHCalculator();
+        BVHCalculatorWidget();
+        ~BVHCalculatorWidget();
 
         auto RenderContent() -> void override;
 

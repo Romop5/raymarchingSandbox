@@ -1,4 +1,4 @@
-#include "BVHCalculator.hpp"
+#include "BVHCalculatorWidget.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -15,12 +15,11 @@
 
 using namespace raymarcher;
 
-BVHCalculator::BVHCalculator() :
+BVHCalculatorWidget::BVHCalculatorWidget() :
     pimpl { std::make_unique<BVHLibrary>() }
 {
     SetSize(400, 0);
     // Small (close) scene
-    //
     auto& scene = pimpl->GetScene();
 
     /* scene.push_back(std::make_shared<SpherePrimitive>( glm::vec3(0.0, 0.0, 0.0), 0.1)); */
@@ -94,9 +93,9 @@ BVHCalculator::BVHCalculator() :
 
 }
 
-BVHCalculator::~BVHCalculator() = default;
+BVHCalculatorWidget::~BVHCalculatorWidget() = default;
 
-auto BVHCalculator::RenderContent() -> void
+auto BVHCalculatorWidget::RenderContent() -> void
 {
     //--------------------------------------------------------------------------------------
     // Button controls
@@ -163,7 +162,7 @@ auto BVHCalculator::RenderContent() -> void
     WindowWidget::RenderContent();
 }
 
-auto BVHCalculator::DisplayElement(SpherePrimitive& element, size_t level) -> void
+auto BVHCalculatorWidget::DisplayElement(SpherePrimitive& element, size_t level) -> void
 {
     ImGui::PushID(&element);
     auto pos = element.GetCenter();
@@ -183,7 +182,7 @@ auto BVHCalculator::DisplayElement(SpherePrimitive& element, size_t level) -> vo
     ImGui::PopID();
 }
 
-auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
+auto BVHCalculatorWidget::Optimize(const OptimizationParameters params) -> void
 {
         while(pimpl->GetScene().size() > 1)
         {
@@ -221,7 +220,7 @@ auto BVHCalculator::Optimize(const OptimizationParameters params) -> void
         pimpl->GetScene()[0]->InflateSinceLevel(params.maxLevel);
 }
 
-auto BVHCalculator::GenerateGeometry() -> void
+auto BVHCalculatorWidget::GenerateGeometry() -> void
 {
     std::random_device rd;  
     std::mt19937 gen(rd());
