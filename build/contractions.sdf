@@ -1,0 +1,21 @@
+vec4 df(vec3 pos) {
+    vec3 oldPos = pos;
+    pos.x += sin(iTime);
+    //pos *= 10.0;
+    vec3 m = vec3(6,6,6);
+    m.x *= (1.6+sin(iTime*1.5));
+    pos = mod(pos+m*0.5, m)-m*0.5;
+
+
+    vec3 center = vec3(0.0,sin(iTime),0);
+    //float radius = sin(abs(fract(oldPos.x))*0.1)*2.0;
+    float radius = 1.0;
+    float d = length(pos-center) - radius;
+    
+    //pos = oldPos;
+    vec3 color = sin(oldPos*0.1);
+    //vec4 gd = ground(abs(pos), 0.0);
+    vec4 gd = vec4(cube(pos, 1.0));
+    vec4 sc =  vec4(d, color);
+    return uniteSmooth(gd,sc, 0.7);
+}
