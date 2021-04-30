@@ -1,0 +1,6 @@
+vec4 df(vec3 pos) {
+    vec3 center = vec3(0.0);
+    float radius = 1.1;
+    float d = length(pos-center) - radius;
+    return unite(ground(pos, -3.0), vec4(d, vec3(1.0,0.0,0.0)));
+}

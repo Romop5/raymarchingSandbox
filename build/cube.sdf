@@ -1,0 +1,7 @@
+vec4 df(vec3 pos) {
+    vec3 center = vec3(0.0);
+    float radius = 1.0;
+    vec3 np = abs(pos);
+    float d = max(np.x, max(np.y,np.z)) - radius;
+    return vec4(d, vec3(1.0,0.0,0.0));
+}

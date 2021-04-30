@@ -1,0 +1,36 @@
+vec3 mirror(vec3 pos, float distance)
+{
+     
+     return mod(pos+distance*0.5, distance)-distance*0.5;
+}
+
+vec3 mirror(vec3 pos, float distance, out ivec3 repeat)
+{
+     repeat = ivec3(pos+distance/distance);
+     return mod(pos+distance*0.5, distance)-distance*0.5;
+}
+
+
+float cube(vec3 pos, vec3 size)
+{
+   vec3 d = abs(pos)-size;
+   return max(d.x,max(d.y, d.z));
+   return 0.0;
+}
+
+vec4 df(vec3 pos)
+{
+    vec3 color = vec3(sin(30.0*abs(pos.x*pos.y)),0.0,fract(iTime));
+    vec4 gd = ground(pos, floorElevation);
+
+    float c = cube(pos+vec3(sin(10*iTime)), vec3(sin(iTime*3.0)*5.0+5.0));
+    //c = 0.0;
+    ivec3 repeat;
+    pos = mirror(pos, 5.0, repeat);
+
+    vec3 offset = vec3(0.0);
+    //offset.x += 0.1*sin(10.0*repeat.x*iTime);
+    float d = max(c, sphere(pos+offset, 1.0));
+    return unite(gd,vec4(d, color));
+}
+        

@@ -1,0 +1,22 @@
+float rand(float n)
+{
+   return fract(sin(n)*43758.5453123);
+}
+
+
+vec4 df(vec3 pos) {
+    vec3 center = vec3(0.0);
+
+    // Morph space using sin
+    pos.x += 0.5*sin(cos(iTime)*pos.x*3.0);
+
+    // Define sphere radius, based on position and time
+    float radius = 1.0+abs(0.3*pos.y)+fract(iTime);
+    //float radius = 3.0;
+    float angle = abs(atan(pos.y,pos.z));
+
+    // Calculate time using circle's angle (polar coordinates)
+    vec3 color = vec3(sin(angle*5.0)*sin(30.0*pos.x+0.3*(pos.x))+pow(pos.y,0.5));
+    float d = length(pos-center) - radius;
+    return vec4(d, color);
+}
