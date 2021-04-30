@@ -40,7 +40,20 @@ auto RendererAttributesWidget::RenderContent() -> void
            raymarcher->SetFarPlaneDistance(val);
         }
     }
-
+    {
+        auto val = raymarcher->GetFx();
+        if(ImGui::InputFloat("Fx", &val, 0.1, 3.0))
+        {
+           raymarcher->SetFx(val);
+        }
+    }
+    {
+        auto val = raymarcher->GetAspect();
+        if(ImGui::InputFloat("Aspect ratio", &val, 0.1, 2.0))
+        {
+           raymarcher->SetAspect(val);
+        }
+    }
     {
         auto val = raymarcher->GetEps();
         if(ImGui::InputFloat("Precision (eps)", &val))

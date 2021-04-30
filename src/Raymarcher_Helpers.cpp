@@ -8,40 +8,43 @@ namespace
     {
         auto literal = R"(
         #version 330 core
-        uniform float iTime            = 100.0;
-        uniform vec3 camera_origin   = vec3(0.0);
-        uniform mat4 camera_rotation = mat4(1.0);
-        const vec2  iResolution      = vec2(1.0,1.0);
+        uniform float fx                = 1.0;
+        uniform float aspectRatio       = 1.0;
 
-        const float maxLightDistance = 30;
+        uniform float iTime             = 100.0;
+        uniform vec3 camera_origin      = vec3(0.0);
+        uniform mat4 camera_rotation    = mat4(1.0);
+        const vec2  iResolution         = vec2(1.0,1.0);
+
+        const float maxLightDistance    = 30;
 
         uniform int g_maxIterations;
         uniform float g_eps;
-        uniform float g_stepRatio      = 0.99;
+        uniform float g_stepRatio       = 0.99;
 
-        uniform int coloringMode       = 0;
+        uniform int coloringMode        = 0;
 
-        const float roughness        = 0.7;
+        const float roughness           = 0.7;
         uniform float ambientRatio;
-        const float shininess        = 20.0;
-        uniform float specularity =  1.0;
+        const float shininess           = 20.0;
+        uniform float specularity       =  1.0;
 
-        const vec3  albedoColor      = vec3(1.0,1.0,1.0);
-        uniform vec3  sunColor         = vec3(1.0,1.0,1.0);
+        const vec3  albedoColor         = vec3(1.0,1.0,1.0);
+        uniform vec3  sunColor          = vec3(1.0,1.0,1.0);
 
 
-        const float floorElevation   = -2.0;
-        uniform float farPlane         = 200.0;
-        //const vec3  fogColor         = vec3(0.1,0.1,0.3);
-        //const vec3  fogColor         = vec3(0.2,0.2,0.7);
-        uniform vec3  fogColor         = vec3(0.871,0.871,1.0);
+        const float floorElevation      = -2.0;
+        uniform float farPlane          = 200.0;
+        //const vec3  fogColor          = vec3(0.1,0.1,0.3);
+        //const vec3  fogColor          = vec3(0.2,0.2,0.7);
+        uniform vec3  fogColor          = vec3(0.871,0.871,1.0);
 
-        const vec3  floorAColor      = vec3(1.0);
-        const vec3  floorBColor      = vec3(0.0);
-        const float floorThickness   = 0.99;
+        const vec3  floorAColor         = vec3(1.0);
+        const vec3  floorBColor         = vec3(0.0);
+        const float floorThickness      = 0.99;
 
-        uniform bool renderShadows   = true;
-        uniform bool renderFog       = true;
+        uniform bool renderShadows      = true;
+        uniform bool renderFog          = true;
 
         float sphere(vec3 pos, float radius)
         {
@@ -303,8 +306,8 @@ namespace
             uv = uv * 2.0;
             uv *= 0.5;
             
-            float aspect = iResolution.x/iResolution.y;
-            uv.x *= aspect;
+            //float aspect = iResolution.x/iResolution.y;
+            //uv.x *= aspect;
             
             //vec3 cameraOrigin = vec3(0,0.0,-(sin(0.0)+5.0));
             vec3  orbiterPoint = vec3(0.0);
@@ -319,7 +322,7 @@ namespace
             vec3 cameraDir = -normalize(orbiterDir);
             //mat3 rotation = mat3( cross(cameraLookUp,cameraDir), cameraLookUp,cameraDir);
             
-            vec3 screenLookVector = normalize(vec3(uv, 1.0));
+            vec3 screenLookVector = normalize(vec3(uv*vec2(fx,fx*aspectRatio), 1.0));
             
             //screenLookVector = rotation*screenLookVector;
             screenLookVector = (camera_rotation*vec4(screenLookVector,0.0)).xyz;

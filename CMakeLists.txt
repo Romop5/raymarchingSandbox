@@ -75,6 +75,6 @@ add_executable (sandbox
     src/TestApplication.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
-target_link_libraries(sandbox geGL dl imgui)
+target_link_libraries(sandbox geGL::geGL dl imgui)
 
 target_link_libraries (sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})

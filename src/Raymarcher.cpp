@@ -82,6 +82,8 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
 {
     if(program)
     {
+        program->set1f("fx", attributes.fx);
+        program->set1f("aspectRatio", attributes.aspectRatio);
         program->set1i("g_maxIterations", attributes.maximumIterations);
         program->set1f("g_eps", attributes.maximumPrecision);
         program->set1f("farPlane", attributes.farPlaneDistance);
@@ -191,6 +193,32 @@ auto Raymarcher::SetRaymarchingAttributes(const RaymarchingAttributes& attribute
     pimpl->SetRaymarchingAttributes(attributes);
 }
 
+auto Raymarcher::GetRaymarchingAttributes() const -> const RaymarchingAttributes&
+{
+    return pimpl->attributes;
+}
+
+auto Raymarcher::SetFx(float fx) -> void
+{
+    pimpl->attributes.fx = fx;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetFx() const -> float
+{
+    return pimpl->attributes.fx;
+}
+
+auto Raymarcher::SetAspect(float aspect) -> void
+{
+    pimpl->attributes.aspectRatio= aspect;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetAspect() const -> float
+{
+    return pimpl->attributes.aspectRatio;
+}
 
 auto Raymarcher::SetMaximumIterations(size_t maximum) -> void
 {

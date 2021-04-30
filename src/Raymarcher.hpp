@@ -22,6 +22,8 @@ enum class ShadingMode
 
 struct RaymarchingAttributes
 {
+    float fx                    = 1.0;
+    float aspectRatio           = 1.0;
     bool renderShadows          = true;
     bool renderFog              = true;
     size_t maximumIterations    = 100;
@@ -54,7 +56,6 @@ class Raymarcher
     auto SetShadingMode(ShadingMode mode) -> void ;
     auto GetShadingMode() -> ShadingMode;
 
-
     /* Phong related */
     auto SetSun(glm::vec3 directory) -> void;
     auto SetSunColour(glm::vec3 color) -> void;
@@ -63,8 +64,24 @@ class Raymarcher
     auto SetFogColour(glm::vec3 color) -> void;
     auto GetFogColour() const -> glm::vec3;
 
+    auto SetSpecularityCoef(float c) -> void;
+    auto GetSpecularityCoef() -> float;
+
+    auto SetRenderFog(bool shouldRenderFog) -> void;
+    auto IsFogRendered() -> bool;
+
+    auto SetRenderShadows(bool shouldRenderShadow) -> void;
+    auto IsShadowsRendered() -> bool;
+
     /* Rendering-specific methods */
     auto SetRaymarchingAttributes(const RaymarchingAttributes& attributes) -> void;
+    auto GetRaymarchingAttributes() const -> const RaymarchingAttributes&;
+
+    auto SetFx(float fx) -> void;
+    auto GetFx() const -> float;
+
+    auto SetAspect(float aspect) -> void;
+    auto GetAspect() const -> float;
 
     auto SetMaximumIterations(size_t maximum) -> void;
     auto GetMaximumIterations() -> size_t;
@@ -75,18 +92,10 @@ class Raymarcher
     auto SetAmbientCoef(float c) -> void;
     auto GetAmbientCoef() -> float;
 
-    auto SetSpecularityCoef(float c) -> void;
-    auto GetSpecularityCoef() -> float;
-
     auto SetFarPlaneDistance(float distance) -> void;
     auto GetFarPlaneDistance() -> float;
 
-    auto SetRenderFog(bool shouldRenderFog) -> void;
-    auto IsFogRendered() -> bool;
-
-    auto SetRenderShadows(bool shouldRenderShadow) -> void;
-    auto IsShadowsRendered() -> bool;
-
+    /* User-data passing */
     auto GetUserUniforms() -> const std::vector<ISDF::Uniform>&;
     auto SetUniform(std::string name, float value) -> bool;
 
