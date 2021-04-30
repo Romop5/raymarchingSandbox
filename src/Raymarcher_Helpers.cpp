@@ -76,6 +76,18 @@ namespace
             return smoothstep(a,b, min(0.0,max(1.0,a/(a+b))));
         }
 
+        vec4 uniteSmooth( vec4 ac, vec4 bc, float k )
+        {
+            float a = ac.x;
+            float b = bc.x;
+            float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+            float m = mix( b, a, h ) - k*h*(1.0-h);
+            float c = ac.x / (ac.x+bc.x);
+            return vec4(m, mix(ac.yzw, bc.yzw, c));
+        }
+
+
+
         float intersect(float a, float b)
         {
             return max(a, b);
