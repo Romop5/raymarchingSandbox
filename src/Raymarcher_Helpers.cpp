@@ -181,51 +181,60 @@ namespace
             return vec4(t, color);
         }
 
-        vec3 normalVector(vec3 o, vec3 d)
+        // Calculate normal at point p
+        vec3 normalVectorPosition(vec3 p)
         {
             vec2 eps = vec2(g_eps, 0);
+            vec3 ds = vec3(df(p).x);
+            vec3 dd = vec3(df(p-eps.xyy).x, df(p-eps.yxy).x, df(p-eps.yyx).x);
+            return ds-dd;
+        }
+
+        vec3 normalVector(vec3 o, vec3 d)
+        {
             float t = rayMarch(o, d).x;
             if(t < 0.0)
             {
                 return vec3(0.0);
             }
             vec3 p = o+d*t;
-            vec3 ds = vec3(df(p).x);
-            vec3 dd = vec3(df(p-eps.xyy).x, df(p-eps.yxy).x, df(p-eps.yyx).x);
-            return ds-dd;
+            return normalVectorPosition(p);
         }
 
+
+        // Evaluate Phong shading for ray, starting in o, along direction d.
         // o = ray's origin
         // d = direction
         // l = light position
         vec3 phongShading(vec3 o, vec3 d, vec3 l)
-        {;
-         
+        {
             vec4 result = rayMarch(o, d);
             float dO = result.x;
             vec3 albedo = result.yzw;
+            // If no surface found or surface beyond far plane, terminate with fog
             if(dO < 0.0 || dO > farPlane)
             {
                return fogColor;
             }
-            //return result.yzw;
+            // Surface point p
             vec3 p = o+d*dO;
+            // Calculate normal for surface point p
+            vec3 nv = normalize(normalVectorPosition(p));
+            float distanceToCamera = length(p-camera_origin);
 
-          
+            // Get normalized light-dir vector
             vec3  nlDir = normalize(l-p);
             float lightDistance = length(l-p);
 
+            // Visibility determines if surface point p is visible from the light 
             bool visibility = false;
-
-            vec3 nv = normalize(normalVector(o, d));
-
-            float distanceToCamera = length(p-camera_origin);
 
             vec3 reflectionColor = vec3(0.0);
             /* vec3 reflectionDir = normalize(reflect(d, nv)); */
             /* vec4 reflection = (rayMarch(p+reflectionDir*g_eps*5.0, reflectionDir)); */
             /* reflectionColor = (reflection.x > 0.0 ? reflection.yzw : reflectionColor) * (1.0/distanceToCamera); */
 
+            // Calculate visibility if allowed and if point is in reach of light
             if(renderShadows && lightDistance < maxLightDistance)
             {
                 visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
@@ -233,8 +242,9 @@ namespace
                 visibility = true;
             }
 
+            // calculate normalized look direction
             vec3 nd = normalize(o-p);
-
+            // use normalized surface normal
             vec3 nnv = nv;
 
             vec3 halfDir = normalize(nlDir + nd);
@@ -255,34 +265,34 @@ namespace
                 fogRatio = 0.0;
             }
             
-            
             vec3 albedoColor = albedo;
-            
+            // Use ambient lighting as base of result color
             vec3 ambientColorPart    = albedoColor*ambientRatio;
             vec3 shadingColor = ambientColorPart;
+
+            // If suface point p is visible, add Phong colour
             if(visibility)
             {
                 vec3 lambertianColorPart = sunColor*albedoColor*lightIntensity*lambertianRatio*roughness;
                 vec3 specularColorPart   = sunColor*specularRatio*lightIntensity;
-            
-            
                 shadingColor += lambertianColorPart + specularColorPart + specularity*reflectionColor;
             }
-            
             return mix(shadingColor, fogColor, fogRatio);
         }
 
 
+        // Calculate color based on distance to surface point p
+        // o = ray origin
+        // d = direction
         vec3 depthMap(vec3 o, vec3 d)
         {
-            
+            // Use raymarching to get distance to intersecting surface
             float dO = rayMarch(o, d).x;
             if(dO < 0.0)
             {
                 return vec3(0.0);
             }
-            return vec3(1.0-(1.0/dO),0.0,0.0);
-            //return vec3(1.0-(exp(dO)/10.0));
+            return vec3(1.0-(1.0/dO),0.0,min(dO, 1.0));
         }
 
         vec3 iterationsMap(vec3 o, vec3 d)
