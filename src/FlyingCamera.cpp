@@ -2,11 +2,14 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+
+#include <iostream>
 
 using namespace raymarcher;
 
 FlyingCamera::FlyingCamera() :
-    position { glm::vec3(0.0) },
+    position { glm::vec3(0.0,5.0,0.0) },
     normalizedLookDirection{ glm::vec3(0, 0, 1.0) },
     normalizedUpVector { glm::vec3(0, 1.0, 0) },
     movementSpeed{ 1.0 },
@@ -21,12 +24,15 @@ auto FlyingCamera::SetPosition(const glm::vec3& pos) -> void
 
 auto FlyingCamera::GetTransformation() const -> const glm::mat4&
 {
-    static glm::mat4 transform;
-    auto rotation = glm::mat4(glm::mat3(glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection)),
-                                        normalizedUpVector,
+    auto orthoSide = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
+    auto orthoUp = glm::normalize(glm::cross(-orthoSide, normalizedLookDirection));
+    auto rotation = glm::mat4(glm::mat3(orthoSide,
+                                        orthoUp,
                                         normalizedLookDirection));
 
     transform = glm::translate(-position)*rotation;
+
+    std::cout << "Camera: " <<  glm::to_string(transform) << std::endl;
     return transform;
 }
 
@@ -62,39 +68,39 @@ auto FlyingCamera::MoveDown() -> void
     position -= normalizedUpVector * movementSpeed;
 }
 
-auto FlyingCamera::RotateLeft() -> void
+auto FlyingCamera::RotateLeft(float amount) -> void
 {
     auto orthogonalLookUp = glm::cross(glm::cross(normalizedUpVector, normalizedLookDirection), 
                             normalizedLookDirection);
 
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                              glm::rotate(angularSpeed, orthogonalLookUp)));
+                              glm::rotate(angularSpeed*amount, orthogonalLookUp)));
 }
 
-auto FlyingCamera::RotateRight() -> void
+auto FlyingCamera::RotateRight(float amount) -> void
 {
     auto orthogonalLookUp = glm::cross(glm::cross(normalizedUpVector, normalizedLookDirection), 
                             normalizedLookDirection);
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                              glm::rotate(-angularSpeed, orthogonalLookUp)));
+                              glm::rotate(-angularSpeed*amount, orthogonalLookUp)));
 }
 
-auto FlyingCamera::RotateUp() -> void
+auto FlyingCamera::RotateUp(float amount) -> void
 {
     if(glm::dot(normalizedLookDirection, normalizedUpVector) > 0.7)
         return;
     auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                        glm::rotate(angularSpeed, orthoDirection)));
+                        glm::rotate(angularSpeed*amount, orthoDirection)));
 }
 
-auto FlyingCamera::RotateDown() -> void
+auto FlyingCamera::RotateDown(float amount) -> void
 {
     if(glm::dot(normalizedLookDirection, normalizedUpVector) < -0.7)
         return;
     auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
-                        glm::rotate(-angularSpeed, orthoDirection)));
+                        glm::rotate(-angularSpeed*amount, orthoDirection)));
 }
 
 auto FlyingCamera::SetMovementSpeed(float unitsPerMovement) -> void

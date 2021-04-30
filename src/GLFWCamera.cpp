@@ -40,15 +40,15 @@ auto GLFWCamera::MouseCursorChanged(GLFWwindow* window, double relativeX, double
         auto& flyingCamera = static_cast<FlyingCamera&>(*camera);
         flyingCamera.SetAngularSpeed(0.01);
         if(relativeX> 0.0)
-            flyingCamera.RotateLeft();
+            flyingCamera.RotateLeft(relativeX);
         if(relativeX< 0.0)
-            flyingCamera.RotateRight();
+            flyingCamera.RotateRight(abs(relativeX));
 
         
         if(relativeY> 0.0)
-            flyingCamera.RotateDown();
+            flyingCamera.RotateDown(relativeY);
         if(relativeY< 0.0)
-            flyingCamera.RotateUp();
+            flyingCamera.RotateUp(abs(relativeY));
     }
 
     if(type == ORBITER_CAMERA)
@@ -80,6 +80,7 @@ auto GLFWCamera::KeyPressed(GLFWwindow* window, int key) const -> void
     if(type == FLYING_CAMERA)
     {
         auto& flyingCamera = static_cast<FlyingCamera&>(*camera);
+        const auto speed = flyingCamera.GetAngularSpeed();
         switch(key)
         {
             case GLFW_KEY_W:
@@ -94,11 +95,29 @@ auto GLFWCamera::KeyPressed(GLFWwindow* window, int key) const -> void
             case GLFW_KEY_D:
                 flyingCamera.MoveRight();
                 break;
-            case GLFW_KEY_UP:
+            case GLFW_KEY_PAGE_UP:
                 flyingCamera.MoveUp();
                 break;
-            case GLFW_KEY_DOWN:
+            case GLFW_KEY_PAGE_DOWN:
                 flyingCamera.MoveDown();
+                break;
+            case GLFW_KEY_UP:
+                flyingCamera.RotateUp(speed);
+                break;
+            case GLFW_KEY_DOWN:
+                flyingCamera.RotateDown(speed);
+                break;
+            case GLFW_KEY_LEFT:
+                flyingCamera.RotateRight(speed);
+                break;
+            case GLFW_KEY_RIGHT:
+                flyingCamera.RotateLeft(speed);
+                break;
+            case GLFW_KEY_KP_ADD:
+                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*10.0f);
+                break;
+            case GLFW_KEY_KP_SUBTRACT:
+                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*0.1f);
                 break;
             default:
                 break;

@@ -23,10 +23,10 @@ class FlyingCamera: public ICamera
     auto MoveUp() -> void;
     auto MoveDown() -> void;
 
-    auto RotateLeft() -> void;
-    auto RotateRight() -> void;
-    auto RotateUp() -> void;
-    auto RotateDown() -> void;
+    auto RotateLeft(float amount) -> void;
+    auto RotateRight(float amount) -> void;
+    auto RotateUp(float amount) -> void;
+    auto RotateDown(float amount) -> void;
 
     auto SetMovementSpeed(float unitsPerMovement) -> void;
     auto GetMovementSpeed() const -> float;
@@ -40,6 +40,8 @@ class FlyingCamera: public ICamera
 
     float movementSpeed;
     float angularSpeed;
+
+    mutable glm::mat4 transform;
 };
 
 }
