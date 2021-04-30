@@ -46,22 +46,26 @@ add_library(imgui SHARED
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
 target_link_libraries(imgui PUBLIC GLEW)
 
+add_library(common
+    src/BVHLibrary.cpp
+    src/Args.cpp
+    src/FileHelper.cpp
+)
+set_property(TARGET common PROPERTY CXX_STANDARD 17)
 
 add_executable (sandbox
-    src/BVHLibrary.cpp
-
     src/main.cpp
     src/SDF.cpp
     src/Raymarcher.cpp
     src/Raymarcher_Helpers.cpp
+
     src/FlyingCamera.cpp
     src/OrbitCamera.cpp
     src/InterpolatedCamera.cpp
     src/GLFWCamera.cpp
-    src/ImguiAdapter.cpp
     src/FPSMeter.cpp
-    src/FileHelper.cpp
 
+    src/ImguiAdapter.cpp
     src/WidgetBase.cpp
     src/WidgetManager.cpp
     src/WindowWidget.cpp
@@ -71,10 +75,19 @@ add_executable (sandbox
     src/EditWidget.cpp
     src/SDFLibrary.cpp
     src/BVHCalculatorWidget.cpp
+
     src/SandboxApplication.cpp
     src/TestApplication.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
-target_link_libraries(sandbox geGL::geGL dl imgui)
+target_link_libraries(sandbox geGL::geGL dl imgui common)
+target_link_libraries(sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
 
-target_link_libraries (sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
+add_executable ( bvhgenerator 
+    src/generator_main.cpp
+    src/BVHGenerator.cpp
+    src/FileHelper.cpp
+    src/BVHLibrary.cpp
+)
+set_property(TARGET bvhgenerator PROPERTY CXX_STANDARD 17)
+target_link_libraries(bvhgenerator common)

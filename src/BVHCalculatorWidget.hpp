@@ -17,18 +17,11 @@ class BVHCalculatorWidget : public WindowWidget
         ~BVHCalculatorWidget();
 
         auto RenderContent() -> void override;
-
-        struct OptimizationParameters
-        {
-            size_t maxLevel = 1;
-        };
-        auto Optimize(const OptimizationParameters params) -> void;
+        auto Optimize() -> void;
         auto GenerateGeometry() -> void;
     private:
         auto DisplayElement(SpherePrimitive&, size_t level) -> void;
         std::unique_ptr<BVHLibrary> pimpl;
-
-       OptimizationParameters params;
 };
 
 }

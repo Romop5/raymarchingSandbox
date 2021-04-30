@@ -35,6 +35,11 @@ namespace raymarcher
     class BVHLibrary
     {
         public:
+        struct OptimizationParameters
+        {
+            size_t maxLevel = 1;
+        };
+
         auto GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std::string;
         auto GenerateCodeForScene() -> std::string;
         auto GenerateCodeForNodeNonOptimized(SpherePrimitive& node, size_t level) -> std::string;
@@ -42,8 +47,15 @@ namespace raymarcher
         auto GenerateCode(bool optimized) -> std::string;
 
         auto GetScene() -> SpherePrimitive::ChildrenType&;
+        auto SetScene(SpherePrimitive::ChildrenType scene) -> void;
+
+        auto SetParams(OptimizationParameters& params) -> void;
+        auto GetParams() const -> const OptimizationParameters&;
+
+        auto Optimize() -> void;
         protected:
         SpherePrimitive::ChildrenType scene;
+        OptimizationParameters params;
     };
 }
 #endif

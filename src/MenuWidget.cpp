@@ -6,7 +6,7 @@
 #include <sstream>
 
 #include "EditWidget.hpp"
-#include "BVHCalculator.hpp"
+#include "BVHCalculatorWidget.hpp"
 #include "FileHelper.hpp"
 #include <filesystem>
 
@@ -71,7 +71,7 @@ auto MenuWidget::RenderContent() -> void
 
     if(ImGui::Button("BHV Optimizator"))
     {
-        auto widget = std::make_shared<raymarcher::BVHCalculator>();
+        auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
         windowManager.AddWidget(widget);
     }
 

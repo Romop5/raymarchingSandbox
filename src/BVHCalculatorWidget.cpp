@@ -107,7 +107,7 @@ auto BVHCalculatorWidget::RenderContent() -> void
     ImGui::SameLine();
     if(ImGui::Button("Generate & save"))
     {
-        Optimize(params);
+        Optimize();
 
         auto hasPassed = true;
         hasPassed &= FileHelper::SaveFile("optimized.sdf", pimpl->GenerateCode(true));
@@ -118,7 +118,7 @@ auto BVHCalculatorWidget::RenderContent() -> void
 
     if(ImGui::Button("Generate optimized code"))
     {
-        Optimize(params);
+        Optimize();
 
         auto widget = std::make_shared<raymarcher::EditWidget>("Generated: optimized", pimpl->GenerateCode(true));
         AddWidget(widget);
@@ -144,10 +144,12 @@ auto BVHCalculatorWidget::RenderContent() -> void
     //--------------------------------------------------------------------------------------
     // Parameters
     //--------------------------------------------------------------------------------------
+    auto params = pimpl->GetParams();
     int maxLevel = params.maxLevel;
     ImGui::PushItemWidth(30);
     ImGui::SliderInt("Maximum level of BVH", &maxLevel, 0, 16);
     params.maxLevel = maxLevel;
+    pimpl->SetParams(params);
 
     //--------------------------------------------------------------------------------------
     // Scene
@@ -182,42 +184,9 @@ auto BVHCalculatorWidget::DisplayElement(SpherePrimitive& element, size_t level)
     ImGui::PopID();
 }
 
-auto BVHCalculatorWidget::Optimize(const OptimizationParameters params) -> void
+auto BVHCalculatorWidget::Optimize() -> void
 {
-        while(pimpl->GetScene().size() > 1)
-        {
-            const auto count = pimpl->GetScene().size();
-            double minSize = 0.0;
-            size_t indices[2] = {0, 1};
-
-            for(size_t i = 0; i < count; i++)
-            {
-                for(size_t j = i+1; j < count; j++)
-                {
-                    auto distance = pimpl->GetScene()[i]->DistanceTo(*pimpl->GetScene()[j]);
-                    //auto primitive = SpherePrimitive({pimpl->GetScene()[i], pimpl->GetScene()[j]});
-                    if(distance < minSize)
-                    {
-                        minSize = distance;
-                        indices[0] = i;
-                        indices[1] = j;
-                    }
-                }
-            }
-
-            auto firstIndex = std::max(indices[0], indices[1]);
-            auto secondIndex = std::min(indices[0], indices[1]);
-
-            auto firstElement = pimpl->GetScene()[indices[0]];
-            auto secondElement = pimpl->GetScene()[indices[1]];
-
-            pimpl->GetScene().erase(pimpl->GetScene().begin() + firstIndex);
-            pimpl->GetScene().erase(pimpl->GetScene().begin() + secondIndex);
-            pimpl->GetScene().emplace_back(std::make_shared<SpherePrimitive>(SpherePrimitive::ChildrenType{firstElement,secondElement}));
-        }
-
-        // Inflate
-        pimpl->GetScene()[0]->InflateSinceLevel(params.maxLevel);
+    pimpl->Optimize();
 }
 
 auto BVHCalculatorWidget::GenerateGeometry() -> void
