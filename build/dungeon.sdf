@@ -1,0 +1,39 @@
+
+float cone(vec3 pos, float a, float e)
+{
+    vec3 n = normalize(vec3(0.0,1.0,0.0));
+    vec3 c = dot(n, pos)*n;
+    float s = abs(0.3*pow(sin(pos.y*2.3),0.1));
+    float d = length(c-pos)-s;
+    d -= 0.3;
+    //d = max(d, -dot(n, pos));
+    //d = max(d, dot(n, pos)-e);
+    return d;
+}
+
+float simpleNoise(vec3 pos)
+{
+    return fract(length(cos(pos*2.0)+sin(pos*50.0)));
+}
+
+vec4 df(vec3 pos)
+{
+    vec3 newPos = pos;
+    pos.x += 0.4*pow(sin(pos.x), 30.0);
+    float k = 5.0;
+    newPos = mod(pos+vec3(k*0.5), vec3(k))-vec3(0.5*k);
+    float d = cone(newPos, 0.4, 0.5);
+
+    d = max(d, -cube(pos*vec3(1.0,0.1,0.7), 1.0));
+    d = min(d, -cube(pos, 10.0));
+
+    vec4 gd = ground(pos, -0.3);
+    gd.x = max(gd.x, -sphere(pos, 3.0));
+    d = min(d, gd.x);
+    
+    d = min(d, sphere(pos-vec3(-0.0, 1.0+2.0*sin(iTime),0), 1.1));
+    
+    vec3 color = mix(vec3(0.70,0.70,0.70),vec3(0.82,0.81, 0.80), simpleNoise(pos));
+    return unite(gd, vec4(d, color));
+}
+        
