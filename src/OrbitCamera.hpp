@@ -5,7 +5,7 @@
 namespace raymarcher 
 {
 /**
- * @brief Simple orbiter
+ * @brief Simple orbiter around point 'center' with radius 'radius'
  */
 class OrbitCamera: public ICamera
 {
@@ -25,11 +25,18 @@ class OrbitCamera: public ICamera
     auto SetAngularSpeed(float degreesPerMovement) -> void;
     auto GetAngularSpeed() const -> float;
     private:
+    /// Center of orbit
     glm::vec3 center;
+    /// Radius of orbiting
     float radius;
+
+    /// Current angle along horizontal plane of sphere
     float horizontalAngle;
+
+    /// Current angle along vertical plane of sphere
     float verticalAngle;
 
+    /// Speed of rotation
     float angularSpeed;
 };
 

@@ -5,6 +5,9 @@
 
 namespace raymarcher
 {
+/**
+ * @brief A generic input handler for GLFW window methods
+ */
 class IGLFWInputHandler
 {
     public:

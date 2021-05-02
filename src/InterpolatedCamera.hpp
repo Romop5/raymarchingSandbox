@@ -37,11 +37,19 @@ class InterpolatedCamera: public ICamera
     auto UpdateFrame(size_t frameID) -> void;
 
     private:
+    /// Get indices of start and end CameraPoint for which frameID is in interval
     auto GetIndexesForFrameID(size_t frameID) -> std::pair<size_t, size_t>;
+
+    /// Calculates interpolation parameter 't' from current frameID and current start/end frame times
     auto GetFrameIDAsInterpolationParameter(size_t frameID, size_t start, size_t end) -> float;
 
+    /// Storage of camera sequence
     std::vector<CameraPoint> cameraPoints;
+
+    /// Cache: Associated id of last camera point, used for start point
     size_t currentCameraPoint;
+
+    /// View transformation, updated in UpdateFrame()
     glm::mat4 currentTransformation;
 };
 }

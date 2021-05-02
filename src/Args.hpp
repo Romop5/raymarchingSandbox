@@ -37,18 +37,20 @@ class Arguments
     void AddLongOpt(std::string name, std::string key, std::string shortKey, bool hasParam = WITH_PARAM, std::string format = "");
 
     // Parse provided command-line 
-    int Parse(int argc, char** argv);
+    int Parse(int argc, const char** argv);
 
 
     // Has user entered any argument with name 'name'
     bool HasArgument(std::string name);
     bool AllowRedefinition(bool allow);
+    std::string Value_or(std::string argument, std::string defaultValue);
 
     // Returns value of argument, specified with name 'arg'
     std::string operator[](const std::string arg);
 
     std::string GetErrorMessage() {return this->errorMessage;}
     const std::map<std::string,std::string> & getMap() {return this->arguments;}
+
 
     //-------------------------------------------------------------------------
     private:

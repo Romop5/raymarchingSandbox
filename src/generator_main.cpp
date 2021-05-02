@@ -6,7 +6,7 @@
 
 using namespace raymarcher;
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 {
     Arguments args;
     args.AddOpt("seed", "seed");

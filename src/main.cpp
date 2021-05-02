@@ -5,6 +5,7 @@
 #include "IApplication.hpp"
 #include "SandboxApplication.hpp"
 #include "TestApplication.hpp"
+#include "Args.hpp"
 
 std::unique_ptr<raymarcher::IApplication> g_application;
 
@@ -66,10 +67,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 int main(int argc, const char* argv[])
-{
-    bool shouldRunTestApplication =  (argc > 1 && std::string(argv[1]) == "test");
-    bool hasFileName =  (argc > 2);
-    bool shouldRunTestFreeMovement =  (argc > 3 && std::string(argv[3]) == "free");
+{    
+    raymarcher::Arguments args;
+
+    //              Name                --opt       -o
+    args.AddLongOpt("shouldRunTest",    "test",     "t", raymarcher::Arguments::paramLogic::NO_PARAM);
+    args.AddLongOpt("useFlyCam",        "flycam",   "f", raymarcher::Arguments::paramLogic::NO_PARAM);
+    args.AddLongOpt("sdfFile",          "input",    "i");
+    args.AddLongOpt("cameraSequenceID", "seq",      "s");
+ 
+    args.Parse(argc, argv);
 
     GLFWwindow* window;
     glfwSetErrorCallback(error_callback);
@@ -84,14 +91,16 @@ int main(int argc, const char* argv[])
     }
     glfwMakeContextCurrent(window);
 
-    if(shouldRunTestApplication)
+    if(args.HasArgument("shouldRunTest"))
     {
         raymarcher::TestApplication::StartParameters params;
-        params.shouldRunWithFreeMovement = shouldRunTestFreeMovement;
-        if(hasFileName)
-        {
-            params.filename = argv[2];
-        }
+        
+        auto id = (args.HasArgument("cameraSequenceID") 
+                ? std::stoi(args["cameraSequenceID"]): params.cameraSequenceID);
+
+        params.shouldRunWithFreeMovement    = args.HasArgument("useFlyCam");
+        params.filename                     = args.Value_or("sdfFile", params.filename);
+        params.cameraSequenceID             = id;
         g_application = std::make_unique<raymarcher::TestApplication>(params);
     } else {
         g_application = std::make_unique<raymarcher::SandboxApplication>();

@@ -14,11 +14,15 @@ OrbitCamera::OrbitCamera() :
 
 auto OrbitCamera::GetTransformation() const -> const glm::mat4&
 {
+    // Spherical coordinates to Cartesian coordinates
+    // https://en.wikipedia.org/wiki/Spherical_coordinate_system
     auto position = radius*glm::vec3(sin(horizontalAngle) * cos (verticalAngle),
                               sin(verticalAngle),
                               cos(horizontalAngle) * cos(verticalAngle));
     auto normalizedPosition = -glm::normalize(position);
     const auto lookUp = glm::vec3(0.0, 1.0, 0.0); 
+
+    // Construction of view matrix from look, look up, and position
     auto third = glm::normalize(glm::cross(normalizedPosition, lookUp));
     auto up = glm::cross(third, normalizedPosition);
 

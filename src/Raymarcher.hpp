@@ -18,6 +18,8 @@ enum class ShadingMode
     NORMAL = 2,
     /// Render count of iterations per fragment as intensity
     ITERATIONS = 3,
+    /// Render bitmap (white for geometry, black for else)
+    BITMAP = 4,
 };
 
 struct RaymarchingAttributes

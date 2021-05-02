@@ -4,6 +4,12 @@
 
 namespace raymarcher
 {
+
+/**
+ * @brief Generic camera interface
+ *
+ * A generic camere only returns its view transformation 
+ */
 class ICamera
 {
     public:

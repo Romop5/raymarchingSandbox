@@ -23,6 +23,8 @@ auto RendererAttributesWidget::RenderContent() -> void
             raymarcher->SetShadingMode(ShadingMode::DEPTH);
         if(ImGui::Selectable("Iterations"))
             raymarcher->SetShadingMode(ShadingMode::ITERATIONS);
+        if(ImGui::Selectable("Bitmap"))
+            raymarcher->SetShadingMode(ShadingMode::BITMAP);
         ImGui::EndCombo();
     }
 

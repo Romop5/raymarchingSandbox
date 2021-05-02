@@ -12,6 +12,37 @@
 using namespace raymarcher;
 
 namespace {
+
+    auto GetCameraPoints(size_t variantID) -> std::vector<raymarcher::InterpolatedCamera::CameraPoint>
+    {
+        switch(variantID)
+        {
+            case 0:
+                return std::vector<raymarcher::InterpolatedCamera::CameraPoint>
+                { 
+                     {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
+                     { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
+                     {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
+                     {200, glm::vec3( -2.0,20.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) }, 
+                     {250, glm::vec3( -20.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
+                     {300, glm::vec3( -10.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) }, 
+                     {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) }, 
+                }; 
+            case 1: [[fallthrough]];
+            default:
+                return std::vector<raymarcher::InterpolatedCamera::CameraPoint>
+                {
+                    {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
+                    { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
+                    {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
+                    {200, glm::vec3( -2.0,2.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) },
+                    {250, glm::vec3( -2.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
+                    {300, glm::vec3( -2.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) },
+                    {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) },
+                };
+        }
+    }
+
     auto GetCodeFromFile(std::string path) -> std::optional<std::string>
     {
         return FileHelper::LoadFile(path);
@@ -99,7 +130,7 @@ vec4 df(vec3 pos)
         return code;
     }
 
-    auto CreateTestApp(std::string code) -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
+    auto CreateTestApp(std::string code, size_t cameraID) -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
     {
         auto rm = std::make_shared<raymarcher::Raymarcher>();
         auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
@@ -107,29 +138,8 @@ vec4 df(vec3 pos)
         orbiter->SetDistance(5.0);
         auto flycam = std::make_shared<raymarcher::FlyingCamera>();
 
-        /* auto cameraPoints = std::vector<raymarcher::InterpolatedCamera::CameraPoint> */
-        /* { */
-        /*     {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
-        /*     { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
-        /*     {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
-        /*     {200, glm::vec3( -2.0,20.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) }, */
-        /*     {250, glm::vec3( -20.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, */
-        /*     {300, glm::vec3( -10.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) }, */
-        /*     {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) }, */
-        /* }; */
-
-        auto cameraPoints = std::vector<raymarcher::InterpolatedCamera::CameraPoint>
-        {
-            {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            {200, glm::vec3( -2.0,2.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) },
-            {250, glm::vec3( -2.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-            {300, glm::vec3( -2.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) },
-            {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) },
-        };
-     
-        auto interpolatedCamera = std::make_shared<raymarcher::InterpolatedCamera>(cameraPoints);
+        const auto cameraPoints = GetCameraPoints(cameraID);
+        auto interpolatedCamera = std::make_shared<raymarcher::InterpolatedCamera>(std::move(cameraPoints));
         //auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
         auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(interpolatedCamera, raymarcher::GLFWCamera::CameraType::INTERPOLATED_CAMERA);
         rm->SetCamera(focusedCamera);
@@ -153,7 +163,7 @@ TestApplication::TestApplication(StartParameters params) :
 
     auto fileContent = GetCodeFromFile(params.filename);
     std::string code = fileContent.value_or(GetTestAppCode());
-    auto [rm, cam] = CreateTestApp(code);
+    auto [rm, cam] = CreateTestApp(code, params.cameraSequenceID);
     raymarcher = rm;
     camera = cam;
     inputHandler = cam;

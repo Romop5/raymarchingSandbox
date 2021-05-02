@@ -280,6 +280,19 @@ namespace
             return mix(shadingColor, fogColor, fogRatio);
         }
 
+        // Calculate bitmap: 1 where geometry, 0 else
+        // o = ray origin
+        // d = direction
+        vec3 bitMap(vec3 o, vec3 d)
+        {
+            // Use raymarching to get distance to intersecting surface
+            float dO = rayMarch(o, d).x;
+            if(dO < 0.0)
+            {
+                return vec3(0.0);
+            }
+            return (dO < farPlane ? vec3(1.0) : vec3(0.0));
+        }
 
         // Calculate color based on distance to surface point p
         // o = ray origin
@@ -292,7 +305,8 @@ namespace
             {
                 return vec3(0.0);
             }
-            return vec3(1.0-(1.0/dO),0.0,min(dO, 1.0));
+            return vec3(pow(dO/farPlane, 0.1));
+            //return vec3(1.0-(1.0/dO),0.0,min(dO, 1.0));
         }
 
         vec3 iterationsMap(vec3 o, vec3 d)
@@ -353,6 +367,10 @@ namespace
             else if (coloringMode == 3)
             {
                 col = iterationsMap(cameraOrigin, screenLookVector);
+            }
+            else if (coloringMode == 4)
+            {
+                col = bitMap(cameraOrigin, screenLookVector);
             }
             else
             {

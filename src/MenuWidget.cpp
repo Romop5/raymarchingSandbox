@@ -21,7 +21,6 @@ vec4 df(vec3 pos)
 {
     vec4 gd = ground(pos, floorElevation);
 
-    //return unite(gd,object(pos));
     return unite(gd,vec4(sphere(pos, 1.0), vec3(1.0,0.0,0.0)));
 }
         )";
@@ -39,8 +38,6 @@ vec4 df(vec3 pos)
     vec4 s2 = vec4(sphere(pos+vec3(-0.5,0.5,0.0), 1.0), vec3(1.0));
     vec4 s3 = vec4(sphere(pos+vec3(0.5,0.9,0.0), 1.0), vec3(1.0));
     return unite(gd, unite(s1, unite(s2, s3)));
-    //return unite(gd,object(pos));
-    //return unite(gd,vec4(sphere(pos, 1.0), vec3(1.0,0.0,0.0)));
 }
         )";
         return sdfLiteral;
@@ -132,8 +129,6 @@ auto MenuWidget::LoadSDFWidget() -> void
 
     if(ImGui::Button("Load file"))
     {
-        //auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
-        //windowManager.AddWidget(widget);
         ImGui::OpenPopup("LoadPopup");
 
     }

@@ -22,6 +22,7 @@ class TestApplication: public IApplication
     {
         std::string filename = "sphere.sdf";
         bool shouldRunWithFreeMovement = false;
+        size_t cameraSequenceID = 1;
     };
     explicit TestApplication(StartParameters params);
     virtual ~TestApplication() = default;

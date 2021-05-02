@@ -9,7 +9,7 @@
 namespace raymarcher 
 {
 /**
- * @brief Renders RayMarching's scene in a ImGUI window
+ * @brief Provides buttons to access functionality of Sandbox
  */
 class MenuWidget: public WidgetBase
 {

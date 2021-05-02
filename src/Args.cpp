@@ -31,13 +31,13 @@ namespace raymarcher
             this->AddOpt(name,shortKey,hasParam,format);
     }
 
-    int Arguments::Parse(int argc, char** argv)
+    int Arguments::Parse(int argc, const char** argv)
     {
             //for(int i = 0; i < argc; ++i)
             //        std::cout << argv[i] << std::endl;
 
             // Skip program name
-            char ** argumentPointer = argv+1;
+            const char ** argumentPointer = argv+1;
             
             enum automata{STEP_FIXED, STEP_OPTIONAL, STEP_END} state;
 
@@ -77,10 +77,10 @@ namespace raymarcher
                                     if(*argumentPointer[0] == '-')
                                     {
 
-                                            char* omitMinus = (*argumentPointer)+1;
+                                            const char* omitMinus = (*argumentPointer)+1;
                                             if((*argumentPointer)[1] == '-')
                                                     omitMinus = (*argumentPointer)+2;
-                                            char* param = *(argumentPointer+1);
+                                            const char* param = *(argumentPointer+1);
                                             if(HasOption(omitMinus))
                                             {
                                                     auto val = &arguments[GetOptionName(omitMinus)];
@@ -190,5 +190,10 @@ namespace raymarcher
     {
             this->isRedefinitionAllowed = allow;
             return true;
+    }
+
+    std::string Arguments::Value_or(std::string argument, std::string defaultValue)
+    {
+        return (HasArgument(argument) ? (*this)[argument] : defaultValue);
     }
 }
