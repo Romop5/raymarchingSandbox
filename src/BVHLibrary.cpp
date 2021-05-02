@@ -2,10 +2,26 @@
 
 #include <sstream>
 #include <queue>
+#include <glm/gtc/constants.hpp>
 
 using namespace raymarcher;
+
+namespace 
+{
+    auto GetSphereVolume(float r) -> float
+    {
+        return 1.3333333*glm::pi<float>()*pow(r, 3.0f);
+    }
+
+    auto GetSphereToSphereAreaRatio(float smallerRadius, float biggerRadius) -> float
+    {
+        return GetSphereVolume(smallerRadius)/GetSphereVolume(biggerRadius); 
+    }
+}
+
 SpherePrimitive::SpherePrimitive(ChildrenType childrenInst) :
-    children { std::move(childrenInst) }
+    children { std::move(childrenInst) },
+    isBoundingSphere { true }
 {
     center = glm::vec3(0.0);
     for(auto child: children)
@@ -24,7 +40,8 @@ SpherePrimitive::SpherePrimitive(ChildrenType childrenInst) :
 /// Construct sphere
 SpherePrimitive::SpherePrimitive(glm::vec3 centerInst, float sizeInst) :
     center { centerInst },
-    size { sizeInst }
+    size { sizeInst },
+    isBoundingSphere { false }
 {
 }
 
@@ -41,6 +58,11 @@ auto SpherePrimitive::GetCenter() -> glm::vec3
 auto SpherePrimitive::GetSize() -> float 
 { 
     return size; 
+}
+
+auto SpherePrimitive::IsBoudingSphere() const -> bool
+{
+    return isBoundingSphere;
 }
 
 double SpherePrimitive::DistanceTo(SpherePrimitive& other)
@@ -88,6 +110,47 @@ auto SpherePrimitive::InflateSinceLevel(size_t level) -> void
     for(auto& child: children)
     {
         child->InflateSinceLevel(level - 1);
+    }
+}
+
+auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
+{
+    SpherePrimitive::ChildrenType toBeAdded;
+    bool hasAddedChild = false;
+    const auto size = GetSize();
+
+    // Until convergence: while there is any subnode's child that has been added to its parent
+    do {
+        bool hasAddedChild = false;
+
+        // For each subnode: determine SAH
+        for(auto& child: children)
+        {
+            const auto childSize = child->GetSize();
+            if(child->IsBoudingSphere() && GetSphereToSphereAreaRatio(childSize, size) > threshold)
+            {
+                // If subnode is too big -> remove one level by inflating subnode
+                // into parent
+                for(auto& child: child->GetChildren())
+                {
+                    toBeAdded.push_back(child);
+                    hasAddedChild = true;
+                }
+                child->GetChildren().clear();
+            }
+        }
+
+        // Append children of subnode to parent
+        for(auto& child: toBeAdded)
+        {
+            children.push_back(child);
+        }
+    } while(hasAddedChild);
+
+    // Call inflate for each child
+    for(auto& child: children)
+    {
+        child->InflateUsingSAH(threshold);
     }
 }
 
@@ -227,38 +290,48 @@ auto BVHLibrary::GetParams() const -> const OptimizationParameters&
 
 auto BVHLibrary::Optimize() -> void
 {
-        while(scene.size() > 1)
-        {
-            const auto count = scene.size();
-            double minSize = 0.0;
-            size_t indices[2] = {0, 1};
+    // Construct raw binary BVH tree, which may be suboptimal
+    ConstructTree();
+    
+    // Inflate tree since maxLevel -> bounds the depth to maxLevel
+    scene[0]->InflateUsingSAH(params.SAHthreshold);
 
-            for(size_t i = 0; i < count; i++)
+    // Inflate tree since maxLevel -> bounds the depth to maxLevel
+    scene[0]->InflateSinceLevel(params.maxLevel);
+}
+
+auto BVHLibrary::ConstructTree() -> void
+{
+    while(scene.size() > 1)
+    {
+        const auto count = scene.size();
+        double minSize = 0.0;
+        size_t indices[2] = {0, 1};
+
+        for(size_t i = 0; i < count; i++)
+        {
+            for(size_t j = i+1; j < count; j++)
             {
-                for(size_t j = i+1; j < count; j++)
+                auto distance = scene[i]->DistanceTo(*scene[j]);
+                //auto primitive = SpherePrimitive({scene[i], scene[j]});
+                if(distance < minSize)
                 {
-                    auto distance = scene[i]->DistanceTo(*scene[j]);
-                    //auto primitive = SpherePrimitive({scene[i], scene[j]});
-                    if(distance < minSize)
-                    {
-                        minSize = distance;
-                        indices[0] = i;
-                        indices[1] = j;
-                    }
+                    minSize = distance;
+                    indices[0] = i;
+                    indices[1] = j;
                 }
             }
-
-            auto firstIndex = std::max(indices[0], indices[1]);
-            auto secondIndex = std::min(indices[0], indices[1]);
-
-            auto firstElement = scene[indices[0]];
-            auto secondElement = scene[indices[1]];
-
-            scene.erase(scene.begin() + firstIndex);
-            scene.erase(scene.begin() + secondIndex);
-            scene.emplace_back(std::make_shared<SpherePrimitive>(SpherePrimitive::ChildrenType{firstElement,secondElement}));
         }
 
-        // Inflate
-        scene[0]->InflateSinceLevel(params.maxLevel);
+        auto firstIndex = std::max(indices[0], indices[1]);
+        auto secondIndex = std::min(indices[0], indices[1]);
+
+        auto firstElement = scene[indices[0]];
+        auto secondElement = scene[indices[1]];
+
+        scene.erase(scene.begin() + firstIndex);
+        scene.erase(scene.begin() + secondIndex);
+        scene.emplace_back(std::make_shared<SpherePrimitive>(SpherePrimitive::ChildrenType{firstElement,secondElement}));
+    }
 }
+

@@ -37,7 +37,7 @@ auto BVHGenerator::GenerateClusteredScene(size_t clusters, float dev, BoundingBo
     {
         auto maxDeviation = dis(generator);
         auto maxElements = disNumber(generator);
-        auto clusterPosition = glm::vec3(disX(generator), disY(generator), disZ(generator));
+        auto clusterPosition = area.pos + glm::vec3(disX(generator), disY(generator), disZ(generator));
         std::cout << "Cluster position: " << clusterPosition.x << ", " << clusterPosition.y << ", "
             << clusterPosition.z << std::endl;
 

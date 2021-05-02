@@ -20,12 +20,16 @@ namespace raymarcher
         auto GetChildren() -> ChildrenType&;
         auto GetCenter() -> glm::vec3;
         auto GetSize() -> float;
+        auto IsBoudingSphere() const -> bool;
 
         auto DistanceTo(SpherePrimitive& other) -> double;
 
         auto InflateChildren() -> void;
         auto InflateSinceLevel(size_t level) -> void;
+        auto InflateUsingSAH(float threshold) -> void;
+
         protected:
+        bool isBoundingSphere;
         ChildrenType children;
 
         glm::vec3 center;
@@ -37,7 +41,8 @@ namespace raymarcher
         public:
         struct OptimizationParameters
         {
-            size_t maxLevel = 1;
+            float   SAHthreshold    = 1.0;
+            size_t  maxLevel        = 32;
         };
 
         auto GenerateCodeForNode(SpherePrimitive& node, size_t level) -> std::string;
@@ -54,6 +59,7 @@ namespace raymarcher
 
         auto Optimize() -> void;
         protected:
+        auto ConstructTree() -> void;
         SpherePrimitive::ChildrenType scene;
         OptimizationParameters params;
     };

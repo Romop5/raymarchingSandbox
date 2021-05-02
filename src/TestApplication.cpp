@@ -174,10 +174,10 @@ auto TestApplication::Resize(size_t newWidth, size_t newHeight) -> void
 
 auto TestApplication::Render() -> void
 {
+    static size_t frameID = 0;
+    frameID++;
     if(!parameters.shouldRunWithFreeMovement)
     {
-        static size_t frameID = 0;
-        frameID++;
         if(frameID > 350)
         {
             shouldContinue = false;
@@ -186,11 +186,16 @@ auto TestApplication::Render() -> void
     }
 
     camera->UpdateFrame();
-    fpsMeter.Measure();
 
     if(raymarcher)
     {
         raymarcher->Render();
+    }
+
+    // Hack: don't measure shader compilation
+    if(frameID > 1)
+    {
+        fpsMeter.Measure();
     }
 
     adapter.BeginFrame();
