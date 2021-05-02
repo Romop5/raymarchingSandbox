@@ -2,6 +2,8 @@
 
 #include <sstream>
 #include <queue>
+#include <algorithm>
+
 #include <glm/gtc/constants.hpp>
 
 using namespace raymarcher;
@@ -13,7 +15,7 @@ namespace
         return 1.3333333*glm::pi<float>()*pow(r, 3.0f);
     }
 
-    auto GetSphereToSphereAreaRatio(float smallerRadius, float biggerRadius) -> float
+    auto GetSphereToSphereVolumeRatio(float smallerRadius, float biggerRadius) -> float
     {
         return GetSphereVolume(smallerRadius)/GetSphereVolume(biggerRadius); 
     }
@@ -23,18 +25,7 @@ SpherePrimitive::SpherePrimitive(ChildrenType childrenInst) :
     children { std::move(childrenInst) },
     isBoundingSphere { true }
 {
-    center = glm::vec3(0.0);
-    for(auto child: children)
-    {
-        center += child->GetCenter();
-    }
-    center = center / glm::vec3(children.size());
-
-    size = 0;
-    for(auto child: children)
-    {
-        size = std::max(size, glm::length(center - child->GetCenter())+child->GetSize());
-    }
+    ConstructBoudingBoxForChildren();
 }
 
 /// Construct sphere
@@ -67,6 +58,9 @@ auto SpherePrimitive::IsBoudingSphere() const -> bool
 
 double SpherePrimitive::DistanceTo(SpherePrimitive& other)
 {
+    // Note: we add radii to prevent a single, large sphere to be close to all spheres due to it's
+    // large radius
+    // This "distance function" prefers small and close spheres to large-to-small sphere distance
     auto d = glm::length(other.GetCenter()-GetCenter()) + (other.GetSize()+GetSize());
     return d;
 }
@@ -115,6 +109,14 @@ auto SpherePrimitive::InflateSinceLevel(size_t level) -> void
 
 auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
 {
+    // Skip optimization of leafs
+    if(!IsBoudingSphere())
+    {
+        return;
+    }
+
+    // Vector iterator does not allow linear pass with appending comfortably
+    // so we keep new children aside
     SpherePrimitive::ChildrenType toBeAdded;
     bool hasAddedChild = false;
     const auto size = GetSize();
@@ -127,7 +129,7 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
         for(auto& child: children)
         {
             const auto childSize = child->GetSize();
-            if(child->IsBoudingSphere() && GetSphereToSphereAreaRatio(childSize, size) > threshold)
+            if(child->IsBoudingSphere() && GetSphereToSphereVolumeRatio(childSize, size) > threshold)
             {
                 // If subnode is too big -> remove one level by inflating subnode
                 // into parent
@@ -140,6 +142,11 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
             }
         }
 
+        // Remove empty nodes
+        std::remove_if(children.begin(), children.end(), [](auto& child)
+        {
+            return (child->IsBoudingSphere() && child->GetChildren().size() == 0);
+        });
         // Append children of subnode to parent
         for(auto& child: toBeAdded)
         {
@@ -147,10 +154,26 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
         }
     } while(hasAddedChild);
 
-    // Call inflate for each child
+    // Call inflate recursively for each child
     for(auto& child: children)
     {
         child->InflateUsingSAH(threshold);
+    }
+}
+
+auto SpherePrimitive::ConstructBoudingBoxForChildren() -> void
+{
+    center = glm::vec3(0.0);
+    for(auto child: children)
+    {
+        center += child->GetCenter();
+    }
+    center = center / glm::vec3(children.size());
+
+    size = 0;
+    for(auto child: children)
+    {
+        size = std::max(size, glm::length(center - child->GetCenter())+child->GetSize());
     }
 }
 
@@ -246,8 +269,6 @@ auto BVHLibrary::GenerateCodeForSceneNonOptimized() -> std::string
 
     ss << "float k = 0.1;" << std::endl;
 
-
-
     ss << "vec4 df(vec3 pos)" << std::endl;
     ss << "{" << std::endl;
     ss << "float d = 1000.0;" << std::endl;
@@ -300,6 +321,11 @@ auto BVHLibrary::Optimize() -> void
     scene[0]->InflateSinceLevel(params.maxLevel);
 }
 
+// Constructs binary BVH tree (thus each node has two subnodes or it's a leaf)
+// The tree may not be balanced. 
+//
+// DistanceTo() methods used in each step of construction to join two closest 
+// nodes at the level
 auto BVHLibrary::ConstructTree() -> void
 {
     while(scene.size() > 1)
@@ -308,6 +334,10 @@ auto BVHLibrary::ConstructTree() -> void
         double minSize = 0.0;
         size_t indices[2] = {0, 1};
 
+        /*
+         * Find the closest two nodes at current level. This has
+         * terrible O(n^2) complexity.
+         */
         for(size_t i = 0; i < count; i++)
         {
             for(size_t j = i+1; j < count; j++)
@@ -323,6 +353,9 @@ auto BVHLibrary::ConstructTree() -> void
             }
         }
 
+        /*
+         * Remove found nodes from current level and insert a new, joined node with two subnodes 
+         */
         auto firstIndex = std::max(indices[0], indices[1]);
         auto secondIndex = std::min(indices[0], indices[1]);
 

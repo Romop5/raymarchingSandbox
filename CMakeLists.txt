@@ -48,6 +48,7 @@ target_link_libraries(imgui PUBLIC GLEW)
 
 add_library(common
     src/BVHLibrary.cpp
+    src/BVHGenerator.cpp
     src/Args.cpp
     src/FileHelper.cpp
 )
@@ -85,7 +86,6 @@ target_link_libraries(sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
 
 add_executable ( bvhgenerator 
     src/generator_main.cpp
-    src/BVHGenerator.cpp
     src/FileHelper.cpp
     src/BVHLibrary.cpp
 )

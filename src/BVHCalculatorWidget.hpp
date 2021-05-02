@@ -10,6 +10,9 @@ namespace raymarcher
 class SpherePrimitive;
 class BVHLibrary;
 
+/**
+ * @brief GUI control over BVHLibrary
+ */
 class BVHCalculatorWidget : public WindowWidget
 {
     public:

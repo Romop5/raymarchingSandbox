@@ -8,12 +8,14 @@
 
 using namespace raymarcher;
 
+const auto maximumVerticalAngle = 0.7;
+
 FlyingCamera::FlyingCamera() :
     position { glm::vec3(0.0,5.0,0.0) },
     normalizedLookDirection{ glm::vec3(0, 0, 1.0) },
     normalizedUpVector { glm::vec3(0, 1.0, 0) },
     movementSpeed{ 1.0 },
-    angularSpeed{ 1.0 }
+    angularSpeed{ 0.01 }
 {
 }
 
@@ -24,6 +26,9 @@ auto FlyingCamera::SetPosition(const glm::vec3& pos) -> void
 
 auto FlyingCamera::GetTransformation() const -> const glm::mat4&
 {
+    // Calculate transformation using look vector and look-up vector. 
+    // maximumVerticalAngle is used in code below to ensure that this
+    // two vectors are not collinear
     auto orthoSide = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
     auto orthoUp = glm::normalize(glm::cross(-orthoSide, normalizedLookDirection));
     auto rotation = glm::mat4(glm::mat3(orthoSide,
@@ -31,8 +36,6 @@ auto FlyingCamera::GetTransformation() const -> const glm::mat4&
                                         normalizedLookDirection));
 
     transform = glm::translate(-position)*rotation;
-
-    std::cout << "Camera: " <<  glm::to_string(transform) << std::endl;
     return transform;
 }
 
@@ -87,7 +90,7 @@ auto FlyingCamera::RotateRight(float amount) -> void
 
 auto FlyingCamera::RotateUp(float amount) -> void
 {
-    if(glm::dot(normalizedLookDirection, normalizedUpVector) > 0.7)
+    if(glm::dot(normalizedLookDirection, normalizedUpVector) > maximumVerticalAngle)
         return;
     auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 
@@ -96,7 +99,7 @@ auto FlyingCamera::RotateUp(float amount) -> void
 
 auto FlyingCamera::RotateDown(float amount) -> void
 {
-    if(glm::dot(normalizedLookDirection, normalizedUpVector) < -0.7)
+    if(glm::dot(normalizedLookDirection, normalizedUpVector) < -maximumVerticalAngle)
         return;
     auto orthoDirection = glm::normalize(glm::cross(normalizedUpVector, normalizedLookDirection));
     normalizedLookDirection = glm::normalize(glm::vec3(glm::vec4(normalizedLookDirection, 0.0) * 

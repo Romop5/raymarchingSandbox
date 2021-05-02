@@ -6,6 +6,9 @@
 
 using namespace raymarcher;
 
+constexpr auto angleSpeedIncrement = 10.0;
+constexpr auto orbiterDistanceIncrement = 0.1;
+
 raymarcher::GLFWCamera::GLFWCamera(std::shared_ptr<ICamera> cameraPtr, CameraType cameraType) :
     type { cameraType },
     camera { cameraPtr }
@@ -38,7 +41,6 @@ auto GLFWCamera::MouseCursorChanged(GLFWwindow* window, double relativeX, double
     if(type == FLYING_CAMERA)
     {
         auto& flyingCamera = static_cast<FlyingCamera&>(*camera);
-        flyingCamera.SetAngularSpeed(0.01);
         if(relativeX> 0.0)
             flyingCamera.RotateLeft(relativeX);
         if(relativeX< 0.0)
@@ -114,10 +116,10 @@ auto GLFWCamera::KeyPressed(GLFWwindow* window, int key) const -> void
                 flyingCamera.RotateLeft(speed);
                 break;
             case GLFW_KEY_KP_ADD:
-                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*10.0f);
+                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*angleSpeedIncrement);
                 break;
             case GLFW_KEY_KP_SUBTRACT:
-                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*0.1f);
+                flyingCamera.SetAngularSpeed(flyingCamera.GetAngularSpeed()*(1.0f/angleSpeedIncrement));
                 break;
             default:
                 break;
@@ -128,10 +130,10 @@ auto GLFWCamera::KeyPressed(GLFWwindow* window, int key) const -> void
         switch(key)
         {
             case GLFW_KEY_W:
-                orbiter.SetDistance(orbiter.GetDistance()-0.1);
+                orbiter.SetDistance(orbiter.GetDistance()-orbiterDistanceIncrement);
                 break;
             case GLFW_KEY_S:
-                orbiter.SetDistance(orbiter.GetDistance()+0.1);
+                orbiter.SetDistance(orbiter.GetDistance()+orbiterDistanceIncrement);
                 break;
             case GLFW_KEY_A:
                 orbiter.RotateLeft();

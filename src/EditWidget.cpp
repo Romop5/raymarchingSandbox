@@ -23,17 +23,12 @@ namespace
 
 EditWidget::EditWidget(std::string name, std::string startingCode, std::string file) :
     code { startingCode },
-    isStatusError { false },
+    status { false, ""}, 
     isAutocompileEnabled { true },
     filename { file }
 {
     SetTitle(name);
     SetSize(400, 400);
-}
-
-auto EditWidget::Render() -> void
-{
-    WindowWidget::Render();
 }
 
 auto EditWidget::RenderContent() -> void
@@ -48,11 +43,11 @@ auto EditWidget::RenderContent() -> void
     ImGui::SameLine();
     ImGui::Checkbox("Auto-Compile",&isAutocompileEnabled);
 
-    if(!lastStatus.empty())
+    if(!status.lastMessage.empty())
     {
         ImGui::SameLine();
-        std::string msg = lastStatus.substr(0, 30);
-        if(isStatusError)
+        std::string msg = status.lastMessage.substr(0, 30);
+        if(status.isError)
         {
             msg = "Error: " + msg;
             ImGui::TextColored(ImVec4(1.0, 0.0,0.0,1.0),msg.c_str());
@@ -63,7 +58,7 @@ auto EditWidget::RenderContent() -> void
         if(ImGui::IsItemHovered())
         {
             ImGui::BeginTooltip();
-            ImGui::Text(lastStatus.c_str());
+            ImGui::Text(status.lastMessage.c_str());
             ImGui::EndTooltip();
         }
     }
@@ -74,29 +69,18 @@ auto EditWidget::RenderContent() -> void
         Recompile();
     }
 
-    /* if(!lastStatus.empty()) */
-    /* { */
-    /*     ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar; */
-    /*     ImGui::BeginChild("ErrorChild", ImVec2(0, 60), false, window_flags); */
-        
-    /*     ImGui::TextWrapped("Error: %s", lastStatus.c_str()); */
-    /*     ImGui::EndChild(); */
-    /* } */
-
-
+    /// Render subwidgets/subviews (e.g. preview window)
     WindowWidget::RenderContent();
 }
 
 auto EditWidget::Recompile() -> void
 {
-    //RemoveAllWidgets();
     SetLastStatus("");
     try {
-        if(!rm)
-        {
-            rm = std::make_shared<raymarcher::Raymarcher>();
-        }
+        rm = (!rm ? std::make_shared<raymarcher::Raymarcher>() : rm);
         CreateAndSetSDF(code, rm);
+
+        // If preview window is not opened, yet
         if(!HasAnyWidget())
         {
             AddWidget(CreateRenderWidget(rm));
@@ -162,25 +146,28 @@ auto EditWidget::SaveAsSubwidget() -> void
 
 auto EditWidget::SetLastError(std::string error) -> void
 {
-    lastStatus = error;
-    isStatusError = true;
+    status.lastMessage = error;
+    status.isError = true;
 }
 auto EditWidget::SetLastStatus(std::string msg) -> void
 {
-    lastStatus = msg;
-    isStatusError = false;
+    status.lastMessage = msg;
+    status.isError = false;
 }
 
 auto EditWidget::CreateRenderWidget(std::shared_ptr<raymarcher::Raymarcher> rm) -> std::shared_ptr<WidgetBase>
 {
+    // Create orbiter as default camera
     auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
     orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
     orbiter->SetDistance(5.0);
     auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
     rm->SetCamera(focusedCamera);
     
+    // Create preview window
     auto widget = std::make_shared<raymarcher::RendererWidget>(rm, focusedCamera);
 
+    // Determine current size of window, and set preview to half of window
     ImGuiIO& io = ImGui::GetIO();
     auto size = io.DisplaySize;
     widget->SetViewportSize(size.x*0.5, size.y*0.5);

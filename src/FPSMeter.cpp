@@ -52,6 +52,7 @@ auto FPSMeter::RenderOverlay() -> void
 
 auto FPSMeter::DumpConclusion() -> void
 {
+    // Compute avg. with discarding frames that has not been reached
     const auto& data = totalFramePeriods.GetArray();
     size_t count = 0;
     size_t sum = 0;

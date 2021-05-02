@@ -6,6 +6,9 @@
 
 namespace raymarcher
 {
+/**
+ * @brief Helper for storing/loading files
+ */
 class FileHelper
 {
     public:

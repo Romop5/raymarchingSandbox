@@ -8,6 +8,9 @@
 
 namespace raymarcher
 {
+/**
+ * @brief Generates deterministically datasets for testing optimization parameters
+ */
 class BVHGenerator
 {
     public:
@@ -21,9 +24,11 @@ class BVHGenerator
 
     using Scene = SpherePrimitive::ChildrenType;
 
+    /// Generate cluster of 'count' primitives at position 'pos' within 'dev' distance
     auto GenerateCluster(glm::vec3 pos, float deviation, size_t count) -> Scene;
+    
+    /// Generate clusters within 'area'. 'Dev' determines spread of a single cluster
     auto GenerateClusteredScene(size_t clusters, float dev, BoundingBox area) -> Scene;
-
     private:
     std::mt19937 generator;
 };

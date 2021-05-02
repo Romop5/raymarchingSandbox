@@ -3,57 +3,45 @@
 
 #include <cstdlib>
 #include <array>
+#include "RingBuffer.hpp"
 
 namespace raymarcher
 {
 
+/**
+ * @brief Collects statistics about FPS during run of the program
+ *
+ * A helper structure RingBuffer is used to effictively store last
+ * N values with computed average. This serves as low-pass filter
+ * of FPS average.
+ */
 class FPSMeter
 {
     public:
     FPSMeter();
+    /// Update statistics for current frame
     auto Measure()          -> void;
+    
+    /// Render overlay with FPS etc.
     auto RenderOverlay()    -> void;
 
+    /// Print statistics to stdout
     auto DumpConclusion()   -> void;
 
     private:
-    size_t perFramePeriodInMs;
+    /// Frames, passed since beginning of measurement
+    size_t framesPassed = 0;
 
-    template<size_t SIZE>
-    class RingBuffer
-    {
-        using StorageType = std::array<size_t, SIZE>;
-        public:
-        RingBuffer()
-        {
-            for(auto& period: this->buffer)
-            {
-                period = 0;
-            }
-        }
-        auto Add(size_t period) -> void
-        {
-            this->sum += period - this->buffer[this->position];
-            this->buffer[this->position++] = period;
-            this->position = this->position % SIZE;
-        }
-        auto GetAverage() const -> double
-        {
-            return this->sum / double(SIZE);
-        }
-        auto GetArray() const -> const StorageType&
-        {
-            return buffer;
-        }
-        private:
-        StorageType buffer;
-        size_t position = 0;
-        size_t sum = 0;
-    };
+    /// Duration of last frame in milliseconds
+    size_t perFramePeriodInMs;
+    
+    /// Last 20 frame periods
     RingBuffer<20> framePeriods;
+
+    /// Last 5 frames per second
     RingBuffer<5> fps;
 
-    size_t framesPassed = 0;
+    /// Statistics over whole recording
     RingBuffer<10000> totalFramePeriods;
 };
 }
