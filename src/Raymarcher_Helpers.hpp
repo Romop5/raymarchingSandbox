@@ -5,8 +5,11 @@
 
 namespace raymarcher
 {
-std::string ConstructRenderedVertexShader();
+/// Construct Fragment Shader using user SDF and predefined functions
 std::string ConstructRenderedFragmentShader(std::string sdfGLSL);
+
+/// Create a simple VS for quad rendering
+std::string ConstructRenderedVertexShader();
 }
 
 #endif

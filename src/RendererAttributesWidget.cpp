@@ -78,6 +78,21 @@ auto RendererAttributesWidget::RenderContent() -> void
         }
     }
     {
+        auto val = static_cast<bool>(raymarcher->IsSunDirectional());
+        if(ImGui::Checkbox("Is sun directional", &val))
+        {
+           raymarcher->SetSunDirectional(val);
+        }
+    }
+    {
+        auto val = raymarcher->GetSun();
+        if(ImGui::InputFloat3("Sun position", glm::value_ptr(val)))
+        {
+           raymarcher->SetSun(val);
+        }
+    }
+
+    {
         auto val = raymarcher->GetSunColour();
         if(ImGui::ColorPicker3("Sun color", glm::value_ptr(val)))
         {

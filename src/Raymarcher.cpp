@@ -92,7 +92,10 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
         program->set1i("renderFog", attributes.renderFog);
         program->set1i("renderShadows", attributes.renderShadows);
 
+        program->set1i("isSunDirectional", attributes.isSunDirectional);
+        program->set1f("sunIntensity", attributes.sunIntensity);
         program->set3fv("sunColor", glm::value_ptr(attributes.sunColor));
+        program->set3fv("sunPos", glm::value_ptr(attributes.sunPosition));
         program->set3fv("fogColor", glm::value_ptr(attributes.fogColor));
     }
 }
@@ -162,8 +165,37 @@ auto Raymarcher::GetShadingMode() -> ShadingMode
     return pimpl->attributes.mode;
 }
 
+auto Raymarcher::IsSunDirectional() const -> bool
+{
+    return pimpl->attributes.isSunDirectional;
+}
+
+auto Raymarcher::SetSunDirectional(bool setDirectional) -> void
+{
+    pimpl->attributes.isSunDirectional = setDirectional;
+    pimpl->UpdateUniforms();
+}
+
 auto Raymarcher::SetSun(glm::vec3 directory) -> void
 {
+    pimpl->attributes.sunPosition = directory;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetSun() const -> glm::vec3
+{
+    return pimpl->attributes.sunPosition;
+}
+
+auto Raymarcher::SetSunIntensity(float intensity) -> void
+{
+    pimpl->attributes.sunIntensity = intensity;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetSunIntensity() const -> float
+{
+    return pimpl->attributes.sunIntensity;
 }
 
 auto Raymarcher::SetSunColour(glm::vec3 color) -> void

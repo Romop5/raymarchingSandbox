@@ -8,43 +8,51 @@ namespace
     {
         auto literal = R"(
         #version 330 core
-        uniform float fx                = 1.0;
-        uniform float aspectRatio       = 1.0;
 
-        uniform float iTime             = 100.0;
-        uniform vec3 camera_origin      = vec3(0.0);
-        uniform mat4 camera_rotation    = mat4(1.0);
-        const vec2  iResolution         = vec2(1.0,1.0);
+        /*
+         * UNIFORMS - Shader Interface with Raymarcher class
+         */
+        uniform float   fx                      = 1.0;
+        uniform float   aspectRatio             = 1.0;
 
-        const float maxLightDistance    = 30;
+        uniform float   iTime                   = 100.0;
+        uniform vec3    camera_origin           = vec3(0.0);
+        uniform mat4    camera_rotation         = mat4(1.0);
+        const vec2      iResolution             = vec2(1.0,1.0);
 
-        uniform int g_maxIterations;
-        uniform float g_eps;
-        uniform float g_stepRatio       = 0.99;
+        const float     maxLightDistance        = 30;
+        uniform float   sunIntensity            = 1;
 
-        uniform int coloringMode        = 0;
+        uniform int     g_maxIterations;
+        uniform float   g_eps;
+        uniform float   g_stepRatio             = 0.99;
 
-        const float roughness           = 0.7;
-        uniform float ambientRatio;
-        const float shininess           = 20.0;
-        uniform float specularity       =  1.0;
+        uniform int     coloringMode            = 0;
 
-        const vec3  albedoColor         = vec3(1.0,1.0,1.0);
-        uniform vec3  sunColor          = vec3(1.0,1.0,1.0);
+        uniform float   ambientRatio            = 0.0;
+        const float     shininess               = 20.0;
+        uniform float   specularity             =  1.0;
+
+        uniform bool    isSunDirectional        = false;
+        const vec3      albedoColor             = vec3(1.0,1.0,1.0);
+        uniform vec3    sunPos                  = vec3(1.0,1.0,1.0);
+        uniform vec3    sunColor                = vec3(1.0,1.0,1.0);
 
 
-        const float floorElevation      = -2.0;
-        uniform float farPlane          = 200.0;
-        //const vec3  fogColor          = vec3(0.1,0.1,0.3);
-        //const vec3  fogColor          = vec3(0.2,0.2,0.7);
-        uniform vec3  fogColor          = vec3(0.871,0.871,1.0);
+        const float     floorElevation          = -2.0;
+        uniform float   farPlane                = 200.0;
+        uniform vec3    fogColor                = vec3(0.871,0.871,1.0);
 
-        const vec3  floorAColor         = vec3(1.0);
-        const vec3  floorBColor         = vec3(0.0);
-        const float floorThickness      = 0.99;
+        const vec3      floorAColor             = vec3(1.0);
+        const vec3      floorBColor             = vec3(0.0);
+        const float     floorThickness          = 0.99;
 
-        uniform bool renderShadows      = true;
-        uniform bool renderFog          = true;
+        uniform bool    renderShadows           = true;
+        uniform bool    renderFog               = true;
+
+        /*
+         * PRIMITIVES & OPERATIONS
+         */
 
         float sphere(vec3 pos, float radius)
         {
@@ -89,8 +97,6 @@ namespace
             return vec4(m, mix(ac.yzw, bc.yzw, c));
         }
 
-
-
         float intersect(float a, float b)
         {
             return max(a, b);
@@ -101,7 +107,9 @@ namespace
             return float(val > thres);
         }
 
-
+        /*
+         * SIMPLE CHECKERBOX PATTERN GROUND
+         */
         vec4 ground(vec3 position, float elevation)
         {
             float distance = position.y - elevation;
@@ -129,15 +137,7 @@ namespace
     {
         auto literal = std::string(R"(
 
-               vec3 colorize(vec3 pos)
-        {
-            float distToFloor = max(0.0, min(1.0, 10.0*g_eps+pos.y-(floorElevation)));
-            float checkerColor = clamp(0.0,1.0,threshold(sin(6.0*pos.x),floorThickness)+
-                                               threshold(sin(6.0*pos.z),floorThickness));
-            return mix(mix(floorAColor, floorBColor, checkerColor),
-                       vec3(1.0,0.8,0.5),
-                       distToFloor);
-        }
+        // Raymarching algorithm, returning distance and iterations
         vec2 rayMarchWithIterations(vec3 o, vec3 d)
         {
             int currentIterations = 0;
@@ -155,8 +155,7 @@ namespace
             return vec2(t, currentIterations);
         }
 
-
-
+        // Raymarching algorithm, returning distance and color 
         vec4 rayMarch(vec3 o, vec3 d)
         {
             int maximumIterations = g_maxIterations;
@@ -217,65 +216,75 @@ namespace
                return fogColor;
             }
             // Surface point p
-            vec3 p = o+d*dO;
+            vec3 p                  = o+d*dO;
             // Calculate normal for surface point p
-            vec3 nv = normalize(normalVectorPosition(p));
-            float distanceToCamera = length(p-camera_origin);
+            vec3 nv                 = normalize(normalVectorPosition(p));
+            float distanceToCamera  = length(p-camera_origin);
 
             // Get normalized light-dir vector
-            vec3  nlDir = normalize(l-p);
-            float lightDistance = length(l-p);
+            vec3  nlDir             = normalize(l-p);
+            if(isSunDirectional)
+            {
+                nlDir = normalize(l);
+            }
+            float lightDistance     = length(l-p);
+            float lightAttenuation  = 0.1*(pow(lightDistance,2.0)+1.0);
+            float lightIntensity    = sunIntensity*min(1.0/lightAttenuation, 1.0);
+            if(isSunDirectional)
+            {
+                lightIntensity = sunIntensity;
+            }
 
             // Visibility determines if surface point p is visible from the light 
-            bool visibility = false;
+            bool visibility         = false;
 
-            vec3 reflectionColor = vec3(0.0);
-            /* vec3 reflectionDir = normalize(reflect(d, nv)); */
-            /* vec4 reflection = (rayMarch(p+reflectionDir*g_eps*5.0, reflectionDir)); */
-            /* reflectionColor = (reflection.x > 0.0 ? reflection.yzw : reflectionColor) * (1.0/distanceToCamera); */
+            vec3 reflectionColor    = vec3(0.0);
+            /* vec3 reflectionDir   = normalize(reflect(d, nv)); */
+            /* vec4 reflection      = (rayMarch(p+reflectionDir*g_eps*5.0, reflectionDir)); */
+            /* reflectionColor      = (reflection.x > 0.0 ? reflection.yzw : reflectionColor) * (1.0/distanceToCamera); */
 
             // Calculate visibility if allowed and if point is in reach of light
-            if(renderShadows && lightDistance < maxLightDistance)
+            if(renderShadows && lightIntensity > 0.01)
             {
-                visibility = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
+                visibility          = (rayMarch(p+nlDir*g_eps*5.0, nlDir).x >= lightDistance-2.0*g_eps);
             } else {
-                visibility = true;
+                visibility          = true;
             }
 
             // calculate normalized look direction
-            vec3 nd = normalize(o-p);
+            vec3 nd                 = normalize(o-p);
             // use normalized surface normal
-            vec3 nnv = nv;
+            vec3 nnv                = nv;
 
-            vec3 halfDir = normalize(nlDir + nd);
-            float specAngle = max(dot(halfDir, nnv), 0.0);
-            float specular = pow(specAngle, shininess);
+            vec3 halfDir            = normalize(nlDir + nd);
+            float specAngle         = max(dot(halfDir, nnv), 0.0);
+            float specular          = pow(specAngle, shininess);
             
-            float specularRatio = specular*specularity;
-            float lambertianRatio = max(dot(nlDir, nnv),0.0);
+            float specularRatio     = specular*specularity;
+            float lambertianRatio   = max(dot(nlDir, nnv),0.0);
+            // If normal vector is not correctly defined for surface, set lambertian intensity to 0
             if(length(nv) < g_eps)
             {
-              lambertianRatio = 0.0;
+                lambertianRatio     = 0.0;
             }
-            float lightAttenuation = 0.1*(pow(lightDistance,2.0)+1.0);
-            float lightIntensity = 1.0/lightAttenuation;
             float fogRatio = max(0.0,(1.0+dO)/farPlane);
             if(!renderFog)
             {
                 fogRatio = 0.0;
             }
             
-            vec3 albedoColor = albedo;
+            vec3 albedoColor        = albedo;
             // Use ambient lighting as base of result color
-            vec3 ambientColorPart    = albedoColor*ambientRatio;
-            vec3 shadingColor = ambientColorPart;
+            vec3 ambientColorPart   = albedoColor*ambientRatio;
+            vec3 shadingColor       = ambientColorPart;
 
             // If suface point p is visible, add Phong colour
             if(visibility)
             {
-                vec3 lambertianColorPart = sunColor*albedoColor*lightIntensity*lambertianRatio*roughness;
-                vec3 specularColorPart   = sunColor*specularRatio*lightIntensity;
-                shadingColor += lambertianColorPart + specularColorPart + specularity*reflectionColor;
+                float roughness           = 1.0-specularity;
+                vec3 lambertianColorPart  = sunColor*albedoColor*lightIntensity*lambertianRatio*roughness;
+                vec3 specularColorPart    = sunColor*specularRatio*lightIntensity;
+                shadingColor              += lambertianColorPart + specularColorPart + specularity*reflectionColor;
             }
             return mix(shadingColor, fogColor, fogRatio);
         }
@@ -309,6 +318,9 @@ namespace
             //return vec3(1.0-(1.0/dO),0.0,min(dO, 1.0));
         }
 
+        // Calculate color based on distance to surface point p
+        // o = ray origin
+        // d = direction
         vec3 iterationsMap(vec3 o, vec3 d)
         {
             vec2 result = rayMarchWithIterations(o, d);
@@ -322,7 +334,7 @@ namespace
 
         void mainImage( out vec4 fragColor, in vec2 fragCoord )
         {
-            vec3 sunPos = vec3(sin(iTime)*0.0,2.0,sin(iTime)*10.0);
+            //vec3 sunPos = vec3(sin(iTime)*0.0,2.0,sin(iTime)*10.0);
 
             // Normalized pixel coordinates (from 0 to 1)
             vec2 uv = fragCoord/iResolution.xy;
@@ -403,6 +415,9 @@ std::string raymarcher::ConstructRenderedFragmentShader(std::string sdfGLSL)
     return ss.str();
 }
 
+/*
+ * Simple Vertex Shader, which propages UV to FS
+ */
 std::string raymarcher::ConstructRenderedVertexShader()
 {
     return R"(
