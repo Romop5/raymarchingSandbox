@@ -38,6 +38,7 @@ namespace raymarcher
             void OnKey(size_t key, bool isDown, ModifierBitmap mod);
             void OnMousePositionRelative(float deltaX, float deltaY);
             void OnMousePosition(float x, float y);
+            void OnScroll(float deltaX, float deltaY);
             void OnButton(size_t buttonID, bool isPressed);
 
             bool IsVisible();

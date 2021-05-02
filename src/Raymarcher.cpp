@@ -86,6 +86,7 @@ auto Raymarcher::Pimpl::UpdateUniforms() -> void
         program->set1f("aspectRatio", attributes.aspectRatio);
         program->set1i("g_maxIterations", attributes.maximumIterations);
         program->set1f("g_eps", attributes.maximumPrecision);
+        program->set1f("g_stepRatio", attributes.stepRatio);
         program->set1f("farPlane", attributes.farPlaneDistance);
         program->set1f("ambientRatio", attributes.ambientCoef);
         program->set1f("specularity", attributes.specularityCoef);
@@ -273,6 +274,17 @@ auto Raymarcher::SetEps(float eps) -> void
 auto Raymarcher::GetEps() -> float
 {
     return pimpl->attributes.maximumPrecision;
+}
+
+auto Raymarcher::SetStepRatio(float coef) -> void
+{
+    pimpl->attributes.stepRatio = coef;
+    pimpl->UpdateUniforms();
+}
+
+auto Raymarcher::GetStepRatio() const -> float
+{
+    return pimpl->attributes.stepRatio;
 }
 
 auto Raymarcher::SetAmbientCoef(float c) -> void

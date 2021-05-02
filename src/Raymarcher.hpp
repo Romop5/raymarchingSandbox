@@ -35,6 +35,8 @@ struct RaymarchingAttributes
     size_t       maximumIterations  = 100;
     /// Epsilon when comparing distance to surface
     double       maximumPrecision   = 0.001;
+    /// Sphere Tracing step ratio
+    double       stepRatio          = 0.99;
     /// Scene's far plane
     double       farPlaneDistance   = 200.0;
 
@@ -121,6 +123,9 @@ class Raymarcher
 
     auto SetEps(float eps) -> void;
     auto GetEps() -> float;
+
+    auto SetStepRatio(float coef) -> void;
+    auto GetStepRatio() const -> float;
 
     auto SetAmbientCoef(float c) -> void;
     auto GetAmbientCoef() -> float;

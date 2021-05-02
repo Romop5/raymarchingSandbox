@@ -189,6 +189,14 @@ void ImguiAdapter::OnMousePosition(float x, float y)
     io.MousePos = ImVec2(x, y);
 }
 
+void ImguiAdapter::OnScroll(float deltaX, float deltaY)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    static float absoluteY = 0.0;
+    absoluteY += deltaY;
+    io.MouseWheel = absoluteY;
+}
+
 void ImguiAdapter::OnButton(size_t buttonID, bool isPressed)
 {
     assert(buttonID < 5);

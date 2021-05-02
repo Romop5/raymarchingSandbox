@@ -282,6 +282,11 @@ auto TestApplication::ScrollChanged(GLFWwindow* window, double relativeX, double
         inputHandler->ScrollChanged(window, relativeX, relativeY);
         return;
     }
+
+    if(adapter.WantCaptureMouse())
+    {
+        adapter.OnScroll(relativeX, relativeY);
+    }
 }
 
 auto TestApplication::KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void

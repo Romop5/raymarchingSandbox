@@ -102,6 +102,11 @@ auto SandboxApplication::ScrollChanged(GLFWwindow* window, double relativeX, dou
         inputHandler->ScrollChanged(window, relativeX, relativeY);
         return;
     }
+
+    if(adapter.WantCaptureMouse())
+    {
+        adapter.OnScroll(relativeX, relativeY);
+    }
 }
 
 auto SandboxApplication::KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void
