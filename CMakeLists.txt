@@ -42,8 +42,12 @@ add_library(imgui SHARED
 
     3rd/imgui/misc/cpp/imgui_stdlib.cpp
     3rd/imgui/misc/cpp/imgui_stdlib.h
+
+
+    3rd/imgui-markdown/imgui_markdown.h
 )
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui-markdown/)
 target_link_libraries(imgui PUBLIC GLEW)
 
 add_library(common
@@ -80,6 +84,7 @@ add_executable (sandbox
     src/widgets/RendererWidget.cpp
     src/widgets/RendererAttributesWidget.cpp
     src/widgets/MenuWidget.cpp
+    src/widgets/WelcomeWidget.cpp
     src/widgets/EditWidget.cpp
     src/widgets/BVHCalculatorWidget.cpp
     src/widgets/FPSMeter.cpp

@@ -5,6 +5,7 @@
 #include "raymarching/SDF.hpp"
 #include "widgets/WindowWidget.hpp"
 #include "widgets/MenuWidget.hpp"
+#include "widgets/WelcomeWidget.hpp"
 
 using namespace raymarcher;
 
@@ -21,6 +22,10 @@ SandboxApplication::SandboxApplication()
     menuWindow->SetTitle("Menu");
     menuWindow->SetSize(150, 0);
     widgetManager.AddWidget(menuWindow);
+
+    auto welcome = std::make_shared<WelcomeWidget>(widgetManager);
+    welcome->SetSize(500, 0);
+    widgetManager.AddWidget(welcome);
 }
 
 auto SandboxApplication::Resize(size_t newWidth, size_t newHeight) -> void
