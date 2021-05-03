@@ -1,4 +1,7 @@
+// Simple Dungeon
+// Created By Roman Dobias
 
+// Textures, generated using QTA - https://romop5.github.io/QuantitizeThemAll
 float procTexture(vec3 pos)
 {
     float x = pos.x;

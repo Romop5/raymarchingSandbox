@@ -1,0 +1,4 @@
+vec4 df(vec3 pos) {
+    float d = max(sphere(pos, 1.0), sphere(pos+vec3(0.5), 1.0));
+    return vec4(d, vec3(1.0));
+}

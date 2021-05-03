@@ -17,11 +17,18 @@ namespace
     auto SimpleSDFCode() -> std::string
     {
         auto sdfLiteral = R"(
+uniform float elevation = -0.1;
+uniform float sphereRadius = 1.0;
+uniform float colorX = 1.0;
+uniform float colorY = 1.0;
+uniform float colorZ = 1.0;
 vec4 df(vec3 pos)
 {
-    vec4 gd = ground(pos, floorElevation);
+    vec4 gd = ground(pos, elevation*10.0);
 
-    return unite(gd,vec4(sphere(pos, 1.0), vec3(1.0,0.0,0.0)));
+    // Map <-1, 1> to <0,1> for each channel
+    vec3 color = 0.5*(vec3(colorX, colorY, colorZ)+vec3(1.0));
+    return unite(gd,vec4(sphere(pos, sphereRadius), color));
 }
         )";
         return sdfLiteral;
@@ -30,13 +37,15 @@ vec4 df(vec3 pos)
     auto TestApplication() -> std::string
     {
         auto sdfLiteral = R"(
+uniform float elevation = -0.1;
+uniform float radius = 1.0;
 vec4 df(vec3 pos)
 {
-    vec4 gd = ground(pos, floorElevation);
+    vec4 gd = ground(pos, elevation*10.0);
 
-    vec4 s1 = vec4(sphere(pos+vec3(0.5,0.1,0.0), 1.0), vec3(1.0));
-    vec4 s2 = vec4(sphere(pos+vec3(-0.5,0.5,0.0), 1.0), vec3(1.0));
-    vec4 s3 = vec4(sphere(pos+vec3(0.5,0.9,0.0), 1.0), vec3(1.0));
+    vec4 s1 = vec4(sphere(pos+vec3(0.5,0.1,0.0), radius), vec3(1.0));
+    vec4 s2 = vec4(sphere(pos+vec3(-0.5,0.5,0.0), radius), vec3(1.0));
+    vec4 s3 = vec4(sphere(pos+vec3(0.5,0.9,0.0), radius), vec3(1.0));
     return unite(gd, unite(s1, unite(s2, s3)));
 }
         )";
@@ -66,11 +75,41 @@ auto MenuWidget::RenderContent() -> void
     ImGui::SameLine();
     LoadSDFWidget();
     
-    if(ImGui::Button("BHV Optimizator"))
+    
+
+        ImGui::Text("Primitives");
+    static std::vector<std::pair<std::string, std::string>> primitives =
     {
-        auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
-        windowManager.AddWidget(widget);
+        { "Sphere"          , "sphere.sdf" },
+        { "Cube"            , "cube.sdf" },
+        { "Plane"           , "plane.sdf" },
+        { "Oriented plane"  , "orientedPlane.sdf" },
+    };
+
+    for(auto& [name, path]: primitives)
+    {
+        if(ImGui::Button(name.c_str()))
+        {
+           Load(path);
+        }
     }
+
+    ImGui::Text("Operations");
+
+    static std::vector<std::pair<std::string, std::string>> operations =
+    {
+        { "Union",        "union.sdf" },
+        { "Intersection", "intersection.sdf" },
+    };
+
+    for(auto& [name, path]: operations)
+    {
+        if(ImGui::Button(name.c_str()))
+        {
+           Load(path);
+        }
+    }
+    ImGui::Separator();
 
     ImGui::Text("Interesting scenes");
     if(ImGui::Button("Test app"))
@@ -95,44 +134,19 @@ auto MenuWidget::RenderContent() -> void
         Load("periodicCubes.sdf");
     }
 
-    ImGui::Text("Primitives");
-    static std::vector<std::pair<std::string, std::string>> primitives =
+    if(ImGui::Button("Bending tube/cone"))
     {
-        { "Sphere", "vec4 df(vec3 pos) {\n    vec3 center = vec3(0.0);\n    float radius = 1.0;\n    float d = length(pos-center) - radius;\n    return vec4(d, vec3(1.0,0.0,0.0));\n}" },
-        { "Cube", "vec4 df(vec3 pos) {\n    vec3 center = vec3(0.0);\n    float radius = 1.0;\n    vec3 np = abs(pos);\n    float d = max(np.x, max(np.y,np.z)) - radius;\n    return vec4(d, vec3(1.0,0.0,0.0));\n}" },
-        { "Plane", "vec4 df(vec3 pos) {\n   vec3 color = vec3(sin(10.0*pos.x), 0.0, 0.0);\n   float offset = -3.0;\n   return vec4(pos.y - offset, color);\n}"},
-        { "Oriented Plane", "vec4 df(vec3 pos) {\n    vec3 normal = normalize(vec3(1.0,1.0,1.0));\n   vec3 color = vec3(sin(10.0*pos.x), 0.0, 0.0);\n   float offset = -3.0;\n   return vec4(dot(normal, pos) - offset, color);\n}"},
-    };
-
-    for(auto& [name, code]: primitives)
-    {
-        if(ImGui::Button(name.c_str()))
-        {
-            auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
-            widget->Recompile();
-            windowManager.AddWidget(widget);
-        }
+        Load("cone.sdf");
     }
 
-    ImGui::Text("Operations");
-
-    static std::vector<std::pair<std::string, std::string>> operations =
-    {
-        { "Union", "vec4 df(vec3 pos) {\n    float d = min(sphere(pos, 1.0), sphere(pos+vec3(0.5), 1.0));\n    return vec4(d, vec3(1.0));\n}" },
-        { "Intersection", "vec4 df(vec3 pos) {\n    float d = max(sphere(pos, 1.0), sphere(pos+vec3(0.5), 1.0));\n    return vec4(d, vec3(1.0));\n}" },
-    };
-
-    for(auto& [name, code]: operations)
-    {
-        if(ImGui::Button(name.c_str()))
-        {
-            auto widget = std::make_shared<raymarcher::EditWidget>(name, code);
-            widget->Recompile();
-            windowManager.AddWidget(widget);
-        }
-    }
     ImGui::Separator();
+
     ImGui::Text("Extras");
+    if(ImGui::Button("BHV Optimizator"))
+    {
+        auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
+        windowManager.AddWidget(widget);
+    }
     if(ImGui::Button("Show FPS"))
     {
         showFPS = !showFPS;
@@ -200,7 +214,7 @@ auto MenuWidget::Load(std::string path) -> void
     }
     std::filesystem::path filePath(path);
     auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.value(), filePath.filename());
-    widget->SetTitle(path);
+    widget->SetTitle(filePath.filename());
     widget->Recompile();
     windowManager.AddWidget(widget);
 }

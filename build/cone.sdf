@@ -1,0 +1,32 @@
+// Created by Roman Dobias
+
+uniform float slope = 0.0;
+uniform float height = 0.1;
+uniform float bending = 0.0;
+
+float cone(vec3 pos)
+{
+    // Bend space 
+    pos.x += sin(pos.y)*bending;
+
+    // Compute orthogonal projection of position to 
+    // to tube
+    vec3 n = normalize(vec3(0.0,1.0,0.0));
+    vec3 c = dot(n, pos)*n;
+
+    // Define radius, based on vertical position
+    float s = abs(slope*pos.y+0.1);
+    float d = length(c-pos)-s;
+    d -= 0.3;
+
+    // Cut-off top of tube
+    d = max(d, pos.y-height*10.0);
+    // Cut-off bottom
+    d = max(d, -pos.y-height*10.0);
+    return d;
+}
+
+vec4 df(vec3 pos)
+{
+    return vec4(cone(pos),vec3(1,0,0));
+}

@@ -15,7 +15,7 @@ auto WelcomeWidget::RenderContent() -> void
 
     ImGui::Text(R"(
   _____                                      _     _
- |  __ \                                    | |   (_)            
+ |  __ \                                    | |   (_)
  | |__) |__ _ _   _ _ __ ___   __ _ _ __ ___| |__  _ _ __   __ _ 
  |  _  // _` | | | | '_ ` _ \ / _` | '__/ __| '_ \| | '_ \ / _` |
  | | \ \ (_| | |_| | | | | | | (_| | | | (__| | | | | | | | (_| |
@@ -33,6 +33,13 @@ using so-called Signed Distance Function (SDF). In comparison to rasterizers or 
 tracers, ray marching allows to use geometry, which is hard to express explicitely.
     )");
 
+    if(ImGui::CollapsingHeader("Features of sandbox"))
+    {
+        ImGui::BulletText("Examples (primitives, operations, scenes)");
+        ImGui::BulletText("Rich shading & rendering parameters");
+        ImGui::BulletText("Live coding with auto-compile");
+        ImGui::BulletText("File save/load (SDF)");
+    }
 
     if(ImGui::CollapsingHeader("Algorithm of raymarching"))
     {

@@ -1,0 +1,5 @@
+uniform float offset = -1.0;
+   vec4 df(vec3 pos) {
+   vec3 color = vec3(sin(10.0*pos.x), 0.0, 0.0);
+   return vec4(pos.y - offset, color);
+}
