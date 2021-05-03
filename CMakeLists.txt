@@ -42,9 +42,6 @@ add_library(imgui SHARED
 
     3rd/imgui/misc/cpp/imgui_stdlib.cpp
     3rd/imgui/misc/cpp/imgui_stdlib.h
-
-
-    3rd/imgui-markdown/imgui_markdown.h
 )
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui-markdown/)
