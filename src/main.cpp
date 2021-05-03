@@ -2,10 +2,10 @@
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 
-#include "IApplication.hpp"
-#include "SandboxApplication.hpp"
-#include "TestApplication.hpp"
-#include "Args.hpp"
+#include "application/IApplication.hpp"
+#include "application/SandboxApplication.hpp"
+#include "application/TestApplication.hpp"
+#include "helpers/Args.hpp"
 
 std::unique_ptr<raymarcher::IApplication> g_application;
 

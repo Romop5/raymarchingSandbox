@@ -47,47 +47,55 @@ target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
 target_link_libraries(imgui PUBLIC GLEW)
 
 add_library(common
-    src/BVHLibrary.cpp
-    src/BVHGenerator.cpp
-    src/Args.cpp
-    src/FileHelper.cpp
+    src/helpers/Args.cpp
+    src/helpers/FileHelper.cpp
+    src/helpers/observer.hpp
 )
 set_property(TARGET common PROPERTY CXX_STANDARD 17)
+target_include_directories(common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+add_library(bvhlibrary
+    src/bvh/BVHLibrary.cpp
+    src/bvh/BVHGenerator.cpp
+)
+set_property(TARGET bvhlibrary PROPERTY CXX_STANDARD 17)
+target_link_libraries(bvhlibrary common)
 
 add_executable (sandbox
     src/main.cpp
-    src/SDF.cpp
-    src/Raymarcher.cpp
-    src/Raymarcher_Helpers.cpp
 
-    src/FlyingCamera.cpp
-    src/OrbitCamera.cpp
-    src/InterpolatedCamera.cpp
-    src/GLFWCamera.cpp
-    src/FPSMeter.cpp
+    src/raymarching/SDF.cpp
+    src/raymarching/Raymarcher.cpp
+    src/raymarching/Raymarcher_Helpers.cpp
+    src/raymarching/SDFLibrary.cpp
 
-    src/ImguiAdapter.cpp
-    src/WidgetBase.cpp
-    src/WidgetManager.cpp
-    src/WindowWidget.cpp
-    src/RendererWidget.cpp
-    src/RendererAttributesWidget.cpp
-    src/MenuWidget.cpp
-    src/EditWidget.cpp
-    src/SDFLibrary.cpp
-    src/BVHCalculatorWidget.cpp
+    src/rendering/FlyingCamera.cpp
+    src/rendering/OrbitCamera.cpp
+    src/rendering/InterpolatedCamera.cpp
+    src/rendering/GLFWCamera.cpp
 
-    src/SandboxApplication.cpp
-    src/TestApplication.cpp
+    src/widgets/WidgetBase.cpp
+    src/widgets/WidgetManager.cpp
+    src/widgets/WindowWidget.cpp
+    src/widgets/RendererWidget.cpp
+    src/widgets/RendererAttributesWidget.cpp
+    src/widgets/MenuWidget.cpp
+    src/widgets/EditWidget.cpp
+    src/widgets/BVHCalculatorWidget.cpp
+    src/widgets/FPSMeter.cpp
+
+
+    src/application/SandboxApplication.cpp
+    src/application/TestApplication.cpp
+    src/application/ImguiAdapter.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
-target_link_libraries(sandbox geGL::geGL dl imgui common)
+target_link_libraries(sandbox geGL::geGL dl imgui bvhlibrary)
 target_link_libraries(sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
+target_include_directories(sandbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_executable ( bvhgenerator 
     src/generator_main.cpp
-    src/FileHelper.cpp
-    src/BVHLibrary.cpp
 )
 set_property(TARGET bvhgenerator PROPERTY CXX_STANDARD 17)
-target_link_libraries(bvhgenerator common)
+target_link_libraries(bvhgenerator bvhlibrary)
