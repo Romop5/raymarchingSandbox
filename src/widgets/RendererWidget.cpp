@@ -80,6 +80,30 @@ auto RendererWidget::RenderContent() -> void
         SetViewportSize(size.x, size.y);
     }
 
+    ImGui::SameLine();
+    if(ImGui::Button("Help"))
+    {
+        ImGui::OpenPopup("HelpPopup");
+    }
+
+    if(ImGui::BeginPopup("HelpPopup"))
+    {
+        ImGui::Text("Help");
+        ImGui::Separator();
+        ImGui::Text("Fly camera:");
+        ImGui::Text("A S W D - movement (left, back, front, right)");
+        ImGui::Text("mouse - rotation");
+        ImGui::Text("Arrow Up/Down - rotation (vertical)");
+        ImGui::Text("Arrow Left/Right - rotation (horizontal)");
+        ImGui::Text("Page Up/Down - movement up/down");
+
+        ImGui::Separator();
+        ImGui::Text("Orbit camera:");
+        ImGui::Text("S W  - move close/further");
+        ImGui::Text("A D  - rotate left/right");
+        ImGui::EndPopup();
+    }
+
     if(ImGui::BeginChild("Render"))
     {
         auto& app = IApplication::GetApplication();

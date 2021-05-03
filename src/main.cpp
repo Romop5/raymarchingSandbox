@@ -70,11 +70,12 @@ int main(int argc, const char* argv[])
 {    
     raymarcher::Arguments args;
 
-    //              Name                --opt       -o
-    args.AddLongOpt("shouldRunTest",    "test",     "t", raymarcher::Arguments::paramLogic::NO_PARAM);
-    args.AddLongOpt("useFlyCam",        "flycam",   "f", raymarcher::Arguments::paramLogic::NO_PARAM);
-    args.AddLongOpt("sdfFile",          "input",    "i");
-    args.AddLongOpt("cameraSequenceID", "seq",      "s");
+    //              Name                --opt           -o
+    args.AddLongOpt("shouldRunTest",    "test",         "t", raymarcher::Arguments::paramLogic::NO_PARAM);
+    args.AddLongOpt("useFlyCam",        "flycam",       "f", raymarcher::Arguments::paramLogic::NO_PARAM);
+    args.AddLongOpt("multisample",      "multisample",  "m", raymarcher::Arguments::paramLogic::NO_PARAM);
+    args.AddLongOpt("sdfFile",          "input",        "i");
+    args.AddLongOpt("cameraSequenceID", "seq",          "s");
  
     args.Parse(argc, argv);
 
@@ -82,7 +83,11 @@ int main(int argc, const char* argv[])
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
-    //glfwWindowHint(GLFW_SAMPLES, 4);
+
+    if(args.HasArgument("multisample"))
+    {
+        glfwWindowHint(GLFW_SAMPLES, 4);
+    }
     window = glfwCreateWindow(defaultWindowWidth, defaultWindowHeight, "Raymarching Sandbox", NULL, NULL);
     if (!window)
     {

@@ -58,20 +58,21 @@ auto MenuWidget::RenderContent() -> void
         fpsMeter.RenderOverlay();
     }
 
-    LoadSDFWidget();
-    ImGui::SameLine();
     if(ImGui::Button("New"))
     {
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", SimpleSDFCode());
         windowManager.AddWidget(widget);
     }
-
+    ImGui::SameLine();
+    LoadSDFWidget();
+    
     if(ImGui::Button("BHV Optimizator"))
     {
         auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
         windowManager.AddWidget(widget);
     }
 
+    ImGui::Text("Interesting scenes");
     if(ImGui::Button("Test app"))
     {
         auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function", TestApplication());
@@ -79,8 +80,22 @@ auto MenuWidget::RenderContent() -> void
         windowManager.AddWidget(widget);
     }
 
-    ImGui::Text("Primitives");
+    if(ImGui::Button("Contractions"))
+    {
+        Load("contractions.sdf");
+    }
 
+    if(ImGui::Button("Dungeon"))
+    {
+        Load("dungeon.sdf");
+    }
+
+    if(ImGui::Button("Vanishing spheres"))
+    {
+        Load("periodicCubes.sdf");
+    }
+
+    ImGui::Text("Primitives");
     static std::vector<std::pair<std::string, std::string>> primitives =
     {
         { "Sphere", "vec4 df(vec3 pos) {\n    vec3 center = vec3(0.0);\n    float radius = 1.0;\n    float d = length(pos-center) - radius;\n    return vec4(d, vec3(1.0,0.0,0.0));\n}" },
@@ -116,6 +131,8 @@ auto MenuWidget::RenderContent() -> void
             windowManager.AddWidget(widget);
         }
     }
+    ImGui::Separator();
+    ImGui::Text("Extras");
     if(ImGui::Button("Show FPS"))
     {
         showFPS = !showFPS;
@@ -183,6 +200,8 @@ auto MenuWidget::Load(std::string path) -> void
     }
     std::filesystem::path filePath(path);
     auto widget = std::make_shared<raymarcher::EditWidget>(filePath.filename(), content.value(), filePath.filename());
+    widget->SetTitle(path);
+    widget->Recompile();
     windowManager.AddWidget(widget);
 }
 
