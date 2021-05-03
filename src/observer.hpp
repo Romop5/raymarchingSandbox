@@ -1,5 +1,11 @@
 /**
  * @brief Thread-nonsafe implementation of Observer pattern
+ *
+ * RAII-friendly
+ * An observer registers a functor using Register() method. Upon
+ * registering, a token is created, which holds state of registry.
+ * When token is destroyed, the observer is unregistered automatically.
+ *
  */
 #ifndef RAYMARCHER_OBSERVER_HPP
 #define RAYMARCHER_OBSERVER_HPP
@@ -17,6 +23,13 @@ class Callback;
 template<typename T>
 class Observee;
 
+/**
+ * @brief Registry token
+ *
+ * This is a RAII class which holds the registry association. 
+ * When destroyed, observer is deregistered automatically.
+ * When observee is destroyed, Observer is deregistered as well.
+ */
 template<typename T>
 class Observer
 {    
@@ -34,6 +47,13 @@ class Observer
     std::shared_ptr<Callback<T>> callback;
 };
 
+/**
+ * @brief Allows to be observed 
+ *
+ * A callback is registered using Register() method. Deregistering is provided
+ * via RAII mechanism.
+ */
+
 template<typename T>
 class Observee: public std::enable_shared_from_this<Observee<T>>
 {
@@ -47,7 +67,10 @@ class Observee: public std::enable_shared_from_this<Observee<T>>
     Observee& operator=(const Observee& o);
     Observee& operator=(Observee&& o);
 
+    /// Register a new callback and return its token
     auto Register(std::function<void(T)> functor) -> Observer<T>;
+
+    /// Call all callbacks with passing value 'a'
     void Call(T a);
 
     friend class Callback<T>;
