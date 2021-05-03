@@ -1,4 +1,15 @@
 
+float procTexture(vec3 pos)
+{
+    float x = pos.x;
+    float y = pos.z;
+    //float d = x*sin(mod(5.71,0.90))*mod(tan(tan(1.63)*x*tan(x)*tan(5.89*0.63)*y*mod(mod(11.41+tan(sin(tan(x))),53.43),16.69)*x+sin(y)),6.29);
+    //float d = sin(tan(x+x*mod(x,16.79)))*tan(mod(17.57*y,3.34))+sin(sin(tan(x))*x*tan(x));
+    //float d =sin(x)*3.13*y+sin(pow(12.88*y+sin(sin(sin(pow(x,pow(pow(x,x),y)))))+25.84,y))+5.77*pow(22.37,pow(x,pow(sin(13.77*y),x+pow(4.04*x,1.91)*43.71)+x))*x+1.46*3.05+y;
+    float d =sin(sin(sin(sin(y*y*sin(sin(x)))+y)*x*6.80+y*sin(y*24.91)));
+    return d;
+}
+
 float cone(vec3 pos, float a, float e)
 {
     vec3 n = normalize(vec3(0.0,1.0,0.0));
@@ -6,8 +17,6 @@ float cone(vec3 pos, float a, float e)
     float s = abs(0.3*pow(sin(pos.y*2.3),0.1));
     float d = length(c-pos)-s;
     d -= 0.3;
-    //d = max(d, -dot(n, pos));
-    //d = max(d, dot(n, pos)-e);
     return d;
 }
 
@@ -19,21 +28,30 @@ float simpleNoise(vec3 pos)
 vec4 df(vec3 pos)
 {
     vec3 newPos = pos;
-    pos.x += 0.4*pow(sin(pos.x), 30.0);
     float k = 5.0;
+    // Repeat space XYZ with K as period
     newPos = mod(pos+vec3(k*0.5), vec3(k))-vec3(0.5*k);
+    // Create column
     float d = cone(newPos, 0.4, 0.5);
 
+    // Remove columns
     d = max(d, -cube(pos*vec3(1.0,0.1,0.7), 1.0));
-    d = min(d, -cube(pos, 10.0));
+    
+    // Bound room into limited cube
+    d = min(d, -cube(pos, 20.0));
 
+    // Compute ground
     vec4 gd = ground(pos, -0.3);
+    // Intersect ground with sphere (pool)
     gd.x = max(gd.x, -sphere(pos, 3.0));
     d = min(d, gd.x);
     
+    // Union with flying sphere
     d = min(d, sphere(pos-vec3(-0.0, 1.0+2.0*sin(iTime),0), 1.1));
     
-    vec3 color = mix(vec3(0.70,0.70,0.70),vec3(0.82,0.81, 0.80), simpleNoise(pos));
+    // Use noise to compute final texture
+    float t = simpleNoise(pos);
+    vec3 color = mix(vec3(0.70,0.70,0.70),vec3(0.82,0.81, 0.80), t);
     return unite(gd, vec4(d, color));
 }
         
