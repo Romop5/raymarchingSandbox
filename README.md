@@ -46,6 +46,10 @@ with all leaves as children.
 `-s` is maximal ratio of child-to-parent volume. E.g. if ratio is 0.5, child's node is 
 removed if its volume divided by parent is more than 0.5.
 
+## Videos
+https://www.youtube.com/watch?v=BY6HxV_988k
+https://www.youtube.com/watch?v=lISFJknwtLg
+
 ## Author
 Roman Dobias (xdobia11(at)stud.fit.vutbr.cz)
 
