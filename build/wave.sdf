@@ -1,26 +1,13 @@
-
+uniform float animateX = 1.0;
+uniform float animateY = 1.0;
 vec4 df(vec3 pos)
 {
     vec3 newPos = pos;
-    pos.x += 0.2*cos(3.0*pos.z*fract(iTime));
-
-    pos.y += 0.8*sin(1.0*pos.x);
+    // Introduce periodicy by adding value of sin depending on position
+    pos.x += 0.2*cos(animateX*3.0*pos.z*fract(iTime));
+    pos.y += 0.8*sin(animateY*1.0*pos.x);
     vec4 gd = ground(pos, floorElevation);
     pos = newPos;
-
-
-    float k = 8;
-    pos = (mod(pos-vec3(k*0.5),k))-vec3(k*0.5);    
-
-    pos.x += sin(iTime);
-
-    float s = abs(cos(iTime));     
-
-    vec4 s1 = vec4(sphere(pos+vec3(0.5,0.1,0.0), s*1.0), vec3(1.0));
-    vec4 s2 = vec4(sphere(pos+vec3(-0.5,0.5,0.0), s*1.0), vec3(1.0));
-    vec4 s3 = vec4(sphere(pos+vec3(0.5,0.9,0.0), s*1.0), vec3(1.0));
-    return unite(gd, unite(s1, unite(s2, s3)));
-    //return unite(gd,object(pos));
-    //return unite(gd,vec4(sphere(pos, 1.0), vec3(1.0,0.0,0.0)));
+    return gd;
 }
         

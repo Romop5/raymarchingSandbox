@@ -1,0 +1,21 @@
+uniform float cellSize = 0.2;
+uniform float sphereSize = 1.0;
+
+// Copies the center at origin to all cells of grid
+// Size of cell is k
+vec3 repeatScene(vec3 pos, float k)
+{
+    return (mod(pos-vec3(k*0.5),k))-vec3(k*0.5);
+}
+
+vec4 df(vec3 pos)
+{
+    vec4 gd = ground(pos, floorElevation);
+
+    float k = abs(50.0*cellSize);
+    pos = repeatScene(pos, k);
+
+    vec4 s1 = vec4(sphere(pos+vec3(0.5,0.1,0.0), sphereSize), vec3(1.0));
+    return unite(gd, s1);
+}
+        

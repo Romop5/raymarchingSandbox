@@ -1,0 +1,26 @@
+/*
+   Example scene with metaballs, demonstrating smooth union
+*/
+uniform float smoothness = 0.1;
+
+// Taken from: https://iquilezles.org/www/articles/smin/smin.htm
+// polynomial smooth min (k = 0.1);
+float smin( float a, float b, float k ) 
+{
+  float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+  return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+vec4 df(vec3 pos)
+{
+    float k = abs(smoothness)*2.0;
+    float d = 1000;
+    float time = 1.0+sin(iTime);
+    d = smin(d, sphere(pos-vec3(-0.808467,3.962383,2.277903), time), k);
+    d = smin(d, sphere(pos-vec3(-0.568146,5.823429,2.149547), time), k);
+    d = smin(d, sphere(pos-vec3(-1.983486,4.103626,2.283116), time), k);
+    d = smin(d, sphere(pos-vec3(-0.964613,4.250393,2.350817), time), k);
+    return vec4(d, vec3(1.0, 0.7, 1.0));
+}
+
+

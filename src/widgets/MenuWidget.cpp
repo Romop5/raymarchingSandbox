@@ -98,8 +98,11 @@ auto MenuWidget::RenderContent() -> void
 
     static std::vector<std::pair<std::string, std::string>> operations =
     {
-        { "Union",        "union.sdf" },
-        { "Intersection", "intersection.sdf" },
+        { "Union",              "union.sdf" },
+        { "Intersection",       "intersection.sdf" },
+        { "Animated waves",     "wave.sdf" },
+        { "Repeating",          "repeat.sdf" },
+        { "Smooth union",       "metaballs.sdf" },
     };
 
     for(auto& [name, path]: operations)
@@ -122,6 +125,10 @@ auto MenuWidget::RenderContent() -> void
     if(ImGui::Button("Contractions"))
     {
         Load("contractions.sdf");
+    }
+    if(ImGui::Button("Contractions Animated"))
+    {
+        Load("contractionsAnimated2.sdf");
     }
 
     if(ImGui::Button("Dungeon"))
