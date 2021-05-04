@@ -17,7 +17,7 @@ auto BVHGenerator::GenerateCluster(glm::vec3 pos, float deviation, size_t count)
     {
         auto posDelta = glm::vec3(dis(generator),dis(generator), dis(generator));
         auto newPos = pos + posDelta;
-        float radius = dis(generator)*0.1;
+        float radius = abs(dis(generator))*0.1;
         scene.push_back(std::make_shared<SpherePrimitive>(newPos, radius));
     }
     return scene;

@@ -128,6 +128,7 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
         // For each subnode: determine SAH
         for(auto& child: children)
         {
+            assert(child);
             const auto childSize = child->GetSize();
             if(child->IsBoudingSphere() && GetSphereToSphereVolumeRatio(childSize, size) > threshold)
             {
@@ -135,6 +136,7 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
                 // into parent
                 for(auto& child: child->GetChildren())
                 {
+                    assert(child);
                     toBeAdded.push_back(child);
                     hasAddedChild = true;
                 }
@@ -143,13 +145,15 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
         }
 
         // Remove empty nodes
-        std::remove_if(children.begin(), children.end(), [](auto& child)
+        auto firstEmpty = std::remove_if(children.begin(), children.end(), [](auto& child)
         {
             return (child->IsBoudingSphere() && child->GetChildren().size() == 0);
         });
+        children.erase(firstEmpty, children.end());
         // Append children of subnode to parent
         for(auto& child: toBeAdded)
         {
+            assert(child);
             children.push_back(child);
         }
     } while(hasAddedChild);
@@ -157,6 +161,7 @@ auto SpherePrimitive::InflateUsingSAH(float threshold) -> void
     // Call inflate recursively for each child
     for(auto& child: children)
     {
+        assert(child);
         child->InflateUsingSAH(threshold);
     }
 }

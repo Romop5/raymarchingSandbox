@@ -1,8 +1,8 @@
 function testIt()
 {
-    echo "Testing: $1 $2 $3 $4"
+    echo "Testing: SEED($1) CLUSTERS($2) SAH($3) MAXLEVELS($4)"
     ./bvhgenerator --seed $1 -c $2 -s $3 -l $4 
-    ./sandbox test optimized.sdf | grep -v "Frame ID"
+    ./sandbox --test -i optimized.sdf | grep -v "Frame ID" | tail -n6
 }
 
 testIt 1337 1 1.0 0
