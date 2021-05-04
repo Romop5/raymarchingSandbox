@@ -40,14 +40,7 @@ auto SandboxApplication::Render() -> void
     if(adapter.IsVisible())
     {
         adapter.BeginFrame();
-        ImGui::ShowDemoWindow(nullptr);
-        
         widgetManager.Render();
-        /* if(ImGui::Begin("Widget", nullptr)) */
-        /* { */
-        /*     widget->Render(); */
-        /*     ImGui::End(); */
-        /* } */
         adapter.EndFrame();
         adapter.RenderCurrentFrame();
     }
