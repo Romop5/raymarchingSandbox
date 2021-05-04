@@ -1,4 +1,7 @@
 # Raymarching Sandbox
+<div align="center">
+    <img src="https://raw.githubusercontent.com/Romop5/raymarchingSandbox/main/media/demo.jpg" alt="app overview" height="400px"/>
+</div>
 
 ## About
 A school project for VGE@FIT VUT subject.
