@@ -2,62 +2,108 @@
 
 #include <imgui.h>
 
+#include "helpers/FileHelper.hpp"
 #include "raymarching/SDF.hpp"
-#include "widgets/WindowWidget.hpp"
-#include "widgets/MenuWidget.hpp"
 #include "rendering/FlyingCamera.hpp"
 #include "rendering/InterpolatedCamera.hpp"
-#include "helpers/FileHelper.hpp"
+#include "widgets/MenuWidget.hpp"
+#include "widgets/WindowWidget.hpp"
 
 using namespace raymarcher;
 
 namespace {
 
-    auto GetCameraPoints(size_t variantID) -> std::vector<raymarcher::InterpolatedCamera::CameraPoint>
-    {
-        switch(variantID)
-        {
-            case 0:
-                return std::vector<raymarcher::InterpolatedCamera::CameraPoint>
-                { 
-                     {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
-                     { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
-                     {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
-                     {200, glm::vec3( -2.0,20.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) }, 
-                     {250, glm::vec3( -20.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) }, 
-                     {300, glm::vec3( -10.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) }, 
-                     {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) }, 
-                }; 
-            case 1: [[fallthrough]];
-            default:
-                return std::vector<raymarcher::InterpolatedCamera::CameraPoint>
-                {
-                    {  0, glm::vec3(-10.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-                    { 50, glm::vec3( -5.0,0.0,0.2), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-                    {100, glm::vec3( -2.0,0.1,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-                    {200, glm::vec3( -2.0,2.0,0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(1.0,0.0,0.0) },
-                    {250, glm::vec3( -2.0,1.0,0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0,1.0,0.0) },
-                    {300, glm::vec3( -2.0,0.1,-5.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0,0.0,0.0) },
-                    {350, glm::vec3(  0.0,0.1,-3.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0,1.0,0.0) },
-                };
-        }
-    }
+auto
+GetCameraPoints(size_t variantID)
+  -> std::vector<raymarcher::InterpolatedCamera::CameraPoint>
+{
+  switch (variantID) {
+    case 0:
+      return std::vector<raymarcher::InterpolatedCamera::CameraPoint>{
+        { 0,
+          glm::vec3(-10.0, 0.1, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 50,
+          glm::vec3(-5.0, 0.0, 0.2),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 100,
+          glm::vec3(-2.0, 0.1, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 200,
+          glm::vec3(-2.0, 20.0, 0.0),
+          glm::vec3(0.0, -1.0, 0.0),
+          glm::vec3(1.0, 0.0, 0.0) },
+        { 250,
+          glm::vec3(-20.0, 1.0, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 300,
+          glm::vec3(-10.0, 0.1, -5.0),
+          glm::vec3(0.0, 0.0, 1.0),
+          glm::vec3(1.0, 0.0, 0.0) },
+        { 350,
+          glm::vec3(0.0, 0.1, -3.0),
+          glm::vec3(0.0, 0.0, 1.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+      };
+    case 1:
+      [[fallthrough]];
+    default:
+      return std::vector<raymarcher::InterpolatedCamera::CameraPoint>{
+        { 0,
+          glm::vec3(-10.0, 0.1, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 50,
+          glm::vec3(-5.0, 0.0, 0.2),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 100,
+          glm::vec3(-2.0, 0.1, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 200,
+          glm::vec3(-2.0, 2.0, 0.0),
+          glm::vec3(0.0, -1.0, 0.0),
+          glm::vec3(1.0, 0.0, 0.0) },
+        { 250,
+          glm::vec3(-2.0, 1.0, 0.0),
+          glm::vec3(1.0, 0.0, 0.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+        { 300,
+          glm::vec3(-2.0, 0.1, -5.0),
+          glm::vec3(0.0, 0.0, 1.0),
+          glm::vec3(1.0, 0.0, 0.0) },
+        { 350,
+          glm::vec3(0.0, 0.1, -3.0),
+          glm::vec3(0.0, 0.0, 1.0),
+          glm::vec3(0.0, 1.0, 0.0) },
+      };
+  }
+}
 
-    auto GetCodeFromFile(std::string path) -> std::optional<std::string>
-    {
-        return FileHelper::LoadFile(path);
-    }
+auto
+GetCodeFromFile(std::string path) -> std::optional<std::string>
+{
+  return FileHelper::LoadFile(path);
+}
 
-    auto CreateFlyingCamera() -> std::shared_ptr<GLFWCamera>
-    {
-        auto flycam = std::make_shared<raymarcher::FlyingCamera>();
-        auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(flycam, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA);
-        return focusedCamera;
-    }
+auto
+CreateFlyingCamera() -> std::shared_ptr<GLFWCamera>
+{
+  auto flycam = std::make_shared<raymarcher::FlyingCamera>();
+  auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(
+    flycam, raymarcher::GLFWCamera::CameraType::FLYING_CAMERA);
+  return focusedCamera;
+}
 
-    auto GetTestAppCode() -> std::string
-    {
-        auto code= R"(
+auto
+GetTestAppCode() -> std::string
+{
+  auto code = R"(
 vec4 df(vec3 pos)
 {
     bool isFarFromOrigin = (distance(camera_origin, pos) > 20.0);
@@ -126,211 +172,213 @@ vec4 df(vec3 pos)
 }
         )";
 
-
-        return code;
-    }
-
-    auto CreateTestApp(std::string code, size_t cameraID) -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
-    {
-        auto rm = std::make_shared<raymarcher::Raymarcher>();
-        auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
-        orbiter->SetCenter(glm::vec3(0.0, 3.0,0.0));
-        orbiter->SetDistance(5.0);
-        auto flycam = std::make_shared<raymarcher::FlyingCamera>();
-
-        const auto cameraPoints = GetCameraPoints(cameraID);
-        auto interpolatedCamera = std::make_shared<raymarcher::InterpolatedCamera>(std::move(cameraPoints));
-        //auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter, raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
-        auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(interpolatedCamera, raymarcher::GLFWCamera::CameraType::INTERPOLATED_CAMERA);
-        rm->SetCamera(focusedCamera);
-        //rm->SetCamera(orbiter);
-        auto sdf = std::make_shared<raymarcher::SDF>(code);
-        rm->SetSDF(sdf);
-
-        return std::pair{rm, focusedCamera};;
-    }
-}
- 
-
-TestApplication::TestApplication(StartParameters params) :
-    parameters(params)
-
-{    
-    ge::gl::init();
-
-    adapter.Initialize(500,500);
-    adapter.SetVisibility(true);
-
-    auto fileContent = GetCodeFromFile(params.filename);
-    std::string code = fileContent.value_or(GetTestAppCode());
-    auto [rm, cam] = CreateTestApp(code, params.cameraSequenceID);
-    raymarcher = rm;
-    camera = cam;
-    inputHandler = cam;
-    attributes = std::make_unique<RendererAttributesWidget>(rm);
-
-    if(parameters.shouldRunWithFreeMovement)
-    {
-        camera = CreateFlyingCamera();
-        raymarcher->SetCamera(camera);
-        SetFocus(camera);
-    }
+  return code;
 }
 
-auto TestApplication::Resize(size_t newWidth, size_t newHeight) -> void
+auto
+CreateTestApp(std::string code, size_t cameraID)
+  -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
 {
-    adapter.Resize(newWidth, newHeight);
+  auto rm = std::make_shared<raymarcher::Raymarcher>();
+  auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
+  orbiter->SetCenter(glm::vec3(0.0, 3.0, 0.0));
+  orbiter->SetDistance(5.0);
+  auto flycam = std::make_shared<raymarcher::FlyingCamera>();
+
+  const auto cameraPoints = GetCameraPoints(cameraID);
+  auto interpolatedCamera =
+    std::make_shared<raymarcher::InterpolatedCamera>(std::move(cameraPoints));
+  // auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(orbiter,
+  // raymarcher::GLFWCamera::CameraType::ORBITER_CAMERA);
+  auto focusedCamera = std::make_shared<raymarcher::GLFWCamera>(
+    interpolatedCamera,
+    raymarcher::GLFWCamera::CameraType::INTERPOLATED_CAMERA);
+  rm->SetCamera(focusedCamera);
+  // rm->SetCamera(orbiter);
+  auto sdf = std::make_shared<raymarcher::SDF>(code);
+  rm->SetSDF(sdf);
+
+  return std::pair{ rm, focusedCamera };
+  ;
+}
 }
 
-auto TestApplication::Render() -> void
+TestApplication::TestApplication(StartParameters params)
+  : parameters(params)
+
 {
-    static size_t frameID = 0;
-    frameID++;
-    if(!parameters.shouldRunWithFreeMovement)
-    {
-        if(frameID > 350)
-        {
-            shouldContinue = false;
-            fpsMeter.DumpConclusion();
-        }
-    }
+  ge::gl::init();
 
-    camera->UpdateFrame();
+  adapter.Initialize(500, 500);
+  adapter.SetVisibility(true);
 
-    if(raymarcher)
-    {
-        raymarcher->Render();
-    }
+  auto fileContent = GetCodeFromFile(params.filename);
+  std::string code = fileContent.value_or(GetTestAppCode());
+  auto [rm, cam] = CreateTestApp(code, params.cameraSequenceID);
+  raymarcher = rm;
+  camera = cam;
+  inputHandler = cam;
+  attributes = std::make_unique<RendererAttributesWidget>(rm);
 
-    // Hack: don't measure shader compilation
-    if(frameID > 1)
-    {
-        fpsMeter.Measure();
-    }
-
-    adapter.BeginFrame();
-    fpsMeter.RenderOverlay();
-
-    if(attributes)
-    {
-        attributes->Render();
-    }
-    
-    adapter.EndFrame();
-    adapter.RenderCurrentFrame();
+  if (parameters.shouldRunWithFreeMovement) {
+    camera = CreateFlyingCamera();
+    raymarcher->SetCamera(camera);
+    SetFocus(camera);
+  }
 }
 
-auto TestApplication::CharacterPressed(GLFWwindow* window, unsigned int character) -> void
+auto
+TestApplication::Resize(size_t newWidth, size_t newHeight) -> void
 {
-    adapter.OnCharacter(character);
+  adapter.Resize(newWidth, newHeight);
 }
 
-auto TestApplication::MouseCursorChanged(GLFWwindow* window, double absoluteX, double absoluteY) -> void
+auto
+TestApplication::Render() -> void
 {
-    static double lastXpos = 0.0, lastYpos = 0.0;
-    double relativeX = absoluteX-lastXpos;
-    double relativeY = absoluteY-lastYpos;
-    lastXpos = absoluteX;
-    lastYpos = absoluteY;
-
-    if(isGUIControlActive)
-    {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-
-        if(absoluteX < 0.0 || absoluteY < 0.0)
-        {
-            glfwSetCursorPos(window, std::max(0.0, absoluteX), std::max(0.0, absoluteY));
-        }
-
-        if(absoluteX > width || absoluteY > height)
-        {
-            auto w = static_cast<double>(width);
-            auto h = static_cast<double>(height);
-            glfwSetCursorPos(window, std::min(w, absoluteX), std::min(h, absoluteY));
-        }
-
-
-        adapter.OnMousePosition(absoluteX, absoluteY);
-        if(adapter.IsVisible())
-        {
-            return;
-        }
+  static size_t frameID = 0;
+  frameID++;
+  if (!parameters.shouldRunWithFreeMovement) {
+    if (frameID > 350) {
+      shouldContinue = false;
+      fpsMeter.DumpConclusion();
     }
+  }
 
-    if(inputHandler)
-    {
-        inputHandler->MouseCursorChanged(window, relativeX, relativeY);
-        return;
-    }
+  camera->UpdateFrame();
 
-    
+  if (raymarcher) {
+    raymarcher->Render();
+  }
+
+  // Hack: don't measure shader compilation
+  if (frameID > 1) {
+    fpsMeter.Measure();
+  }
+
+  adapter.BeginFrame();
+  fpsMeter.RenderOverlay();
+
+  if (attributes) {
+    attributes->Render();
+  }
+
+  adapter.EndFrame();
+  adapter.RenderCurrentFrame();
 }
 
-auto TestApplication::MouseButtonPressed(GLFWwindow* window, int button, int action) -> void 
+auto
+TestApplication::CharacterPressed(GLFWwindow* window, unsigned int character)
+  -> void
 {
-    if(adapter.WantCaptureMouse())
-    {
-        adapter.OnButton(button, action == GLFW_PRESS);
-    }
+  adapter.OnCharacter(character);
 }
 
-auto TestApplication::ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) -> void
+auto
+TestApplication::MouseCursorChanged(GLFWwindow* window,
+                                    double absoluteX,
+                                    double absoluteY) -> void
 {
-    if(inputHandler)
-    {
-        inputHandler->ScrollChanged(window, relativeX, relativeY);
-        return;
+  static double lastXpos = 0.0, lastYpos = 0.0;
+  double relativeX = absoluteX - lastXpos;
+  double relativeY = absoluteY - lastYpos;
+  lastXpos = absoluteX;
+  lastYpos = absoluteY;
+
+  if (isGUIControlActive) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+
+    if (absoluteX < 0.0 || absoluteY < 0.0) {
+      glfwSetCursorPos(
+        window, std::max(0.0, absoluteX), std::max(0.0, absoluteY));
     }
 
-    if(adapter.WantCaptureMouse())
-    {
-        adapter.OnScroll(relativeX, relativeY);
+    if (absoluteX > width || absoluteY > height) {
+      auto w = static_cast<double>(width);
+      auto h = static_cast<double>(height);
+      glfwSetCursorPos(window, std::min(w, absoluteX), std::min(h, absoluteY));
     }
+
+    adapter.OnMousePosition(absoluteX, absoluteY);
+    if (adapter.IsVisible()) {
+      return;
+    }
+  }
+
+  if (inputHandler) {
+    inputHandler->MouseCursorChanged(window, relativeX, relativeY);
+    return;
+  }
 }
 
-auto TestApplication::KeyPressed(GLFWwindow* window, int key, int action, int mod) -> void
+auto
+TestApplication::MouseButtonPressed(GLFWwindow* window, int button, int action)
+  -> void
 {
-    if(key == GLFW_KEY_F11 && action == GLFW_PRESS)
-    {
-        //adapter.SetVisibility(!adapter.IsVisible());
-        isGUIControlActive = !isGUIControlActive;
-    }
-
-    if(isGUIControlActive)
-    {
-        if(adapter.WantCaptureKeyboard())
-        {
-            int imguiMod = ModifierBitmap::NORMAL;
-            if(mod & GLFW_MOD_CONTROL)
-                imguiMod = imguiMod | ModifierBitmap::CTRL;
-            if(mod & GLFW_MOD_SHIFT)
-                imguiMod = imguiMod | ModifierBitmap::SHIFT;
-
-            adapter.OnKey(key, action == GLFW_PRESS, static_cast<ModifierBitmap>(imguiMod));
-            return;
-        }
-    }
-
-    if(inputHandler)
-    {
-        inputHandler->KeyPressed(window, key);
-        return;
-    }
-    
+  if (adapter.WantCaptureMouse()) {
+    adapter.OnButton(button, action == GLFW_PRESS);
+  }
 }
 
-auto TestApplication::SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void
+auto
+TestApplication::ScrollChanged(GLFWwindow* window,
+                               double relativeX,
+                               double relativeY) -> void
 {
-    inputHandler = std::move(handler);
+  if (inputHandler) {
+    inputHandler->ScrollChanged(window, relativeX, relativeY);
+    return;
+  }
+
+  if (adapter.WantCaptureMouse()) {
+    adapter.OnScroll(relativeX, relativeY);
+  }
 }
 
-auto TestApplication::GetFocus() -> std::shared_ptr<IGLFWInputHandler>
+auto
+TestApplication::KeyPressed(GLFWwindow* window, int key, int action, int mod)
+  -> void
 {
-    return inputHandler;
+  if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+    // adapter.SetVisibility(!adapter.IsVisible());
+    isGUIControlActive = !isGUIControlActive;
+  }
+
+  if (isGUIControlActive) {
+    if (adapter.WantCaptureKeyboard()) {
+      int imguiMod = ModifierBitmap::NORMAL;
+      if (mod & GLFW_MOD_CONTROL)
+        imguiMod = imguiMod | ModifierBitmap::CTRL;
+      if (mod & GLFW_MOD_SHIFT)
+        imguiMod = imguiMod | ModifierBitmap::SHIFT;
+
+      adapter.OnKey(
+        key, action == GLFW_PRESS, static_cast<ModifierBitmap>(imguiMod));
+      return;
+    }
+  }
+
+  if (inputHandler) {
+    inputHandler->KeyPressed(window, key);
+    return;
+  }
 }
 
-auto TestApplication::ShouldContinue() -> bool
+auto
+TestApplication::SetFocus(std::shared_ptr<IGLFWInputHandler> handler) -> void
 {
-    return shouldContinue;
+  inputHandler = std::move(handler);
+}
+
+auto
+TestApplication::GetFocus() -> std::shared_ptr<IGLFWInputHandler>
+{
+  return inputHandler;
+}
+
+auto
+TestApplication::ShouldContinue() -> bool
+{
+  return shouldContinue;
 }

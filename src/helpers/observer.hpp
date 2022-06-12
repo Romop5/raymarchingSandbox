@@ -10,12 +10,11 @@
 #ifndef RAYMARCHER_OBSERVER_HPP
 #define RAYMARCHER_OBSERVER_HPP
 
+#include <functional>
 #include <memory>
 #include <vector>
-#include <functional>
 
-namespace raymarcher
-{
+namespace raymarcher {
 
 template<typename T>
 class Callback;
@@ -26,248 +25,251 @@ class Observee;
 /**
  * @brief Registry token
  *
- * This is a RAII class which holds the registry association. 
+ * This is a RAII class which holds the registry association.
  * When destroyed, observer is deregistered automatically.
  * When observee is destroyed, Observer is deregistered as well.
  */
 template<typename T>
 class Observer
-{    
-    public:
-    Observer() = default;
-    ~Observer();
-    Observer(const Observer& o);
-    Observer(Observer&& o);
+{
+public:
+  Observer() = default;
+  ~Observer();
+  Observer(const Observer& o);
+  Observer(Observer&& o);
 
-    Observer& operator=(const Observer& o);
-    Observer& operator=(Observer&& o);
+  Observer& operator=(const Observer& o);
+  Observer& operator=(Observer&& o);
 
-    friend class Observee<T>;
-    private:
-    std::shared_ptr<Callback<T>> callback;
+  friend class Observee<T>;
+
+private:
+  std::shared_ptr<Callback<T>> callback;
 };
 
 /**
- * @brief Allows to be observed 
+ * @brief Allows to be observed
  *
  * A callback is registered using Register() method. Deregistering is provided
  * via RAII mechanism.
  */
 
 template<typename T>
-class Observee: public std::enable_shared_from_this<Observee<T>>
+class Observee : public std::enable_shared_from_this<Observee<T>>
 {
-    public:
-    Observee();
-    ~Observee();
+public:
+  Observee();
+  ~Observee();
 
-    Observee(const Observee& o);
-    Observee(Observee&& o);
+  Observee(const Observee& o);
+  Observee(Observee&& o);
 
-    Observee& operator=(const Observee& o);
-    Observee& operator=(Observee&& o);
+  Observee& operator=(const Observee& o);
+  Observee& operator=(Observee&& o);
 
-    /// Register a new callback and return its token
-    auto Register(std::function<void(T)> functor) -> Observer<T>;
+  /// Register a new callback and return its token
+  auto Register(std::function<void(T)> functor) -> Observer<T>;
 
-    /// Call all callbacks with passing value 'a'
-    void Call(T a);
+  /// Call all callbacks with passing value 'a'
+  void Call(T a);
 
-    friend class Callback<T>;
-    private:
-    auto Unregister(std::shared_ptr<Callback<T>> callback) -> void;
-    std::vector<std::shared_ptr<Callback<T>>> callbacks;
+  friend class Callback<T>;
+
+private:
+  auto Unregister(std::shared_ptr<Callback<T>> callback) -> void;
+  std::vector<std::shared_ptr<Callback<T>>> callbacks;
 };
 
 template<typename T>
-class Callback: public std::enable_shared_from_this<Callback<T>>
+class Callback : public std::enable_shared_from_this<Callback<T>>
 {
-    public:
-    Callback();
-    ~Callback();
+public:
+  Callback();
+  ~Callback();
 
-    Callback(const Callback& o);
-    Callback(Callback&& o);
-    Callback& operator=(const Callback& o);
-    Callback& operator=(Callback&& o);
+  Callback(const Callback& o);
+  Callback(Callback&& o);
+  Callback& operator=(const Callback& o);
+  Callback& operator=(Callback&& o);
 
-    friend class Observee<T>;
-    friend class Observer<T>;
-    private:
-    auto Unregister() -> void;
-    std::shared_ptr<Observee<T>> observee;
-    std::function<void(T)> callback;
+  friend class Observee<T>;
+  friend class Observer<T>;
+
+private:
+  auto Unregister() -> void;
+  std::shared_ptr<Observee<T>> observee;
+  std::function<void(T)> callback;
 };
-
 
 //-----------------------------------------------------------------------------
 template<typename T>
 Observer<T>::~Observer<T>()
 {
-    if(callback)
-    {
-        callback->Unregister();
-    }
-    callback.reset();
+  if (callback) {
+    callback->Unregister();
+  }
+  callback.reset();
 }
 
 template<typename T>
 Observer<T>::Observer(const Observer<T>& o)
 {
-    this->callback = o.callback;
+  this->callback = o.callback;
 }
 
 template<typename T>
 Observer<T>::Observer(Observer<T>&& o)
 {
-    std::swap(this->callback, o.callback);
+  std::swap(this->callback, o.callback);
 }
 
 template<typename T>
-Observer<T>& Observer<T>::operator=(const Observer<T>& o)
+Observer<T>&
+Observer<T>::operator=(const Observer<T>& o)
 {
-    this->callback = o.callback;
-    return *this;
+  this->callback = o.callback;
+  return *this;
 }
 
 template<typename T>
-Observer<T>& Observer<T>::operator=(Observer<T>&& o)
+Observer<T>&
+Observer<T>::operator=(Observer<T>&& o)
 {
-    std::swap(this->callback, o.callback);
-    return *this;
+  std::swap(this->callback, o.callback);
+  return *this;
 }
 
 //-----------------------------------------------------------------------------
 template<typename T>
 Observee<T>::Observee()
-{
-}
+{}
 
 template<typename T>
 Observee<T>::~Observee()
 {
-    for(auto& observer: callbacks)
-    {
-        Unregister(observer);
-    }
+  for (auto& observer : callbacks) {
+    Unregister(observer);
+  }
 }
 
 template<typename T>
 Observee<T>::Observee(const Observee<T>& o)
 {
-    this->callbacks = o.callbacks;
+  this->callbacks = o.callbacks;
 }
 
 template<typename T>
 Observee<T>::Observee(Observee<T>&& o)
 {
-    std::swap(this->callbacks, o.callbacks);
-}
-
-
-template<typename T>
-Observee<T>& Observee<T>::operator=(const Observee<T>& o)
-{
-    this->callbacks = o.callbacks;
-    return *this;
+  std::swap(this->callbacks, o.callbacks);
 }
 
 template<typename T>
-Observee<T>& Observee<T>::operator=(Observee<T>&& o)
+Observee<T>&
+Observee<T>::operator=(const Observee<T>& o)
 {
-    std::swap(this->callbacks, o.callbacks);
-    return *this;
-}
-
-
-template<typename T>
-auto Observee<T>::Register(std::function<void(T)> functor) -> Observer<T>
-{
-    auto callback = std::make_shared<Callback<T>>();
-    callback->observee = std::enable_shared_from_this<Observee<T>>::shared_from_this();
-    callback->callback = std::move(functor);
-
-    callbacks.push_back(callback);
-
-    Observer<T> observer;
-    observer.callback = callback;
-    return observer;
+  this->callbacks = o.callbacks;
+  return *this;
 }
 
 template<typename T>
-auto Observee<T>::Unregister(std::shared_ptr<Callback<T>> callback) -> void
+Observee<T>&
+Observee<T>::operator=(Observee<T>&& o)
 {
-    callback->observee.reset();
+  std::swap(this->callbacks, o.callbacks);
+  return *this;
+}
 
-    for(auto it = callbacks.begin(); it != callbacks.end(); it++)
-    {
-        if(*it == callback)
-        {
-            callbacks.erase(it);
-            return;
-        }
+template<typename T>
+auto
+Observee<T>::Register(std::function<void(T)> functor) -> Observer<T>
+{
+  auto callback = std::make_shared<Callback<T>>();
+  callback->observee =
+    std::enable_shared_from_this<Observee<T>>::shared_from_this();
+  callback->callback = std::move(functor);
+
+  callbacks.push_back(callback);
+
+  Observer<T> observer;
+  observer.callback = callback;
+  return observer;
+}
+
+template<typename T>
+auto
+Observee<T>::Unregister(std::shared_ptr<Callback<T>> callback) -> void
+{
+  callback->observee.reset();
+
+  for (auto it = callbacks.begin(); it != callbacks.end(); it++) {
+    if (*it == callback) {
+      callbacks.erase(it);
+      return;
     }
+  }
 }
 
 template<typename T>
-void Observee<T>::Call(T a)
+void
+Observee<T>::Call(T a)
 {
-    for(auto& observer: callbacks)
-    {
-        observer->callback(a);
-    }
+  for (auto& observer : callbacks) {
+    observer->callback(a);
+  }
 }
 
 //-----------------------------------------------------------------------------
 template<typename T>
 Callback<T>::Callback()
-{
-}
+{}
 
 template<typename T>
 Callback<T>::~Callback()
 {
-    Unregister(); 
+  Unregister();
 }
-
 
 template<typename T>
 Callback<T>::Callback(const Callback<T>& o)
 {
-    this->observee = o.observee;
-    this->callback = o.callback;
+  this->observee = o.observee;
+  this->callback = o.callback;
 }
 
 template<typename T>
 Callback<T>::Callback(Callback<T>&& o)
 {
-    std::swap(this->observee, o.observee);
-    std::swap(this->callback, o.callback);
+  std::swap(this->observee, o.observee);
+  std::swap(this->callback, o.callback);
 }
 
 template<typename T>
-Callback<T>& Callback<T>::operator=(const Callback<T>& o)
+Callback<T>&
+Callback<T>::operator=(const Callback<T>& o)
 {
-    this->observee = o.observee;
-    this->callback = o.callback;
-    return *this;
+  this->observee = o.observee;
+  this->callback = o.callback;
+  return *this;
 }
 
 template<typename T>
-Callback<T>& Callback<T>::operator=(Callback<T>&& o)
+Callback<T>&
+Callback<T>::operator=(Callback<T>&& o)
 {
-    std::swap(this->observee, o.observee);
-    std::swap(this->callback, o.callback);
-    return *this;
+  std::swap(this->observee, o.observee);
+  std::swap(this->callback, o.callback);
+  return *this;
 }
 
 template<typename T>
-auto Callback<T>::Unregister() -> void
+auto
+Callback<T>::Unregister() -> void
 {
-    if(observee)
-    {
-        observee->Unregister(std::enable_shared_from_this<Callback<T>>::shared_from_this());
-    }
+  if (observee) {
+    observee->Unregister(
+      std::enable_shared_from_this<Callback<T>>::shared_from_this());
+  }
 }
 }
 #endif

@@ -5,18 +5,18 @@
 #include "widgets/WindowWidget.hpp"
 #include <map>
 
-namespace raymarcher
+namespace raymarcher {
+class RendererAttributesWidget : public WindowWidget
 {
-class RendererAttributesWidget: public WindowWidget
-{
-    public:
-        RendererAttributesWidget() = default;
-        explicit RendererAttributesWidget(std::shared_ptr<Raymarcher> rm);
+public:
+  RendererAttributesWidget() = default;
+  explicit RendererAttributesWidget(std::shared_ptr<Raymarcher> rm);
 
-        auto RenderContent() -> void override;
-    private:
-        std::shared_ptr<Raymarcher>             raymarcher;
-        std::map<std::string, float>            lastUniformValue;
+  auto RenderContent() -> void override;
+
+private:
+  std::shared_ptr<Raymarcher> raymarcher;
+  std::map<std::string, float> lastUniformValue;
 };
 
 }

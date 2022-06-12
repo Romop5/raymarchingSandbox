@@ -3,13 +3,14 @@
 
 #include <string>
 
-namespace raymarcher
-{
+namespace raymarcher {
 /// Construct Fragment Shader using user SDF and predefined functions
-std::string ConstructRenderedFragmentShader(std::string sdfGLSL);
+std::string
+ConstructRenderedFragmentShader(std::string sdfGLSL);
 
 /// Create a simple VS for quad rendering
-std::string ConstructRenderedVertexShader();
+std::string
+ConstructRenderedVertexShader();
 }
 
 #endif

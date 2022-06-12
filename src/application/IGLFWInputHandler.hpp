@@ -3,17 +3,20 @@
 
 #include <GLFW/glfw3.h>
 
-namespace raymarcher
-{
+namespace raymarcher {
 /**
  * @brief A generic input handler for GLFW window methods
  */
 class IGLFWInputHandler
 {
-    public:
-    virtual auto MouseCursorChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void = 0;
-    virtual auto ScrollChanged(GLFWwindow* window, double relativeX, double relativeY) const -> void = 0;
-    virtual auto KeyPressed(GLFWwindow* window, int key) const -> void = 0;
+public:
+  virtual auto MouseCursorChanged(GLFWwindow* window,
+                                  double relativeX,
+                                  double relativeY) const -> void = 0;
+  virtual auto ScrollChanged(GLFWwindow* window,
+                             double relativeX,
+                             double relativeY) const -> void = 0;
+  virtual auto KeyPressed(GLFWwindow* window, int key) const -> void = 0;
 };
 }
 #endif

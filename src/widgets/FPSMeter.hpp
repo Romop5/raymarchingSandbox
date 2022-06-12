@@ -1,12 +1,11 @@
 #ifndef RAYMARCHER_FPSMETER_HPP
 #define RAYMARCHER_FPSMETER_HPP
 
-#include <cstdlib>
-#include <array>
 #include "helpers/RingBuffer.hpp"
+#include <array>
+#include <cstdlib>
 
-namespace raymarcher
-{
+namespace raymarcher {
 
 /**
  * @brief Collects statistics about FPS during run of the program
@@ -17,32 +16,32 @@ namespace raymarcher
  */
 class FPSMeter
 {
-    public:
-    FPSMeter();
-    /// Update statistics for current frame
-    auto Measure()          -> void;
-    
-    /// Render overlay with FPS etc.
-    auto RenderOverlay()    -> void;
+public:
+  FPSMeter();
+  /// Update statistics for current frame
+  auto Measure() -> void;
 
-    /// Print statistics to stdout
-    auto DumpConclusion()   -> void;
+  /// Render overlay with FPS etc.
+  auto RenderOverlay() -> void;
 
-    private:
-    /// Frames, passed since beginning of measurement
-    size_t framesPassed = 0;
+  /// Print statistics to stdout
+  auto DumpConclusion() -> void;
 
-    /// Duration of last frame in milliseconds
-    size_t perFramePeriodInMs;
-    
-    /// Last 20 frame periods
-    RingBuffer<20> framePeriods;
+private:
+  /// Frames, passed since beginning of measurement
+  size_t framesPassed = 0;
 
-    /// Last 5 frames per second
-    RingBuffer<5> fps;
+  /// Duration of last frame in milliseconds
+  size_t perFramePeriodInMs;
 
-    /// Statistics over whole recording
-    RingBuffer<10000> totalFramePeriods;
+  /// Last 20 frame periods
+  RingBuffer<20> framePeriods;
+
+  /// Last 5 frames per second
+  RingBuffer<5> fps;
+
+  /// Statistics over whole recording
+  RingBuffer<10000> totalFramePeriods;
 };
 }
 #endif

@@ -3,39 +3,43 @@
 
 using namespace raymarcher;
 
-SDF::SDF(std::string code) :
-    sourceCode { code} 
+SDF::SDF(std::string code)
+  : sourceCode{ code }
 
 {
-    ParseCode();
+  ParseCode();
 }
 
-auto SDF::GetGLSLCode() -> const std::string&
+auto
+SDF::GetGLSLCode() -> const std::string&
 {
-    return sourceCode;
+  return sourceCode;
 }
 
-auto SDF::OnUpdateParametersCallback(ge::gl::Program& program) -> void
+auto
+SDF::OnUpdateParametersCallback(ge::gl::Program& program) -> void
 {
-    // Pass
+  // Pass
 }
 
-auto SDF::GetUniforms() const -> const std::vector<Uniform>&
+auto
+SDF::GetUniforms() const -> const std::vector<Uniform>&
 {
-    return userUniforms;
+  return userUniforms;
 }
 
-auto SDF::ParseCode() -> void
+auto
+SDF::ParseCode() -> void
 {
-    // Parse uniforms
-    userUniforms.clear();
-    auto str = sourceCode;
-    auto uniformDefinition = std::regex("uniform *([^ ]*) *([a-zA-Z0-9]*)( *=.*)?;");
-    std::smatch match;
-    while(regex_search(str, match, uniformDefinition))
-    {
-        const Uniform uniform {match[2], match[1]};
-        userUniforms.push_back(uniform);
-        str = match.suffix();
-    }
+  // Parse uniforms
+  userUniforms.clear();
+  auto str = sourceCode;
+  auto uniformDefinition =
+    std::regex("uniform *([^ ]*) *([a-zA-Z0-9]*)( *=.*)?;");
+  std::smatch match;
+  while (regex_search(str, match, uniformDefinition)) {
+    const Uniform uniform{ match[2], match[1] };
+    userUniforms.push_back(uniform);
+    str = match.suffix();
+  }
 }

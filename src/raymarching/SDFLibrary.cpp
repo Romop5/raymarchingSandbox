@@ -2,51 +2,44 @@
 
 using namespace raymarcher;
 
+SDFLibrary::SDFLibrary() {}
 
-SDFLibrary::SDFLibrary()
+SDFLibrary::SDFLibrary(std::vector<std::string> newPrimitive,
+                       std::vector<std::string> newBinaryOps)
 {
+  for (auto& primitive : newPrimitive) {
+    auto name = ParseName(primitive);
+    primitives[name] = primitive;
+  }
 }
 
-
-SDFLibrary::SDFLibrary(std::vector<std::string> newPrimitive, std::vector<std::string> newBinaryOps)
+const std::vector<std::string>
+SDFLibrary::GetPrimitiveNames() const
 {
-    for(auto& primitive: newPrimitive)
-    {
-        auto name = ParseName(primitive);
-        primitives[name] = primitive;
-    }
+  std::vector<std::string> names;
+  for (auto& name : primitives) {
+    names.push_back(name.first);
+  }
+  return names;
 }
 
-const std::vector<std::string> SDFLibrary::GetPrimitiveNames() const
+const std::string
+SDFLibrary::GetPrimitive(std::string key)
 {
-    std::vector<std::string> names;
-    for(auto& name: primitives)
-    {
-        names.push_back(name.first);
-    }
-    return names;
+  if (primitives.count(key)) {
+    return primitives.at(key);
+  }
+  return "";
 }
 
-const std::string SDFLibrary::GetPrimitive(std::string key)
+std::string
+SDFLibrary::ParseName(std::string GLSLcode)
 {
-    if(primitives.count(key))
-    {
-        return primitives.at(key);
-    }
-    return "";
+  auto posStart = GLSLcode.find("float");
+  auto posEnd = GLSLcode.find("(");
+  if (posStart && posEnd) {
+    return GLSLcode.substr(posStart, posEnd - posStart);
+  }
+  static size_t id = 0;
+  return "Unknown " + std::to_string(id++);
 }
-
-
-std::string SDFLibrary::ParseName(std::string GLSLcode)
-{
-    auto posStart= GLSLcode.find("float");
-    auto posEnd = GLSLcode.find("(");
-    if(posStart && posEnd)
-    {
-        return GLSLcode.substr(posStart, posEnd-posStart);
-    }
-    static size_t id = 0;
-    return "Unknown "+std::to_string(id++);
-}
-
-

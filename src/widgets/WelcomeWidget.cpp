@@ -5,14 +5,15 @@ using namespace raymarcher;
 
 WelcomeWidget::WelcomeWidget(WidgetManager& windowManager)
 {
-    SetTitle("Welcome screen");
+  SetTitle("Welcome screen");
 }
 
-auto WelcomeWidget::RenderContent() -> void
+auto
+WelcomeWidget::RenderContent() -> void
 {
-    WindowWidget::RenderContent();
+  WindowWidget::RenderContent();
 
-    ImGui::Text(R"(
+  ImGui::Text(R"(
   _____                                      _     _
  |  __ \                                    | |   (_)
  | |__) |__ _ _   _ _ __ ___   __ _ _ __ ___| |__  _ _ __   __ _ 
@@ -26,48 +27,44 @@ auto WelcomeWidget::RenderContent() -> void
         ____) | (_| | | | | (_| | |_) | (_) >  <                 
        |_____/ \__,_|_| |_|\__,_|_.__/ \___/_/\_\                
     )");
-    ImGui::Text(R"(
+  ImGui::Text(R"(
 Raymarching is an generic algorithm for finding an intersection with a ray and geometry, defined
 using so-called Signed Distance Function (SDF). In comparison to rasterizers or ray
 tracers, ray marching allows to use geometry, which is hard to express explicitely.
     )");
 
-    if(ImGui::CollapsingHeader("Features of sandbox"))
-    {
-        ImGui::BulletText("Examples (primitives, operations, scenes)");
-        ImGui::BulletText("Rich shading & rendering parameters");
-        ImGui::BulletText("Live coding with auto-compile");
-        ImGui::BulletText("File save/load (SDF)");
-    }
+  if (ImGui::CollapsingHeader("Features of sandbox")) {
+    ImGui::BulletText("Examples (primitives, operations, scenes)");
+    ImGui::BulletText("Rich shading & rendering parameters");
+    ImGui::BulletText("Live coding with auto-compile");
+    ImGui::BulletText("File save/load (SDF)");
+  }
 
-    if(ImGui::CollapsingHeader("Algorithm of raymarching"))
-    {
-        ImGui::Text(R"(
+  if (ImGui::CollapsingHeader("Algorithm of raymarching")) {
+    ImGui::Text(R"(
 A generic idea of raymarching is that the intersection with geometry can be found by moving
 (marching) along the ray and determing the current distance to the closest geometry.
 If such distance is small enough, the current point is declared as intersection, and the distance to
 the point from the origin is reported.
 )");
-    }
+  }
 
-    if(ImGui::CollapsingHeader("Sphere Tracing Algorithm"))
-    {
-        ImGui::Text(R"(
+  if (ImGui::CollapsingHeader("Sphere Tracing Algorithm")) {
+    ImGui::Text(R"(
 The definition above does not give an exact approach to compute the distance. Therefore, various
 variants of raymarching exists. 
 )");
 
-ImGui::Text(R"(
+    ImGui::Text(R"(
 Sphere Tracing sphereTracing originates from 1995. The idea is that positions along the ray
 are marched with distances, equal to the closest geometry, thus by computing SDF at each position.
 The name of algorithm originates from the fact that evaluation of SDF at points along the ray gives
 the sphere where none of geometry lies in.
 )");
-    }
+  }
 
-    if(ImGui::CollapsingHeader("Implementation using GLSL"))
-    {
-        ImGui::Text(R"(
+  if (ImGui::CollapsingHeader("Implementation using GLSL")) {
+    ImGui::Text(R"(
 In practice, ray marching is implemented for instance using OpenGL and quad rendering.
 A fullscreen quad is rendered and the algorithm is encoded in Fragment Shader.
 
@@ -104,11 +101,10 @@ After determining distance to geometry, the distance D can be visualized in mult
     Finally, the ray marching can be used to display properly shaded models. 
 
         )");
-    }
+  }
 
-    if(ImGui::CollapsingHeader("Signed Distance Function"))
-    {
-        ImGui::Text(R"(
+  if (ImGui::CollapsingHeader("Signed Distance Function")) {
+    ImGui::Text(R"(
 A SDF function is an arbitrary continuous function R^3->R, which maps
 position to the distance to the nearest point of geometry. In contrast to a metric function, SDF can
 also obtain negative values. These are for points, which are inside the object.
@@ -123,7 +119,5 @@ By using a texture
     This is useful, for instance, for rendering geometry, expressed by a point cloud.
 
         )");
-    }
+  }
 }
-
-
