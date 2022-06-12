@@ -179,7 +179,7 @@ auto
 CreateTestApp(std::string code, size_t cameraID)
   -> std::pair<std::unique_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
 {
-  auto rm = std::unique_ptr<raymarcher::Raymarcher>();
+  auto rm = std::make_unique<raymarcher::Raymarcher>();
   auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
   orbiter->SetCenter(glm::vec3(0.0, 3.0, 0.0));
   orbiter->SetDistance(5.0);
