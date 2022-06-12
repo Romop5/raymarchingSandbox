@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (gl)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 find_package(OpenGL)
@@ -12,40 +15,34 @@ else (OPENGL_FOUND)
 endif()
 
 
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-
 #add_subdirectory(ext/glfw)
 #include_directories(ext/glfw/include)
 
 find_package(geGL REQUIRED)
-find_package(GLFW REQUIRED)
-find_package(GLM REQUIRED)
 
-# Compile imgui
-add_library(imgui SHARED 
-    3rd/imgui/imgui.cpp
-    3rd/imgui/imgui_demo.cpp
-    3rd/imgui/imgui_draw.cpp
-    3rd/imgui/imgui_tables.cpp
-    3rd/imgui/imgui_widgets.cpp
-    3rd/imgui/imconfig.h
-    3rd/imgui/imgui.h
-    3rd/imgui/imgui_internal.h
-    3rd/imgui/imstb_rectpack.h
-    3rd/imgui/imstb_textedit.h
-    3rd/imgui/imstb_truetype.h
+# # Compile imgui
+# add_library(imgui SHARED 
+# 3rd/imgui/imgui.cpp
+# 3rd/imgui/imgui_demo.cpp
+# 3rd/imgui/imgui_draw.cpp
+# 3rd/imgui/imgui_tables.cpp
+# 3rd/imgui/imgui_widgets.cpp
+# 3rd/imgui/imconfig.h
+# 3rd/imgui/imgui.h
+# 3rd/imgui/imgui_internal.h
+# 3rd/imgui/imstb_rectpack.h
+# 3rd/imgui/imstb_textedit.h
+# 3rd/imgui/imstb_truetype.h
 
-    3rd/imgui/backends/imgui_impl_opengl3.h
-    3rd/imgui/backends/imgui_impl_opengl3.cpp
+# 3rd/imgui/backends/imgui_impl_opengl3.h
+# 3rd/imgui/backends/imgui_impl_opengl3.cpp
 
-    3rd/imgui/misc/cpp/imgui_stdlib.cpp
-    3rd/imgui/misc/cpp/imgui_stdlib.h
-)
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui-markdown/)
-target_link_libraries(imgui PUBLIC GLEW)
+# 3rd/imgui/misc/cpp/imgui_stdlib.cpp
+# 3rd/imgui/misc/cpp/imgui_stdlib.h
+# )
+# target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
+# target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui-markdown/)
+# target_link_libraries(imgui PUBLIC GLEW)
 
 add_library(common
     src/helpers/Args.cpp
@@ -86,15 +83,19 @@ add_executable (sandbox
     src/widgets/BVHCalculatorWidget.cpp
     src/widgets/FPSMeter.cpp
 
-
     src/application/SandboxApplication.cpp
     src/application/TestApplication.cpp
     src/application/ImguiAdapter.cpp
+
+    src/bindings/imgui_impl_opengl3.cpp
+    src/bindings/imgui_stdlib.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
-target_link_libraries(sandbox geGL::geGL dl imgui bvhlibrary)
-target_link_libraries(sandbox glfw ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES})
-target_include_directories(sandbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(sandbox geGL::geGL dl CONAN_PKG::imgui bvhlibrary)
+target_link_libraries(sandbox CONAN_PKG::glfw CONAN_PKG::glew ${OPENGL_LIBRARIES})
+target_include_directories(sandbox PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 add_executable ( bvhgenerator 
     src/generator_main.cpp

@@ -31,7 +31,7 @@ function prepareRepo {
 ###############################################################################
 # I. Clone deps
 ###############################################################################
-prepareRepo "imgui" "https://github.com/ocornut/imgui" 
+#prepareRepo "imgui" "https://github.com/ocornut/imgui" 
 prepareRepo "geGL" "https://github.com/dormon/geGL/" 
 
 ##############################################################################

@@ -1,7 +1,7 @@
 #include "widgets/EditWidget.hpp"
 
 #include <imgui.h>
-#include <misc/cpp/imgui_stdlib.h>
+#include <bindings/imgui_stdlib.h>
 
 #include "widgets/RendererWidget.hpp"
 #include "raymarching/Raymarcher.hpp"
@@ -64,7 +64,7 @@ auto EditWidget::RenderContent() -> void
     }
 
     ImGui::Text("Code:");
-    if(ImGui::InputTextMultiline("", &code, ImVec2(-1,-1)) && isAutocompileEnabled)
+    if(ImGui::InputTextMultiline("Code", &code, ImVec2(-1,-1)) && isAutocompileEnabled)
     {
         Recompile();
     }
