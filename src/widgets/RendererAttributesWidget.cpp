@@ -88,10 +88,18 @@ RendererAttributesWidget::RenderContent() -> void
         raymarcher->SetSunDirectional(val);
       }
     }
+
     {
       auto val = raymarcher->GetSun();
       if (ImGui::InputFloat3("Sun position", glm::value_ptr(val))) {
         raymarcher->SetSun(val);
+      }
+    }
+
+    {
+      auto val = raymarcher->GetSunIntensity();
+      if (ImGui::InputFloat("Sun intensity", &val)) {
+        raymarcher->SetSunIntensity(val);
       }
     }
 
