@@ -2,6 +2,7 @@
 #include "raymarching/Raymarcher_Helpers.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+#include <spdlog/spdlog.h>
 
 #include "raymarching/Raymarcher.hpp"
 
@@ -119,7 +120,7 @@ Raymarcher::Pimpl::Compile() -> bool
 
   auto fs = std::make_shared<ge::gl::Shader>(GL_FRAGMENT_SHADER);
   auto finalFsCode = ConstructRenderedFragmentShader(sdf->GetGLSLCode());
-  std::cout << "Compiling FS: " << std::endl << finalFsCode << std::endl;
+  spdlog::trace("Raymarcher::Pimpl::Compile FS:\n {}", finalFsCode);
   fs->compile(finalFsCode);
   if (!fs->getCompileStatus()) {
     throw std::runtime_error(fs->getInfoLog());

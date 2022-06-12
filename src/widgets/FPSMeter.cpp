@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "imgui.h"
+#include <spdlog/spdlog.h>
 
 #include "widgets/FPSMeter.hpp"
 
@@ -34,7 +35,7 @@ FPSMeter::Measure() -> void
 
   lastFrame = now;
 
-  std::cout << "Frame ID: " << perFramePeriodInMs << std::endl;
+  spdlog::trace("FPSMeter::Measure() Frame period: {}", perFramePeriodInMs);
 }
 
 auto
@@ -70,8 +71,11 @@ FPSMeter::DumpConclusion() -> void
   }
 
   const auto totalSeconds = sum / 1000.0;
-  std::cout << "Total time:" << totalSeconds << " seconds " << std::endl;
-  std::cout << "Total frames:" << count << std::endl;
-  std::cout << "Average frame period:" << (sum / double(count)) << std::endl;
-  std::cout << "Average FPS:" << (count / totalSeconds) << std::endl;
+  spdlog::trace("FPSMeter::DumpConclusion() Total time: {} seconds",
+                totalSeconds);
+  spdlog::trace("FPSMeter::DumpConclusion() Total frames: {}", count);
+  spdlog::trace("FPSMeter::DumpConclusion() Average frame period: {}",
+                (sum / double(count)));
+  spdlog::trace("FPSMeter::DumpConclusion() Average FPS: {}",
+                (count / totalSeconds));
 }

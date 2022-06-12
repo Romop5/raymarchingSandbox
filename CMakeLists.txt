@@ -50,6 +50,9 @@ add_library(common
     src/helpers/observer.hpp
 )
 set_property(TARGET common PROPERTY CXX_STANDARD 17)
+target_link_libraries(common PUBLIC
+    CONAN_PKG::spdlog
+)
 target_include_directories(common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_library(bvhlibrary
@@ -57,7 +60,9 @@ add_library(bvhlibrary
     src/bvh/BVHGenerator.cpp
 )
 set_property(TARGET bvhlibrary PROPERTY CXX_STANDARD 17)
-target_link_libraries(bvhlibrary common)
+target_link_libraries(bvhlibrary PUBLIC 
+    common
+)
 
 add_executable (sandbox
     src/main.cpp
@@ -91,8 +96,18 @@ add_executable (sandbox
     src/bindings/imgui_stdlib.cpp
 )
 set_property(TARGET sandbox PROPERTY CXX_STANDARD 17)
-target_link_libraries(sandbox geGL::geGL dl CONAN_PKG::imgui bvhlibrary)
-target_link_libraries(sandbox CONAN_PKG::glfw CONAN_PKG::glew ${OPENGL_LIBRARIES})
+target_link_libraries(sandbox 
+    geGL::geGL  
+    bvhlibrary
+    dl 
+)
+target_link_libraries(sandbox 
+    CONAN_PKG::spdlog
+    CONAN_PKG::imgui
+    CONAN_PKG::glfw 
+    CONAN_PKG::glew 
+    ${OPENGL_LIBRARIES}
+)
 target_include_directories(sandbox PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

@@ -2,6 +2,8 @@
 
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <spdlog/cfg/env.h>
+#include <spdlog/spdlog.h>
 
 #include "application/IApplication.hpp"
 #include "application/SandboxApplication.hpp"
@@ -40,7 +42,7 @@ scroll_callback(GLFWwindow* window, double xpos, double ypos)
   lastXpos = xpos;
   lastYpos = ypos;
 
-  std::cout << "Scroll: " << xpos << " - " << ypos << std::endl;
+  spdlog::trace("scroll_callback: {} - {}", xpos, ypos);
   g_application->ScrollChanged(window, relativeX, relativeY);
 }
 
@@ -53,7 +55,7 @@ mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 static void
 cursor_callback(GLFWwindow* window, double xpos, double ypos)
 {
-  std::cout << "Cursor: " << xpos << " - " << ypos << std::endl;
+  spdlog::trace("cursor_callback: {} - {}", xpos, ypos);
   g_application->MouseCursorChanged(window, xpos, ypos);
 }
 
@@ -76,6 +78,10 @@ framebuffer_size_callback(GLFWwindow* window, int width, int height)
 int
 main(int argc, const char* argv[])
 {
+  //
+  // Parse command line arguments
+  //
+  spdlog::cfg::load_env_levels();
   raymarcher::Arguments args;
 
   //              Name                --opt           -o
@@ -92,16 +98,24 @@ main(int argc, const char* argv[])
 
   args.Parse(argc, argv);
 
+  //
+  // Create window & application
+  //
   GLFWwindow* window;
   glfwSetErrorCallback(error_callback);
   if (!glfwInit())
     exit(EXIT_FAILURE);
 
   if (args.HasArgument("multisample")) {
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    const auto multisample_level = 4;
+    spdlog::info("main: using multisample: {}", multisample_level);
+    glfwWindowHint(GLFW_SAMPLES, multisample_level);
   }
-  window = glfwCreateWindow(
-    defaultWindowWidth, defaultWindowHeight, "Raymarching Sandbox", NULL, NULL);
+  window = glfwCreateWindow(defaultWindowWidth,
+                            defaultWindowHeight,
+                            "Raymarching Sandbox",
+                            glfwGetPrimaryMonitor(),
+                            NULL);
   if (!window) {
     glfwTerminate();
     exit(EXIT_FAILURE);
@@ -135,6 +149,10 @@ main(int argc, const char* argv[])
   glfwSetMouseButtonCallback(window, mouse_button_callback);
 
   glEnable(GL_MULTISAMPLE);
+
+  //
+  // Run application
+  //
   while (!glfwWindowShouldClose(window) && g_application->ShouldContinue()) {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -144,6 +162,9 @@ main(int argc, const char* argv[])
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+  //
+  // Clean up
+  //
   glfwDestroyWindow(window);
   glfwTerminate();
   exit(EXIT_SUCCESS);

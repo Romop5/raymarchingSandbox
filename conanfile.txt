@@ -1,4 +1,5 @@
 [requires]
+spdlog/1.10.0
 glfw/3.3.7
 glew/2.2.0
 imgui/1.81

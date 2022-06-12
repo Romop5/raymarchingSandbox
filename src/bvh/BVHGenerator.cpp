@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <spdlog/spdlog.h>
+
 #include "bvh/BVHGenerator.hpp"
 
 using namespace raymarcher;
@@ -43,8 +45,11 @@ BVHGenerator::GenerateClusteredScene(size_t clusters,
     auto maxElements = disNumber(generator);
     auto clusterPosition =
       area.pos + glm::vec3(disX(generator), disY(generator), disZ(generator));
-    std::cout << "Cluster position: " << clusterPosition.x << ", "
-              << clusterPosition.y << ", " << clusterPosition.z << std::endl;
+
+    spdlog::trace("Cluster position: {}, {}, {}",
+                  clusterPosition.x,
+                  clusterPosition.y,
+                  clusterPosition.z);
 
     auto elements = GenerateCluster(clusterPosition, maxDeviation, maxElements);
     for (auto& element : elements) {

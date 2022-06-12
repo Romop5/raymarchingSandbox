@@ -4,6 +4,7 @@
 #include "bvh/BVHLibrary.hpp"
 #include "helpers/Args.hpp"
 #include "helpers/FileHelper.hpp"
+#include <spdlog/spdlog.h>
 
 using namespace raymarcher;
 
@@ -17,7 +18,7 @@ main(int argc, const char** argv)
   args.AddLongOpt("SAHCoeficient", "sah", "s");
   auto parseStatus = args.Parse(argc, argv);
   if (parseStatus != Arguments::parseResult::OK) {
-    std::cout << "Failed to parse argumetns" << std::endl;
+    spdlog::error("main: Failed to parse argumetns");
   }
 
   auto seed = 1337;
@@ -38,28 +39,28 @@ main(int argc, const char** argv)
   BVHLibrary::OptimizationParameters params;
 
   if (args.HasArgument("maxLevel")) {
-    std::cout << "Overriding maxLevel with CLI argument" << std::endl;
+    spdlog::info("main: Overriding maxLevel with CLI argument");
     params.maxLevel = std::stoi(args["maxLevel"]);
   }
   if (args.HasArgument("SAHCoeficient")) {
-    std::cout << "Overriding SAHCoeficient with CLI argument" << std::endl;
+    spdlog::info("main: Overriding SAHCoeficient with CLI argument");
     params.SAHthreshold = std::stof(args["SAHCoeficient"]);
   }
 
-  std::cout << "Using optimization parameters:" << std::endl;
-  std::cout << "\tclusters = " << clusters << std::endl;
-  std::cout << "\tseed = " << seed << std::endl;
-  std::cout << "\tmaxLevel = " << params.maxLevel << std::endl;
-  std::cout << "\tSAHCoeficient = " << params.SAHthreshold << std::endl;
+  spdlog::info("main: Using optimization parameters:");
+  spdlog::info("main: \tclusters = {}", clusters);
+  spdlog::info("main: \tseed = {}", seed);
+  spdlog::info("main: \tmaxLevel = {}", params.maxLevel);
+  spdlog::info("main: \tSAHCoeficient = {}", params.SAHthreshold);
 
   library.SetParams(params);
 
   library.Optimize();
   auto optimizedSDF = library.GenerateCode(true);
   FileHelper::SaveFile("optimized.sdf", optimizedSDF);
-  std::cout << "Storing optimized to optimized.sdf" << std::endl;
+  spdlog::info("main: Storing optimized to optimized.sdf");
 
   auto nonOptimizedSDF = library.GenerateCode(false);
   FileHelper::SaveFile("nonoptimized.sdf", nonOptimizedSDF);
-  std::cout << "Storing nonoptimized to optimized.sdf" << std::endl;
+  spdlog::info("main: Storing nonoptimized to optimized.sdf");
 }

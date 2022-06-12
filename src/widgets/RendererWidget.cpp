@@ -6,6 +6,7 @@
 #include "widgets/RendererAttributesWidget.hpp"
 #include <GL/gl.h>
 #include <imgui.h>
+#include <spdlog/spdlog.h>
 
 #include "widgets/RendererWidget.hpp"
 
@@ -150,9 +151,11 @@ RendererWidget::Reinitialize() -> void
   targetFBO->attachTexture(GL_COLOR_ATTACHMENT0, colorImage.get());
   auto status = targetFBO->check();
   if (!status) {
-    std::cout << "Texture: " << colorImage->getInfo() << std::endl;
-    std::cout << "Info: " << targetFBO->getInfo() << std::endl;
+    spdlog::trace("RendererWidget::Reinitialize: Texture: {}",
+                  colorImage->getInfo());
+    spdlog::trace("RendererWidget::Reinitialize: Info: {}",
+                  targetFBO->getInfo());
     assert(false);
   }
-  std::cout << "Reinitialized " << std::endl;
+  spdlog::trace("RendererWidget::Reinitialize: done");
 }
