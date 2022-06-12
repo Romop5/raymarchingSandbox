@@ -10,6 +10,8 @@
 #include "application/TestApplication.hpp"
 #include "helpers/Args.hpp"
 
+using namespace std::string_literals;
+
 std::unique_ptr<raymarcher::IApplication> g_application;
 
 constexpr auto defaultWindowWidth = 1600;
@@ -104,6 +106,12 @@ main(int argc, const char* argv[])
 
   args.Parse(argc, argv);
 
+  const auto arguments = args.getMap();
+  for (const auto& [argument_name, argument_value] : arguments) {
+    const auto value = argument_value.empty() ? "EMPTY"s : argument_value;
+    spdlog::trace("main: argument {} => {}", argument_name, value);
+  }
+
   //
   // Create window & application
   //
@@ -119,11 +127,19 @@ main(int argc, const char* argv[])
 
   const auto fullscreen_option =
     args.HasArgument("fullscreen") ? glfwGetPrimaryMonitor() : NULL;
-  window = glfwCreateWindow(defaultWindowWidth,
-                            defaultWindowHeight,
-                            defaultWindowName,
-                            fullscreen_option,
-                            NULL);
+
+  if (!fullscreen_option) {
+    window = glfwCreateWindow(
+      defaultWindowWidth, defaultWindowHeight, defaultWindowName, NULL, NULL);
+  } else {
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    window = glfwCreateWindow(mode->width,
+                              mode->height,
+                              defaultWindowName,
+                              glfwGetPrimaryMonitor(),
+                              NULL);
+  }
   if (!window) {
     glfwTerminate();
     exit(EXIT_FAILURE);
