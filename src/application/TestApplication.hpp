@@ -3,7 +3,7 @@
 
 #include "application/IApplication.hpp"
 
-#include "ImguiAdapter.hpp"
+#include "bindings/ImguiAdapter.hpp"
 #include "raymarching/Raymarcher.hpp"
 #include "rendering/GLFWCamera.hpp"
 #include "rendering/OrbitCamera.hpp"

@@ -55,6 +55,9 @@ public:
 
   /// Singleton: only a single application is active per process run
   static IApplication& GetApplication();
+
+  /// Request the application's exit
+  virtual auto RequestExit() -> void{};
 };
 }
 #endif

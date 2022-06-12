@@ -2,7 +2,7 @@
 #define RAYMARCHER_SANDBOXAPPLICATION_HPP
 
 #include "application/IApplication.hpp"
-#include "application/ImguiAdapter.hpp"
+#include "bindings/ImguiAdapter.hpp"
 #include "rendering/GLFWCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
 #include "widgets/WidgetManager.hpp"
@@ -37,6 +37,9 @@ public:
     -> void override;
   virtual auto GetFocus() -> std::shared_ptr<IGLFWInputHandler> override;
 
+  virtual auto ShouldContinue() -> bool override;
+  virtual auto RequestExit() -> void override;
+
 private:
   raymarcher::ImguiAdapter adapter;
   raymarcher::WidgetManager widgetManager;
@@ -45,6 +48,8 @@ private:
 
   size_t width;
   size_t height;
+
+  bool should_continue;
 };
 }
 #endif

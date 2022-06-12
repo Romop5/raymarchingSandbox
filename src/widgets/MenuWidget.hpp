@@ -1,10 +1,12 @@
 #ifndef RAYMARCHER_MENUWIDGET_HPP
 #define RAYMARCHER_MENUWIDGET_HPP
 
-#include "WidgetManager.hpp"
+#include "application/IApplication.hpp"
 #include "raymarching/SDFLibrary.hpp"
 #include "widgets/FPSMeter.hpp"
 #include "widgets/WidgetBase.hpp"
+
+#include "WidgetManager.hpp"
 
 namespace raymarcher {
 /**
@@ -14,7 +16,7 @@ class MenuWidget : public WidgetBase
 {
 public:
   MenuWidget() = default;
-  explicit MenuWidget(WidgetManager& windowManager);
+  explicit MenuWidget(IApplication& application, WidgetManager& windowManager);
 
   auto RenderContent() -> void override;
 
@@ -22,6 +24,8 @@ private:
   auto RenderContentWidget(bool is_menu) -> void;
   auto LoadSDFWidget() -> void;
   auto Load(std::string path) -> void;
+
+  IApplication& application;
   WidgetManager& windowManager;
   SDFLibrary library;
 

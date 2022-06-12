@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "application/IGLFWInputHandler.hpp"
+#include "bindings/IGLFWInputHandler.hpp"
 #include "rendering/ICamera.hpp"
 
 namespace raymarcher {

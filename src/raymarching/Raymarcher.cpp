@@ -69,18 +69,29 @@ Raymarcher::Pimpl::SetRaymarchingAttributes(
 auto
 Raymarcher::Pimpl::Render() -> void
 {
-  if (program && camera) {
-    auto transform = camera->GetTransformation();
-    program->use();
-    const auto origin = -glm::vec3(transform[3]);
-    auto identity = glm::mat4(1.0);
-    program->setMatrix4fv("camera_rotation", glm::value_ptr(transform));
-    program->set3fv("camera_origin", glm::value_ptr(origin));
-    static float time = 0.0;
-    time += 0.005;
-    program->set1f("iTime", time);
+  try {
+    if (program && camera) {
+      auto transform = camera->GetTransformation();
+      program->use();
+      const auto origin = -glm::vec3(transform[3]);
+      auto identity = glm::mat4(1.0);
+      program->setMatrix4fv("camera_rotation", glm::value_ptr(transform));
+      program->set3fv("camera_origin", glm::value_ptr(origin));
+      static float time = 0.0;
+      time += 0.005;
 
-    fullscreenQuad.draw();
+      // FIX: uniforms may be optimized out by compiler if not referenced
+      // so if the SDF function didn not use iTime, it would trigger an
+      // exception when setting the value
+      if (program->getUniformLocation("iTime") != -1) {
+        program->set1f("iTime", time);
+      }
+
+      fullscreenQuad.draw();
+    }
+  } catch (std::exception& e) {
+    spdlog::error("Raymarcher::Pimpl::Render: failed to render, reason: {}",
+                  e.what());
   }
 }
 
@@ -111,6 +122,7 @@ auto
 Raymarcher::Pimpl::Compile() -> bool
 {
   auto program = std::make_unique<ge::gl::Program>();
+  program->setNonexistingUniformWarning(true);
 
   auto vs = std::make_shared<ge::gl::Shader>(GL_VERTEX_SHADER);
   vs->compile(ConstructRenderedVertexShader());
