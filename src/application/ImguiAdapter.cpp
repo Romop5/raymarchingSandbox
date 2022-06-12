@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cctype>
-#include <backends/imgui_impl_opengl3.h>
+#include <bindings/imgui_impl_opengl3.h>
 
 using namespace raymarcher;
 
