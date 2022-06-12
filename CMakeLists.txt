@@ -4,6 +4,16 @@ project (gl)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
+
+include(FetchContent)
+FetchContent_Declare(
+  geGL 
+  GIT_REPOSITORY https://github.com/dormon/geGL.git
+  GIT_TAG 5464a364329982d5d5b04574e16458581cbeb806 
+)
+
+FetchContent_MakeAvailable(geGL)
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 find_package(OpenGL)
@@ -18,7 +28,7 @@ endif()
 #add_subdirectory(ext/glfw)
 #include_directories(ext/glfw/include)
 
-find_package(geGL REQUIRED)
+#find_package(geGL REQUIRED)
 
 # # Compile imgui
 # add_library(imgui SHARED 
