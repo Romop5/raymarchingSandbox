@@ -1,5 +1,4 @@
 
-#include <bindings/imgui_stdlib.h>
 #include <imgui.h>
 
 #include "helpers/FileHelper.hpp"
@@ -8,6 +7,7 @@
 #include "rendering/GLFWCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
 #include "widgets/RendererWidget.hpp"
+#include <bindings/imgui_stdlib.h>
 
 #include "widgets/EditWidget.hpp"
 
