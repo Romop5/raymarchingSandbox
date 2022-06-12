@@ -1,6 +1,7 @@
-#include "rendering/InterpolatedCamera.hpp"
 #include <cassert>
 #include <glm/gtx/transform.hpp>
+
+#include "rendering/InterpolatedCamera.hpp"
 
 using namespace raymarcher;
 

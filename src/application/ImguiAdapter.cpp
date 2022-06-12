@@ -1,10 +1,11 @@
-#include "ImguiAdapter.hpp"
+
+#include <cctype>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <bindings/imgui_impl_opengl3.h>
-#include <cctype>
 
+#include "ImguiAdapter.hpp"
 using namespace raymarcher;
 
 const auto INTERNAL_KEY_CTRL_A = 255;

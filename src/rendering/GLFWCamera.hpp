@@ -1,9 +1,10 @@
 #ifndef RAYMARCHER_GLFWCAMERA_HPP
 #define RAYMARCHER_GLFWCAMERA_HPP
 
+#include <memory>
+
 #include "application/IGLFWInputHandler.hpp"
 #include "rendering/ICamera.hpp"
-#include <memory>
 
 namespace raymarcher {
 /**

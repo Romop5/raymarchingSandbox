@@ -1,11 +1,11 @@
-#include "application/SandboxApplication.hpp"
-
 #include <imgui.h>
 
 #include "raymarching/SDF.hpp"
 #include "widgets/MenuWidget.hpp"
 #include "widgets/WelcomeWidget.hpp"
 #include "widgets/WindowWidget.hpp"
+
+#include "application/SandboxApplication.hpp"
 
 using namespace raymarcher;
 

@@ -1,11 +1,12 @@
 #ifndef RAYMARCHER_BVH_GENERATOR_HPP
 #define RAYMARCHER_BVH_GENERATOR_HPP
 
-#include "bvh/BVHLibrary.hpp"
-#include <glm/glm.hpp>
 #include <random>
 #include <vector>
 
+#include <glm/glm.hpp>
+
+#include "bvh/BVHLibrary.hpp"
 namespace raymarcher {
 /**
  * @brief Generates deterministically datasets for testing optimization

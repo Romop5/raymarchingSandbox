@@ -1,8 +1,9 @@
+#include <iostream>
+
 #include "bvh/BVHGenerator.hpp"
 #include "bvh/BVHLibrary.hpp"
 #include "helpers/Args.hpp"
 #include "helpers/FileHelper.hpp"
-#include <iostream>
 
 using namespace raymarcher;
 

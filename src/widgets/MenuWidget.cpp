@@ -1,5 +1,5 @@
-#include "widgets/MenuWidget.hpp"
 
+#include <filesystem>
 #include <imgui.h>
 #include <sstream>
 #include <string>
@@ -8,7 +8,8 @@
 #include "helpers/FileHelper.hpp"
 #include "widgets/BVHCalculatorWidget.hpp"
 #include "widgets/EditWidget.hpp"
-#include <filesystem>
+
+#include "widgets/MenuWidget.hpp"
 
 using namespace raymarcher;
 

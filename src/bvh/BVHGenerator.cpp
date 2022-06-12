@@ -1,5 +1,6 @@
-#include "bvh/BVHGenerator.hpp"
 #include <iostream>
+
+#include "bvh/BVHGenerator.hpp"
 
 using namespace raymarcher;
 

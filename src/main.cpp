@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include <GLFW/glfw3.h>
 #include <imgui.h>
-#include <iostream>
 
 #include "application/IApplication.hpp"
 #include "application/SandboxApplication.hpp"

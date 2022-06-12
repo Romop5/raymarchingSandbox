@@ -1,7 +1,7 @@
-#include "widgets/RendererAttributesWidget.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+
+#include "widgets/RendererAttributesWidget.hpp"
 
 using namespace raymarcher;
 

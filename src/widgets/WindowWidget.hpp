@@ -1,8 +1,9 @@
 #ifndef RAYMARCHER_WINDOWWIDGET_HPP
 #define RAYMARCHER_WINDOWWIDGET_HPP
+#include <string>
+
 #include "WidgetManager.hpp"
 #include "widgets/WidgetBase.hpp"
-#include <string>
 
 namespace raymarcher {
 class WindowWidget

@@ -1,11 +1,13 @@
-#include "widgets/RendererWidget.hpp"
+#include <iostream>
+
 #include "application/IApplication.hpp"
 #include "rendering/FlyingCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
 #include "widgets/RendererAttributesWidget.hpp"
 #include <GL/gl.h>
 #include <imgui.h>
-#include <iostream>
+
+#include "widgets/RendererWidget.hpp"
 
 using namespace raymarcher;
 

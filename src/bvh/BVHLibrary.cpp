@@ -1,10 +1,11 @@
-#include "bvh/BVHLibrary.hpp"
 
 #include <algorithm>
 #include <queue>
 #include <sstream>
 
 #include <glm/gtc/constants.hpp>
+
+#include "bvh/BVHLibrary.hpp"
 
 using namespace raymarcher;
 

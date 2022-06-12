@@ -1,9 +1,10 @@
 #ifndef RAYMARCHER_FPSMETER_HPP
 #define RAYMARCHER_FPSMETER_HPP
 
-#include "helpers/RingBuffer.hpp"
 #include <array>
 #include <cstdlib>
+
+#include "helpers/RingBuffer.hpp"
 
 namespace raymarcher {
 

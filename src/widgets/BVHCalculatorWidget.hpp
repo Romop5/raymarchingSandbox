@@ -1,9 +1,10 @@
 #ifndef RAYMARCHER_BVH_CALCULATOR_WIDGET_HPP
 #define RAYMARCHER_BVH_CALCULATOR_WIDGET_HPP
 
+#include <memory>
+
 #include "raymarching/Raymarcher.hpp"
 #include "widgets/WindowWidget.hpp"
-#include <memory>
 
 namespace raymarcher {
 class SpherePrimitive;

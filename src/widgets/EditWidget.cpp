@@ -1,4 +1,3 @@
-#include "widgets/EditWidget.hpp"
 
 #include <bindings/imgui_stdlib.h>
 #include <imgui.h>
@@ -9,6 +8,8 @@
 #include "rendering/GLFWCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
 #include "widgets/RendererWidget.hpp"
+
+#include "widgets/EditWidget.hpp"
 
 using namespace raymarcher;
 

@@ -1,6 +1,6 @@
-#include "raymarching/Raymarcher_Helpers.hpp"
-
 #include <sstream>
+
+#include "raymarching/Raymarcher_Helpers.hpp"
 
 namespace {
 std::string

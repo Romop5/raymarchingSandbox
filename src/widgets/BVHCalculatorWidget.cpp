@@ -1,5 +1,3 @@
-#include "widgets/BVHCalculatorWidget.hpp"
-
 #include <algorithm>
 #include <queue>
 #include <random>
@@ -13,6 +11,8 @@
 #include "bvh/BVHLibrary.hpp"
 #include "helpers/FileHelper.hpp"
 #include "widgets/EditWidget.hpp"
+
+#include "widgets/BVHCalculatorWidget.hpp"
 
 using namespace raymarcher;
 

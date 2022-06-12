@@ -1,9 +1,10 @@
 #ifndef RAYMARCHER_RENDERER_ATTRIBUTES_WIDGET_HPP
 #define RAYMARCHER_RENDERER_ATTRIBUTES_WIDGET_HPP
 
+#include <map>
+
 #include "raymarching/Raymarcher.hpp"
 #include "widgets/WindowWidget.hpp"
-#include <map>
 
 namespace raymarcher {
 class RendererAttributesWidget : public WindowWidget

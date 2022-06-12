@@ -1,5 +1,6 @@
-#include "raymarching/SDF.hpp"
 #include <regex>
+
+#include "raymarching/SDF.hpp"
 
 using namespace raymarcher;
 

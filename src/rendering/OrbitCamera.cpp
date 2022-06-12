@@ -1,5 +1,6 @@
-#include "rendering/OrbitCamera.hpp"
 #include <algorithm>
+
+#include "rendering/OrbitCamera.hpp"
 
 using namespace raymarcher;
 

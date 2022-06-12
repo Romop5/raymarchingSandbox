@@ -1,7 +1,8 @@
-#include "WidgetManager.hpp"
 #include <imgui.h>
 
 #include "helpers/observer.hpp"
+
+#include "WidgetManager.hpp"
 
 using namespace raymarcher;
 

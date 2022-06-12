@@ -1,9 +1,9 @@
-#include "raymarching/Raymarcher.hpp"
 #include "helpers/helpers.hpp"
 #include "raymarching/Raymarcher_Helpers.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+
+#include "raymarching/Raymarcher.hpp"
 
 using namespace raymarcher;
 

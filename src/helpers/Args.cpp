@@ -1,6 +1,7 @@
-#include "helpers/Args.hpp"
 #include <iostream>
 #include <regex>
+
+#include "helpers/Args.hpp"
 
 namespace raymarcher {
 Arguments::Arguments()

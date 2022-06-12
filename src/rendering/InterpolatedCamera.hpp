@@ -1,9 +1,11 @@
 #ifndef RAYMARCHER_INTERPOLATEDCAMERA_HPP
 #define RAYMARCHER_INTERPOLATEDCAMERA_HPP
 
-#include "rendering/ICamera.hpp"
-#include <glm/glm.hpp>
 #include <vector>
+
+#include <glm/glm.hpp>
+
+#include "rendering/ICamera.hpp"
 
 namespace raymarcher {
 /**

@@ -1,12 +1,15 @@
-#include "widgets/FPSMeter.hpp"
-#include "imgui.h"
 #include <chrono>
 #include <iostream>
+
+#include "imgui.h"
+
+#include "widgets/FPSMeter.hpp"
 
 using namespace raymarcher;
 using namespace std::chrono;
 
 FPSMeter::FPSMeter() {}
+
 auto
 FPSMeter::Measure() -> void
 {

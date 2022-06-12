@@ -1,8 +1,9 @@
-#include "rendering/GLFWCamera.hpp"
 #include "rendering/FlyingCamera.hpp"
 #include "rendering/InterpolatedCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
 #include <GLFW/glfw3.h>
+
+#include "rendering/GLFWCamera.hpp"
 
 using namespace raymarcher;
 

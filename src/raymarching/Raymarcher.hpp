@@ -1,9 +1,11 @@
 #ifndef RAYMARCHER_RAYMARCHER_HPP
 #define RAYMARCHER_RAYMARCHER_HPP
+
+#include <memory>
+
 #include "ISDF.hpp"
 #include "rendering/ICamera.hpp"
 #include <glm/glm.hpp>
-#include <memory>
 
 namespace raymarcher {
 

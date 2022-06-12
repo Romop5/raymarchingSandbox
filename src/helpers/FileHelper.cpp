@@ -1,6 +1,7 @@
-#include "helpers/FileHelper.hpp"
 #include <filesystem>
 #include <fstream>
+
+#include "helpers/FileHelper.hpp"
 
 using namespace raymarcher;
 

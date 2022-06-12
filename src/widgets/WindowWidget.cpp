@@ -1,5 +1,6 @@
-#include "widgets/WindowWidget.hpp"
 #include <imgui.h>
+
+#include "widgets/WindowWidget.hpp"
 
 using namespace raymarcher;
 

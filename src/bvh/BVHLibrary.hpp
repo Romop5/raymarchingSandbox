@@ -1,10 +1,11 @@
 #ifndef RAYMARCHER_BVHLIBRARY_HPP
 #define RAYMARCHER_BVHLIBRARY_HPP
 
-#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <glm/glm.hpp>
 
 namespace raymarcher {
 /**

@@ -1,8 +1,10 @@
 #ifndef RAYMARCHER_HELPERS_HPP
 #define RAYMARCHER_HELPERS_HPP
+
+#include <vector>
+
 #include <GL/gl.h>
 #include <geGL/geGL.h>
-#include <vector>
 
 static void
 fillTexture(std::shared_ptr<ge::gl::Texture>& tex, size_t width, size_t height)
