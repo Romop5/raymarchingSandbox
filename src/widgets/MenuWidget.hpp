@@ -19,6 +19,7 @@ public:
   auto RenderContent() -> void override;
 
 private:
+  auto RenderContentWidget(bool is_menu) -> void;
   auto LoadSDFWidget() -> void;
   auto Load(std::string path) -> void;
   WidgetManager& windowManager;

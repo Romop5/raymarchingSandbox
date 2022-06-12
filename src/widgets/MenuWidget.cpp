@@ -68,81 +68,105 @@ MenuWidget::RenderContent() -> void
     fpsMeter.RenderOverlay();
   }
 
-  if (ImGui::Button("New")) {
-    auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function",
-                                                           SimpleSDFCode());
-    windowManager.AddWidget(widget);
+  if (ImGui::BeginMainMenuBar()) {
+    // RenderContentMenu();
+    RenderContentWidget(true);
+    ImGui::EndMainMenuBar();
   }
-  ImGui::SameLine();
-  LoadSDFWidget();
+}
 
-  ImGui::Text("Primitives");
-  static std::vector<std::pair<std::string, std::string>> primitives = {
-    { "Sphere", "sphere.sdf" },
-    { "Cube", "cube.sdf" },
-    { "Plane", "plane.sdf" },
-    { "Oriented plane", "orientedPlane.sdf" },
-  };
-
-  for (auto& [name, path] : primitives) {
-    if (ImGui::Button(name.c_str())) {
-      Load(path);
+auto
+MenuWidget::RenderContentWidget(bool is_menu) -> void
+{
+  if (ImGui::BeginMenu("File")) {
+    if (ImGui::MenuItem("New")) {
+      auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function",
+                                                             SimpleSDFCode());
+      windowManager.AddWidget(widget);
     }
+
+    LoadSDFWidget();
+    ImGui::EndMenu();
   }
 
-  ImGui::Text("Operations");
+  if (ImGui::BeginMenu("Primitives")) {
+    static std::vector<std::pair<std::string, std::string>> primitives = {
+      { "Sphere", "sphere.sdf" },
+      { "Cube", "cube.sdf" },
+      { "Plane", "plane.sdf" },
+      { "Oriented plane", "orientedPlane.sdf" },
+    };
 
-  static std::vector<std::pair<std::string, std::string>> operations = {
-    { "Union", "union.sdf" },
-    { "Intersection", "intersection.sdf" },
-    { "Animated waves", "wave.sdf" },
-    { "Repeating", "repeat.sdf" },
-    { "Smooth union", "metaballs.sdf" },
-  };
-
-  for (auto& [name, path] : operations) {
-    if (ImGui::Button(name.c_str())) {
-      Load(path);
+    for (auto& [name, path] : primitives) {
+      if (ImGui::MenuItem(name.c_str())) {
+        Load(path);
+      }
     }
-  }
-  ImGui::Separator();
-
-  ImGui::Text("Interesting scenes");
-  if (ImGui::Button("Test app")) {
-    auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function",
-                                                           TestApplication());
-    widget->Recompile();
-    windowManager.AddWidget(widget);
+    ImGui::EndMenu();
   }
 
-  if (ImGui::Button("Contractions")) {
-    Load("contractions.sdf");
-  }
-  if (ImGui::Button("Contractions Animated")) {
-    Load("contractionsAnimated2.sdf");
+  if (ImGui::BeginMenu("Operations")) {
+    static std::vector<std::pair<std::string, std::string>> operations = {
+      { "Union", "union.sdf" },
+      { "Intersection", "intersection.sdf" },
+      { "Animated waves", "wave.sdf" },
+      { "Repeating", "repeat.sdf" },
+      { "Smooth union", "metaballs.sdf" },
+    };
+
+    for (auto& [name, path] : operations) {
+      if (ImGui::MenuItem(name.c_str())) {
+        Load(path);
+      }
+    }
+    ImGui::EndMenu();
   }
 
-  if (ImGui::Button("Dungeon")) {
-    Load("dungeon.sdf");
+  if (ImGui::BeginMenu("Interesting scenes")) {
+    if (ImGui::MenuItem("Test app")) {
+      auto widget = std::make_shared<raymarcher::EditWidget>("New SDF function",
+                                                             TestApplication());
+      widget->Recompile();
+      windowManager.AddWidget(widget);
+    }
+
+    if (ImGui::MenuItem("Contractions")) {
+      Load("contractions.sdf");
+    }
+    if (ImGui::MenuItem("Contractions Animated")) {
+      Load("contractionsAnimated2.sdf");
+    }
+
+    if (ImGui::MenuItem("Dungeon")) {
+      Load("dungeon.sdf");
+    }
+
+    if (ImGui::MenuItem("Vanishing spheres")) {
+      Load("periodicCubes.sdf");
+    }
+
+    if (ImGui::MenuItem("Bending tube/cone")) {
+      Load("cone.sdf");
+    }
+    ImGui::EndMenu();
   }
 
-  if (ImGui::Button("Vanishing spheres")) {
-    Load("periodicCubes.sdf");
+  if (ImGui::BeginMenu("Extras")) {
+    if (ImGui::MenuItem("BHV Optimizator")) {
+      auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
+      windowManager.AddWidget(widget);
+    }
+    ImGui::EndMenu();
   }
 
-  if (ImGui::Button("Bending tube/cone")) {
-    Load("cone.sdf");
-  }
-
-  ImGui::Separator();
-
-  ImGui::Text("Extras");
-  if (ImGui::Button("BHV Optimizator")) {
-    auto widget = std::make_shared<raymarcher::BVHCalculatorWidget>();
-    windowManager.AddWidget(widget);
-  }
-  if (ImGui::Button("Show FPS")) {
-    showFPS = !showFPS;
+  if (ImGui::BeginMenu("Windows")) {
+    if (ImGui::MenuItem("Close all windows")) {
+      windowManager.RemoveAllWidgets();
+    }
+    if (ImGui::MenuItem("Show FPS")) {
+      showFPS = !showFPS;
+    }
+    ImGui::EndMenu();
   }
 }
 
@@ -152,7 +176,7 @@ MenuWidget::LoadSDFWidget() -> void
   static std::vector<std::string> fileNames;
   static std::filesystem::path selectedFile;
 
-  if (ImGui::Button("Load file")) {
+  if (ImGui::MenuItem("Load file")) {
     ImGui::OpenPopup("LoadPopup");
   }
 

@@ -17,11 +17,7 @@ SandboxApplication::SandboxApplication()
   width = height = 500;
   adapter.SetVisibility(true);
 
-  auto menuWindow = std::make_shared<WindowWidget>();
-  menuWindow->AddWidget(std::make_shared<MenuWidget>(widgetManager));
-  menuWindow->SetTitle("Menu");
-  menuWindow->SetSize(150, 0);
-  widgetManager.AddWidget(menuWindow);
+  widgetManager.AddWidget(std::make_shared<MenuWidget>(widgetManager));
 
   auto welcome = std::make_shared<WelcomeWidget>(widgetManager);
   welcome->SetSize(500, 0);
@@ -39,6 +35,10 @@ SandboxApplication::Resize(size_t newWidth, size_t newHeight) -> void
 auto
 SandboxApplication::Render() -> void
 {
+  if (!widgetManager.HasAnyWidget()) {
+    widgetManager.AddWidget(std::make_shared<MenuWidget>(widgetManager));
+  }
+
   if (adapter.IsVisible()) {
     adapter.BeginFrame();
     widgetManager.Render();
