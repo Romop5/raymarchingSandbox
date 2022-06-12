@@ -49,7 +49,7 @@ public:
 
 private:
   raymarcher::ImguiAdapter adapter;
-  std::shared_ptr<raymarcher::GLFWCamera> focusedCamera;
+  std::unique_ptr<raymarcher::GLFWCamera> focusedCamera;
   std::shared_ptr<IGLFWInputHandler> inputHandler;
 
   std::shared_ptr<Raymarcher> raymarcher;

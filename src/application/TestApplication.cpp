@@ -177,9 +177,9 @@ vec4 df(vec3 pos)
 
 auto
 CreateTestApp(std::string code, size_t cameraID)
-  -> std::pair<std::shared_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
+  -> std::pair<std::unique_ptr<Raymarcher>, std::shared_ptr<GLFWCamera>>
 {
-  auto rm = std::make_shared<raymarcher::Raymarcher>();
+  auto rm = std::unique_ptr<raymarcher::Raymarcher>();
   auto orbiter = std::make_shared<raymarcher::OrbitCamera>();
   orbiter->SetCenter(glm::vec3(0.0, 3.0, 0.0));
   orbiter->SetDistance(5.0);
@@ -198,8 +198,7 @@ CreateTestApp(std::string code, size_t cameraID)
   auto sdf = std::make_shared<raymarcher::SDF>(code);
   rm->SetSDF(sdf);
 
-  return std::pair{ rm, focusedCamera };
-  ;
+  return std::make_pair(std::move(rm), focusedCamera);
 }
 }
 
@@ -215,10 +214,10 @@ TestApplication::TestApplication(StartParameters params)
   auto fileContent = GetCodeFromFile(params.filename);
   std::string code = fileContent.value_or(GetTestAppCode());
   auto [rm, cam] = CreateTestApp(code, params.cameraSequenceID);
-  raymarcher = rm;
+  raymarcher = std::move(rm);
   camera = cam;
   inputHandler = cam;
-  attributes = std::make_unique<RendererAttributesWidget>(rm);
+  attributes = std::make_unique<RendererAttributesWidget>(raymarcher);
 
   if (parameters.shouldRunWithFreeMovement) {
     camera = CreateFlyingCamera();

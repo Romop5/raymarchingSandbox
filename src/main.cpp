@@ -14,6 +14,8 @@ std::unique_ptr<raymarcher::IApplication> g_application;
 
 constexpr auto defaultWindowWidth = 1600;
 constexpr auto defaultWindowHeight = 900;
+constexpr auto defaultWindowName = "Raymarching Sandbox";
+constexpr auto multisample_level = 4;
 
 raymarcher::IApplication&
 raymarcher::IApplication::GetApplication()
@@ -94,6 +96,10 @@ main(int argc, const char* argv[])
                   "m",
                   raymarcher::Arguments::paramLogic::NO_PARAM);
   args.AddLongOpt("sdfFile", "input", "i");
+  args.AddLongOpt("fullscreen",
+                  "fullscreen",
+                  "f",
+                  raymarcher::Arguments::paramLogic::NO_PARAM);
   args.AddLongOpt("cameraSequenceID", "seq", "s");
 
   args.Parse(argc, argv);
@@ -107,14 +113,16 @@ main(int argc, const char* argv[])
     exit(EXIT_FAILURE);
 
   if (args.HasArgument("multisample")) {
-    const auto multisample_level = 4;
     spdlog::info("main: using multisample: {}", multisample_level);
     glfwWindowHint(GLFW_SAMPLES, multisample_level);
   }
+
+  const auto fullscreen_option =
+    args.HasArgument("fullscreen") ? glfwGetPrimaryMonitor() : NULL;
   window = glfwCreateWindow(defaultWindowWidth,
                             defaultWindowHeight,
-                            "Raymarching Sandbox",
-                            glfwGetPrimaryMonitor(),
+                            defaultWindowName,
+                            fullscreen_option,
                             NULL);
   if (!window) {
     glfwTerminate();
