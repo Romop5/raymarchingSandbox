@@ -62,6 +62,7 @@ add_library(bvhlibrary
 set_property(TARGET bvhlibrary PROPERTY CXX_STANDARD 17)
 target_link_libraries(bvhlibrary PUBLIC 
     common
+    CONAN_PKG::glm
 )
 
 add_executable (sandbox
