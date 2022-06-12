@@ -1,12 +1,12 @@
-#include "raymarching/Raymarcher_Helpers.hpp"
-
 #include <sstream>
 
-namespace 
+#include "raymarching/Raymarcher_Helpers.hpp"
+
+namespace {
+std::string
+GetFragmentShaderHead()
 {
-    std::string GetFragmentShaderHead()
-    {
-        auto literal = R"(
+  auto literal = R"(
         #version 330 core
 
         /*
@@ -129,13 +129,13 @@ namespace
             return vec4(intersect(b,c), vec3(1.0,0.0,0.0));
         }
         )";
-        return literal;
-    }
+  return literal;
+}
 
-
-    std::string GetFragmentShaderTail()
-    {
-        auto literal = std::string(R"(
+std::string
+GetFragmentShaderTail()
+{
+  auto literal = std::string(R"(
 
         // Raymarching algorithm, returning distance and iterations
         vec2 rayMarchWithIterations(vec3 o, vec3 d)
@@ -402,25 +402,27 @@ namespace
         }
 
         )");
-        return literal;
-    }
+  return literal;
+}
 }
 
-std::string raymarcher::ConstructRenderedFragmentShader(std::string sdfGLSL)
+std::string
+raymarcher::ConstructRenderedFragmentShader(std::string sdfGLSL)
 {
-    std::stringstream ss;
-    ss  << GetFragmentShaderHead() << std::endl
-        << sdfGLSL << std::endl
-        << GetFragmentShaderTail();
-    return ss.str();
+  std::stringstream ss;
+  ss << GetFragmentShaderHead() << std::endl
+     << sdfGLSL << std::endl
+     << GetFragmentShaderTail();
+  return ss.str();
 }
 
 /*
  * Simple Vertex Shader, which propages UV to FS
  */
-std::string raymarcher::ConstructRenderedVertexShader()
+std::string
+raymarcher::ConstructRenderedVertexShader()
 {
-    return R"(
+  return R"(
     #version 330 core
     layout(location = 0) in vec3 normal;
     layout(location = 1) in vec2 uvIn;

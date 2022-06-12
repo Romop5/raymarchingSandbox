@@ -1,84 +1,92 @@
-#include "rendering/OrbitCamera.hpp"
 #include <algorithm>
+
+#include "rendering/OrbitCamera.hpp"
 
 using namespace raymarcher;
 
-OrbitCamera::OrbitCamera() :
-    center { glm::vec3(0.0) },
-    radius { 1.0 },
-    horizontalAngle { 0.0 },
-    verticalAngle { 0.0 },
-    angularSpeed { 0.01 }
+OrbitCamera::OrbitCamera()
+  : center{ glm::vec3(0.0) }
+  , radius{ 1.0 }
+  , horizontalAngle{ 0.0 }
+  , verticalAngle{ 0.0 }
+  , angularSpeed{ 0.01 }
+{}
+
+auto
+OrbitCamera::GetTransformation() const -> const glm::mat4&
 {
+  // Spherical coordinates to Cartesian coordinates
+  // https://en.wikipedia.org/wiki/Spherical_coordinate_system
+  auto position = radius * glm::vec3(sin(horizontalAngle) * cos(verticalAngle),
+                                     sin(verticalAngle),
+                                     cos(horizontalAngle) * cos(verticalAngle));
+  auto normalizedPosition = -glm::normalize(position);
+  const auto lookUp = glm::vec3(0.0, 1.0, 0.0);
+
+  // Construction of view matrix from look, look up, and position
+  auto third = glm::normalize(glm::cross(normalizedPosition, lookUp));
+  auto up = glm::cross(third, normalizedPosition);
+
+  static auto transform = glm::mat4(1.0);
+  transform = glm::mat4(glm::mat3(third, up, normalizedPosition));
+  transform[3] = glm::vec4(-position, 1.0);
+  return transform;
 }
 
-auto OrbitCamera::GetTransformation() const -> const glm::mat4&
+auto
+OrbitCamera::SetCenter(glm::vec3 position) -> void
 {
-    // Spherical coordinates to Cartesian coordinates
-    // https://en.wikipedia.org/wiki/Spherical_coordinate_system
-    auto position = radius*glm::vec3(sin(horizontalAngle) * cos (verticalAngle),
-                              sin(verticalAngle),
-                              cos(horizontalAngle) * cos(verticalAngle));
-    auto normalizedPosition = -glm::normalize(position);
-    const auto lookUp = glm::vec3(0.0, 1.0, 0.0); 
-
-    // Construction of view matrix from look, look up, and position
-    auto third = glm::normalize(glm::cross(normalizedPosition, lookUp));
-    auto up = glm::cross(third, normalizedPosition);
-
-    static auto transform = glm::mat4(1.0);
-    transform = glm::mat4(glm::mat3(third, up, normalizedPosition));
-    transform[3] = glm::vec4(-position, 1.0);
-    return transform;
+  center = position;
 }
 
-auto OrbitCamera::SetCenter(glm::vec3 position) -> void
+auto
+OrbitCamera::SetDistance(float newRadius) -> void
 {
-    center = position;
+  radius = std::max(newRadius, 0.0f);
 }
 
-auto OrbitCamera::SetDistance(float newRadius) -> void
+auto
+OrbitCamera::GetDistance() const -> float
 {
-    radius = std::max(newRadius, 0.0f);
+  return radius;
 }
 
-auto OrbitCamera::GetDistance() const -> float
+auto
+OrbitCamera::RotateLeft() -> void
 {
-    return radius;
+  horizontalAngle += angularSpeed;
 }
 
-auto OrbitCamera::RotateLeft() -> void
+auto
+OrbitCamera::RotateRight() -> void
 {
-    horizontalAngle += angularSpeed;
+  horizontalAngle -= angularSpeed;
 }
 
-auto OrbitCamera::RotateRight() -> void
+auto
+OrbitCamera::RotateUp() -> void
 {
-    horizontalAngle -= angularSpeed;
+  verticalAngle += angularSpeed;
+  if (verticalAngle > 0.9)
+    verticalAngle = 0.9;
 }
 
-auto OrbitCamera::RotateUp() -> void
+auto
+OrbitCamera::RotateDown() -> void
 {
-    verticalAngle += angularSpeed;
-    if(verticalAngle  > 0.9)
-        verticalAngle = 0.9;
+  verticalAngle -= angularSpeed;
+  if (verticalAngle < -0.9)
+    verticalAngle = -0.9;
 }
 
-auto OrbitCamera::RotateDown() -> void
+auto
+OrbitCamera::SetAngularSpeed(float degreesPerMovement) -> void
 {
-    verticalAngle -= angularSpeed;
-    if(verticalAngle  < -0.9)
-        verticalAngle = -0.9;
+  angularSpeed = degreesPerMovement;
 }
 
-auto OrbitCamera::SetAngularSpeed(float degreesPerMovement) -> void
+auto
+OrbitCamera::GetAngularSpeed() const -> float
 {
-    angularSpeed = degreesPerMovement;
+  return angularSpeed;
 }
-
-auto OrbitCamera::GetAngularSpeed() const -> float
-{
-    return angularSpeed;
-}
-
-

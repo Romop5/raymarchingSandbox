@@ -1,63 +1,64 @@
-#include "widgets/WindowWidget.hpp"
 #include <imgui.h>
+
+#include "widgets/WindowWidget.hpp"
 
 using namespace raymarcher;
 
-WindowWidget::WindowWidget() :
-    title { "WindowWidget" },
-    width { 100 },
-    height{ 100 },
-    posx { 100 },
-    posy { 100 }
+WindowWidget::WindowWidget()
+  : title{ "WindowWidget" }
+  , width{ 100 }
+  , height{ 100 }
+  , posx{ 100 }
+  , posy{ 100 }
+{}
+
+auto
+WindowWidget::Render() -> void
 {
+  auto id = std::to_string(reinterpret_cast<size_t>(static_cast<void*>(this)));
+  auto label = title + "###" + id;
+
+  bool shouldContinue = true;
+  ImGui::SetNextWindowSize(ImVec2(width, height), ImGuiCond_Once);
+  ImGui::SetNextWindowPos(ImVec2(posx, posy), ImGuiCond_Once);
+  if (ImGui::Begin(label.c_str(), &shouldContinue)) {
+    RenderContent();
+  }
+  ImGui::End();
+
+  if (!shouldContinue) {
+    Delete();
+  }
 }
 
-auto WindowWidget::Render() -> void
+auto
+WindowWidget::RenderContent() -> void
 {
-    auto id = std::to_string(reinterpret_cast<size_t>(static_cast<void*>(this)));
-    auto label = title + "###" + id;
-
-    bool shouldContinue = true;
-    ImGui::SetNextWindowSize(ImVec2(width,height), ImGuiCond_Once);
-    ImGui::SetNextWindowPos(ImVec2(posx,posy), ImGuiCond_Once);
-    if(ImGui::Begin(label.c_str(), &shouldContinue))
-    {
-        RenderContent();
-    }
-    ImGui::End();
-
-    if(!shouldContinue)
-    {
-        Delete();
-    }
+  WidgetManager::Render();
 }
 
-auto WindowWidget::RenderContent() -> void
+auto
+WindowWidget::SetSize(float width, float height) -> void
 {
-    WidgetManager::Render();
+  this->width = width;
+  this->height = height;
 }
 
-auto WindowWidget::SetSize(float width, float height) -> void
+auto
+WindowWidget::SetPosition(float posx, float posy) -> void
 {
-    this->width = width;
-    this->height = height;
+  this->posx = posx;
+  this->posy = posy;
 }
 
-auto WindowWidget::SetPosition(float posx, float posy) -> void
+auto
+WindowWidget::SetTitle(const std::string& title) -> void
 {
-    this->posx = posx;
-    this->posy = posy;
+  this->title = title;
 }
 
-auto WindowWidget::SetTitle(const std::string& title) -> void
+auto
+WindowWidget::GetTitle() const -> const std::string
 {
-    this->title = title;
+  return title;
 }
-
-auto WindowWidget::GetTitle() const -> const std::string
-{
-    return title;
-}
-
-
-

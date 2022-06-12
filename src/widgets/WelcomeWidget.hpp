@@ -3,19 +3,19 @@
 
 #include "widgets/WindowWidget.hpp"
 
-namespace raymarcher 
-{
+namespace raymarcher {
 /**
  * @brief Provides buttons to access functionality of Sandbox
  */
-class WelcomeWidget: public WindowWidget
+class WelcomeWidget : public WindowWidget
 {
-    public:
-        WelcomeWidget() = default;
-        explicit WelcomeWidget(WidgetManager& windowManager);
+public:
+  WelcomeWidget() = default;
+  explicit WelcomeWidget(WidgetManager& windowManager);
 
-        auto RenderContent() -> void override;
-    private:
+  auto RenderContent() -> void override;
+
+private:
 };
 
 }
