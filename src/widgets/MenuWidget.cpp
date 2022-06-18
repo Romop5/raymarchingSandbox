@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "IconsFontAwesome5.h"
 #include "helpers/FileHelper.hpp"
 #include "widgets/BVHCalculatorWidget.hpp"
 #include "widgets/EditWidget.hpp"
@@ -60,7 +61,8 @@ MenuWidget::MenuWidget(IApplication& app, WidgetManager& manager)
   : application{ app }
   , windowManager{ manager }
   , showFPS{ false }
-{}
+{
+}
 
 auto
 MenuWidget::RenderContent() -> void

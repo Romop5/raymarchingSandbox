@@ -4,15 +4,28 @@ project (gl)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-
+#---DEPS-----------------------------------------------------------------------
 include(FetchContent)
 FetchContent_Declare(
   geGL 
   GIT_REPOSITORY https://github.com/dormon/geGL.git
   GIT_TAG 5464a364329982d5d5b04574e16458581cbeb806 
 )
+FetchContent_Declare(
+  icons 
+  GIT_REPOSITORY https://github.com/juliettef/IconFontCppHeaders.git
+  GIT_TAG main 
+)
+FetchContent_Declare(
+  icons_font
+  URL      https://github.com/FortAwesome/font-awesome-sass/archive/refs/tags/6.1.1.tar.gz
+)
 
-FetchContent_MakeAvailable(geGL)
+FetchContent_MakeAvailable(geGL icons icons_font)
+
+add_library(icons INTERFACE)
+target_include_directories(icons INTERFACE ${icons_SOURCE_DIR})
+file(COPY ${icons_font_SOURCE_DIR}/assets/fonts/font-awesome/fa-solid-900.ttf DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
@@ -24,6 +37,7 @@ else (OPENGL_FOUND)
   MESSAGE("OpenGL environment missing")
 endif()
 
+#---SOURCES--------------------------------------------------------------------
 add_library(common
     src/helpers/Args.cpp
     src/helpers/FileHelper.cpp
@@ -89,6 +103,7 @@ target_link_libraries(sandbox
     CONAN_PKG::glfw 
     CONAN_PKG::glew 
     ${OPENGL_LIBRARIES}
+    icons
 )
 target_include_directories(sandbox PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/src

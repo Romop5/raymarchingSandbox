@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 
+#include "IconsFontAwesome5.h"
 #include <glm/glm.hpp>
 #include <imgui.h>
 
@@ -32,11 +33,11 @@ BVHCalculatorWidget::RenderContent() -> void
   //--------------------------------------------------------------------------------------
   // Button controls
   //--------------------------------------------------------------------------------------
-  if (ImGui::Button("Generate scene")) {
+  if (ImGui::Button(ICON_FA_PLUS "Generate scene")) {
     GenerateGeometry();
   }
   ImGui::SameLine();
-  if (ImGui::Button("Generate & save")) {
+  if (ImGui::Button(ICON_FA_FILE_UPLOAD "Generate & save")) {
     Optimize();
 
     auto hasPassed = true;
@@ -48,7 +49,7 @@ BVHCalculatorWidget::RenderContent() -> void
 
   ImGui::SameLine();
 
-  if (ImGui::Button("Generate optimized code")) {
+  if (ImGui::Button(ICON_FA_PLUS "Generate optimized code")) {
     Optimize();
 
     auto widget = std::make_shared<raymarcher::EditWidget>(
@@ -61,7 +62,7 @@ BVHCalculatorWidget::RenderContent() -> void
   }
 
   ImGui::SameLine();
-  if (ImGui::Button("Preview current scene")) {
+  if (ImGui::Button(ICON_FA_TV "Preview current scene")) {
     auto widget2 = std::make_shared<raymarcher::EditWidget>(
       "Scene Preview: non-optimized", pimpl->GenerateCode(false));
     widget2->Recompile();
@@ -69,7 +70,7 @@ BVHCalculatorWidget::RenderContent() -> void
   }
 
   ImGui::SameLine();
-  if (ImGui::Button("Close subwindows")) {
+  if (ImGui::Button(ICON_FA_TIMES "Close subwindows")) {
     RemoveAllWidgets();
   }
 

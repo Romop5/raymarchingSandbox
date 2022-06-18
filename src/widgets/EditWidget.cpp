@@ -1,6 +1,7 @@
 
 #include <imgui.h>
 
+#include "IconsFontAwesome5.h"
 #include "helpers/FileHelper.hpp"
 #include "raymarching/Raymarcher.hpp"
 #include "raymarching/SDF.hpp"
@@ -40,7 +41,7 @@ EditWidget::RenderContent() -> void
 {
   SaveAsSubwidget();
   ImGui::SameLine();
-  if (ImGui::Button("Compile")) {
+  if (ImGui::Button(ICON_FA_FIRE "Compile")) {
     Recompile();
   }
 
@@ -109,12 +110,12 @@ EditWidget::SaveAs(std::string filename) -> void
 auto
 EditWidget::SaveAsSubwidget() -> void
 {
-  if (ImGui::Button("Save")) {
+  if (ImGui::Button(ICON_FA_SAVE "Save")) {
     SaveAs(filename);
   }
   ImGui::SameLine();
 
-  if (ImGui::Button("Save as")) {
+  if (ImGui::Button(ICON_FA_SAVE "Save as")) {
     if (filename.empty()) {
       filename = "new.sdf";
     }
@@ -125,13 +126,13 @@ EditWidget::SaveAsSubwidget() -> void
     ImGui::Text("Save SDF function to disk");
     ImGui::Separator();
     ImGui::InputText("", &filename);
-    if (ImGui::Button("Save")) {
+    if (ImGui::Button(ICON_FA_SAVE "Save")) {
       SaveAs(filename);
       ImGui::CloseCurrentPopup();
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Exit")) {
+    if (ImGui::Button(ICON_FA_TIMES "Exit")) {
       ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();

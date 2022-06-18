@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "IconsFontAwesome5.h"
 #include "application/IApplication.hpp"
 #include "rendering/FlyingCamera.hpp"
 #include "rendering/OrbitCamera.hpp"
@@ -43,13 +44,14 @@ RendererWidget::RenderContent() -> void
     glPopAttrib();
   }
 
-  std::string pauseButtonString = (isPaused ? "Play" : "Pause");
+  std::string pauseButtonString =
+    (isPaused ? ICON_FA_PLAY "Play" : ICON_FA_PAUSE "Pause");
   if (ImGui::Button(pauseButtonString.c_str())) {
     isPaused = !isPaused;
   }
   ImGui::SameLine();
 
-  if (ImGui::Button("Settings")) {
+  if (ImGui::Button(ICON_FA_COGS "Settings")) {
     RemoveAllWidgets();
     auto widget = std::make_shared<RendererAttributesWidget>(raymarcher);
     widget->SetTitle(GetTitle() + "  - Settings");
@@ -57,12 +59,12 @@ RendererWidget::RenderContent() -> void
     AddWidget(widget);
   }
   ImGui::SameLine();
-  if (ImGui::Button("Fit render plane to window")) {
+  if (ImGui::Button(ICON_FA_RULER "Fit render plane to window")) {
     auto size = ImGui::GetWindowSize();
     SetViewportSize(size.x, size.y);
   }
   ImGui::SameLine();
-  if (ImGui::Button("Toggle orbiter/fly")) {
+  if (ImGui::Button(ICON_FA_CAMERA "Toggle orbiter/fly")) {
     using CameraType = GLFWCamera::CameraType;
     if (camera) {
       if (camera->GetType() == CameraType::ORBITER_CAMERA) {
@@ -79,7 +81,7 @@ RendererWidget::RenderContent() -> void
   }
 
   ImGui::SameLine();
-  if (ImGui::Button("Help")) {
+  if (ImGui::Button(ICON_FA_INFO "Help")) {
     ImGui::OpenPopup("HelpPopup");
   }
 
