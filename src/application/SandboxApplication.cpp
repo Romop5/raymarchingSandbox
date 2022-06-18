@@ -17,11 +17,13 @@ SandboxApplication::SandboxApplication()
   width = height = 500;
   adapter.SetVisibility(true);
 
-  widgetManager.AddWidget(std::make_shared<MenuWidget>(widgetManager));
+  widgetManager.AddWidget(std::make_shared<MenuWidget>(*this, widgetManager));
 
   auto welcome = std::make_shared<WelcomeWidget>(widgetManager);
   welcome->SetSize(500, 0);
   widgetManager.AddWidget(welcome);
+
+  should_continue = true;
 }
 
 auto
@@ -36,7 +38,7 @@ auto
 SandboxApplication::Render() -> void
 {
   if (!widgetManager.HasAnyWidget()) {
-    widgetManager.AddWidget(std::make_shared<MenuWidget>(widgetManager));
+    widgetManager.AddWidget(std::make_shared<MenuWidget>(*this, widgetManager));
   }
 
   if (adapter.IsVisible()) {
@@ -152,4 +154,16 @@ auto
 SandboxApplication::GetFocus() -> std::shared_ptr<IGLFWInputHandler>
 {
   return inputHandler;
+}
+
+auto
+SandboxApplication::ShouldContinue() -> bool
+{
+  return should_continue;
+}
+
+auto
+SandboxApplication::RequestExit() -> void
+{
+  should_continue = false;
 }

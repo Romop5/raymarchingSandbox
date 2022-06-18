@@ -24,36 +24,6 @@ else (OPENGL_FOUND)
   MESSAGE("OpenGL environment missing")
 endif()
 
-
-#add_subdirectory(ext/glfw)
-#include_directories(ext/glfw/include)
-
-#find_package(geGL REQUIRED)
-
-# # Compile imgui
-# add_library(imgui SHARED 
-# 3rd/imgui/imgui.cpp
-# 3rd/imgui/imgui_demo.cpp
-# 3rd/imgui/imgui_draw.cpp
-# 3rd/imgui/imgui_tables.cpp
-# 3rd/imgui/imgui_widgets.cpp
-# 3rd/imgui/imconfig.h
-# 3rd/imgui/imgui.h
-# 3rd/imgui/imgui_internal.h
-# 3rd/imgui/imstb_rectpack.h
-# 3rd/imgui/imstb_textedit.h
-# 3rd/imgui/imstb_truetype.h
-
-# 3rd/imgui/backends/imgui_impl_opengl3.h
-# 3rd/imgui/backends/imgui_impl_opengl3.cpp
-
-# 3rd/imgui/misc/cpp/imgui_stdlib.cpp
-# 3rd/imgui/misc/cpp/imgui_stdlib.h
-# )
-# target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui)
-# target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd/imgui-markdown/)
-# target_link_libraries(imgui PUBLIC GLEW)
-
 add_library(common
     src/helpers/Args.cpp
     src/helpers/FileHelper.cpp
@@ -101,8 +71,9 @@ add_executable (sandbox
 
     src/application/SandboxApplication.cpp
     src/application/TestApplication.cpp
-    src/application/ImguiAdapter.cpp
 
+
+    src/bindings/ImguiAdapter.cpp
     src/bindings/imgui_impl_opengl3.cpp
     src/bindings/imgui_stdlib.cpp
 )
