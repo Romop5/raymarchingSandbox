@@ -1,9 +1,11 @@
 
 #include <cctype>
 
+#include "IconsFontAwesome5.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <bindings/imgui_impl_opengl3.h>
+#include <spdlog/spdlog.h>
 
 #include "ImguiAdapter.hpp"
 using namespace raymarcher;
@@ -102,6 +104,26 @@ ImguiAdapter::Initialize(size_t width, size_t height)
   Resize(width, height);
 
   ImGui_ImplOpenGL3_Init();
+
+  // Add support for icons
+  io.Fonts->AddFontDefault();
+
+  // merge in icons from Font Awesome
+  static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+  ImFontConfig icons_config;
+  icons_config.MergeMode = true;
+  icons_config.PixelSnapH = true;
+  icons_config.GlyphMinAdvanceX = 13.0f;
+
+  const auto font_path = FONT_ICON_FILE_NAME_FAS;
+  const auto font_ptr =
+    io.Fonts->AddFontFromFileTTF(font_path, 13.0f, &icons_config, icons_ranges);
+  // use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
+
+  if (!font_ptr) {
+    spdlog::error("ImguiAdapter: Failed to load font '{}'", font_path);
+  }
+
   return true;
 }
 
