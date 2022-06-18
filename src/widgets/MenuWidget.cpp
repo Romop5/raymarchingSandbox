@@ -185,45 +185,9 @@ MenuWidget::RenderContentWidget(bool is_menu) -> void
 auto
 MenuWidget::LoadSDFWidget() -> void
 {
-  static std::vector<std::string> fileNames;
-  static std::filesystem::path selectedFile;
-
   if (ImGui::MenuItem("Load file")) {
-    ImGui::OpenPopup("LoadPopup");
-  }
-
-  if (ImGui::BeginPopup("LoadPopup")) {
-    ImGui::Text("Load SDF function from disk");
-    ImGui::Separator();
-
-    if (ImGui::BeginListBox("")) {
-
-      for (const auto& entry : std::filesystem::directory_iterator(
-             std::filesystem::current_path())) {
-        const auto path = entry.path();
-        const auto filename = path.filename();
-        if (filename.extension() != ".sdf") {
-          continue;
-        }
-        if (ImGui::Selectable(filename.c_str())) {
-          selectedFile = path;
-        }
-      }
-      ImGui::EndListBox();
-    }
-
-    ImGui::Text(selectedFile.filename().c_str());
-    ImGui::SameLine();
-    if (ImGui::Button("Load")) {
-      Load(selectedFile);
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Exit")) {
-      ImGui::CloseCurrentPopup();
-    }
-    ImGui::EndPopup();
+    auto widget = std::make_shared<raymarcher::LoadFileWidget>(windowManager);
+    windowManager.AddWidget(widget);
   }
 }
 

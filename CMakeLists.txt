@@ -80,6 +80,7 @@ add_executable (sandbox
     src/widgets/MenuWidget.cpp
     src/widgets/WelcomeWidget.cpp
     src/widgets/EditWidget.cpp
+    src/widgets/LoadFileWidget.cpp
     src/widgets/BVHCalculatorWidget.cpp
     src/widgets/FPSMeter.cpp
 

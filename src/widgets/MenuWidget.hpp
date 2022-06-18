@@ -4,6 +4,7 @@
 #include "application/IApplication.hpp"
 #include "raymarching/SDFLibrary.hpp"
 #include "widgets/FPSMeter.hpp"
+#include "widgets/LoadFileWidget.hpp"
 #include "widgets/WidgetBase.hpp"
 
 #include "WidgetManager.hpp"
